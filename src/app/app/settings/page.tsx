@@ -74,7 +74,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div style={{ padding: '32px', maxWidth: 680, margin: '0 auto' }}>
+    <div className="settings-page" style={{ padding: '32px', maxWidth: 680, margin: '0 auto' }}>
       <div style={{ marginBottom: 28 }}>
         <h1 style={{ fontSize: 26, fontWeight: 800, letterSpacing: '-0.03em', marginBottom: 4 }}>Settings</h1>
         <p style={{ fontSize: 14, color: 'rgba(240,240,255,0.4)' }}>Manage your preferences and account</p>
@@ -188,7 +188,7 @@ export default function SettingsPage() {
               <div style={{ fontSize: 13, color: 'rgba(240,240,255,0.4)', marginBottom: 14 }}>3 daily matches · Basic features</div>
             </div>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+          <div className="settings-sub-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
             <div style={{ background: 'linear-gradient(135deg, rgba(124,58,237,0.12), rgba(219,39,119,0.08))', border: '1px solid rgba(139,92,246,0.2)', borderRadius: 14, padding: '14px 16px' }}>
               <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 2 }}>Spark — $19/mo</div>
               <div style={{ fontSize: 12, color: 'rgba(240,240,255,0.45)', marginBottom: 10 }}>5 matches + AI Coach + Date Planner</div>
@@ -232,6 +232,13 @@ export default function SettingsPage() {
         <LogOut size={17} />
         Sign out
       </button>
+
+      <style>{`
+        @media (max-width: 768px) {
+          .settings-page { padding: 20px 16px 32px !important; }
+          .settings-sub-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
     </div>
   );
 }

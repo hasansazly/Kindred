@@ -21,9 +21,9 @@ export default function ProfilePage() {
   ];
 
   return (
-    <div style={{ padding: '32px', maxWidth: 800, margin: '0 auto' }}>
+    <div className="profile-page" style={{ padding: '32px', maxWidth: 800, margin: '0 auto' }}>
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
+      <div className="profile-header-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
         <h1 style={{ fontSize: 26, fontWeight: 800, letterSpacing: '-0.03em' }}>Your Profile</h1>
         <button
           onClick={() => router.push('/app/settings')}
@@ -53,7 +53,7 @@ export default function ProfilePage() {
             </button>
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginTop: 12 }}>
+          <div className="profile-hero-meta" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginTop: 12, flexWrap: 'wrap', gap: 12 }}>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                 <h2 style={{ fontSize: 22, fontWeight: 800, letterSpacing: '-0.02em' }}>{user.name}, {user.age}</h2>
@@ -263,6 +263,12 @@ export default function ProfilePage() {
           </div>
         </div>
       )}
+      <style>{`
+        @media (max-width: 768px) {
+          .profile-page { padding: 20px 16px 32px !important; }
+          .profile-header-row { flex-wrap: wrap; gap: 12px; }
+        }
+      `}</style>
     </div>
   );
 }

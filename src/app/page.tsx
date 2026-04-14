@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react';
 import {
   Heart, Sparkles, Shield, MessageCircle, Star, ChevronRight,
   Brain, Zap, Users, CheckCircle, ArrowRight, Lock, BarChart2,
-  Camera, Coffee, Mountain, Music,
+  Camera, Coffee, Mountain, Music, Menu, X,
 } from 'lucide-react';
 
 const NAV_LINKS = [
@@ -142,6 +142,7 @@ function FloatingCard({ className, delay = 0 }: { className?: string; delay?: nu
 
 export default function LandingPage() {
   const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 20);
@@ -191,15 +192,50 @@ export default function LandingPage() {
           </div>
 
           {/* CTA */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <Link href="/auth/login" className="btn-ghost" style={{ padding: '9px 20px', fontSize: 14 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+            <Link href="/auth/login" className="btn-ghost hidden-mobile" style={{ padding: '9px 20px', fontSize: 14 }}>
               Sign in
             </Link>
             <Link href="/auth/signup" className="btn-primary" style={{ padding: '9px 20px', fontSize: 14 }}>
               Get Started
             </Link>
+            {/* Hamburger — mobile only */}
+            <button
+              className="hamburger-btn"
+              onClick={() => setMenuOpen(o => !o)}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(240,240,255,0.7)', padding: 4, display: 'none' }}
+            >
+              {menuOpen ? <X size={22} /> : <Menu size={22} />}
+            </button>
           </div>
         </div>
+
+        {/* Mobile nav menu */}
+        {menuOpen && (
+          <div className="mobile-menu" style={{
+            background: 'rgba(7,7,15,0.97)',
+            backdropFilter: 'blur(20px)',
+            borderTop: '1px solid rgba(255,255,255,0.07)',
+            padding: '12px 24px 20px',
+            display: 'none',
+            flexDirection: 'column',
+            gap: 4,
+          }}>
+            {NAV_LINKS.map(l => (
+              <a
+                key={l.label}
+                href={l.href}
+                onClick={() => setMenuOpen(false)}
+                style={{ color: 'rgba(240,240,255,0.65)', fontSize: 15, fontWeight: 500, textDecoration: 'none', padding: '12px 4px', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'block' }}
+              >
+                {l.label}
+              </a>
+            ))}
+            <Link href="/auth/login" onClick={() => setMenuOpen(false)} style={{ color: 'rgba(240,240,255,0.65)', fontSize: 15, fontWeight: 500, textDecoration: 'none', padding: '12px 4px', display: 'block' }}>
+              Sign in
+            </Link>
+          </div>
+        )}
       </nav>
 
       {/* ── Hero ── */}
@@ -576,7 +612,7 @@ export default function LandingPage() {
       {/* ── CTA Banner ── */}
       <section style={{ padding: '100px 24px' }}>
         <div style={{ maxWidth: 800, margin: '0 auto', textAlign: 'center' }}>
-          <div style={{
+          <div className="cta-banner" style={{
             borderRadius: 28,
             padding: '64px 48px',
             background: 'linear-gradient(135deg, rgba(124,58,237,0.15) 0%, rgba(219,39,119,0.1) 100%)',
@@ -640,6 +676,14 @@ export default function LandingPage() {
         @media (max-width: 600px) {
           .stats-grid { grid-template-columns: 1fr !important; }
           .steps-grid { grid-template-columns: 1fr !important; }
+        }
+        @media (max-width: 768px) {
+          .hamburger-btn { display: flex !important; }
+          .hidden-mobile { display: none !important; }
+          .mobile-menu { display: flex !important; }
+          .cta-banner { padding: 40px 24px !important; }
+          /* Footer flex */
+          footer > div { flex-direction: column; align-items: flex-start !important; }
         }
       `}</style>
     </div>
