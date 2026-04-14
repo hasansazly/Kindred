@@ -1,0 +1,190 @@
+'use client';
+
+import Link from 'next/link';
+import { useState } from 'react';
+import { Heart, Eye, EyeOff, ArrowRight, Sparkles } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+
+export default function LoginPage() {
+  const router = useRouter();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError('');
+    if (!email || !password) { setError('Please fill in all fields.'); return; }
+    setLoading(true);
+    // Simulate auth
+    await new Promise(r => setTimeout(r, 1200));
+    setLoading(false);
+    router.push('/app/discover');
+  }
+
+  return (
+    <div style={{ minHeight: '100vh', background: '#07070f', display: 'flex' }}>
+      {/* Left panel — decorative */}
+      <div style={{ flex: 1, position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: 48 }} className="hidden lg:flex">
+        {/* Gradient BG */}
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(124,58,237,0.2) 0%, rgba(219,39,119,0.15) 50%, rgba(7,7,15,0) 100%)' }} />
+        <div className="orb" style={{ width: 500, height: 500, background: 'rgba(124,58,237,0.15)', top: -100, left: -100 }} />
+        <div className="orb" style={{ width: 400, height: 400, background: 'rgba(244,63,94,0.1)', bottom: 0, right: 0 }} />
+
+        {/* Logo */}
+        <div style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ width: 36, height: 36, borderRadius: 10, background: 'linear-gradient(135deg, #7c3aed, #db2777)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Heart size={18} color="white" fill="white" />
+          </div>
+          <span style={{ fontWeight: 700, fontSize: 22, letterSpacing: '-0.03em' }}>kindred</span>
+        </div>
+
+        {/* Testimonial */}
+        <div style={{ position: 'relative', zIndex: 1, maxWidth: 440 }}>
+          {/* Match preview card */}
+          <div className="glass" style={{ borderRadius: 20, padding: 20, marginBottom: 28 }}>
+            <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 14 }}>
+              <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&q=80" style={{ width: 44, height: 44, borderRadius: '50%', objectFit: 'cover' }} alt="" />
+              <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&q=80" style={{ width: 44, height: 44, borderRadius: '50%', objectFit: 'cover', marginLeft: -16, border: '2px solid #07070f' }} alt="" />
+              <div>
+                <div style={{ fontSize: 14, fontWeight: 600 }}>Emma & James matched</div>
+                <div style={{ fontSize: 12, color: 'rgba(240,240,255,0.4)' }}>97% compatibility · Values + Goals</div>
+              </div>
+              <div style={{ marginLeft: 'auto', fontSize: 20 }}>💫</div>
+            </div>
+            <div style={{ fontSize: 13, color: 'rgba(240,240,255,0.6)', lineHeight: 1.6 }}>
+              &ldquo;We got engaged last month. Kindred showed me things about our compatibility I never could have seen on my own.&rdquo;
+            </div>
+            <div style={{ marginTop: 12, display: 'flex', gap: 6 }}>
+              {['Values', 'Goals', 'Communication'].map(t => (
+                <span key={t} className="tag tag-violet" style={{ fontSize: 11 }}>{t}</span>
+              ))}
+            </div>
+          </div>
+          <p style={{ fontSize: 28, fontWeight: 700, lineHeight: 1.25, letterSpacing: '-0.02em', color: 'rgba(240,240,255,0.9)' }}>
+            Welcome back.<br />Your matches are waiting.
+          </p>
+        </div>
+      </div>
+
+      {/* Right panel — form */}
+      <div style={{ width: '100%', maxWidth: 520, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 40px' }}>
+        <div style={{ width: '100%' }}>
+          {/* Mobile logo */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 40 }} className="lg:hidden">
+            <div style={{ width: 34, height: 34, borderRadius: 9, background: 'linear-gradient(135deg, #7c3aed, #db2777)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Heart size={16} color="white" fill="white" />
+            </div>
+            <span style={{ fontWeight: 700, fontSize: 20, letterSpacing: '-0.03em' }}>kindred</span>
+          </div>
+
+          <h1 style={{ fontSize: 28, fontWeight: 800, letterSpacing: '-0.03em', marginBottom: 8 }}>Sign in</h1>
+          <p style={{ fontSize: 15, color: 'rgba(240,240,255,0.45)', marginBottom: 36 }}>
+            New here?{' '}
+            <Link href="/auth/signup" style={{ color: '#a78bfa', textDecoration: 'none', fontWeight: 500 }}>Create an account</Link>
+          </p>
+
+          {/* Social logins */}
+          <div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
+            {[
+              { name: 'Google', icon: '🔵' },
+              { name: 'Apple', icon: '🍎' },
+            ].map(s => (
+              <button
+                key={s.name}
+                className="btn-ghost"
+                style={{ flex: 1, justifyContent: 'center', fontSize: 14 }}
+                onClick={() => router.push('/app/discover')}
+              >
+                <span>{s.icon}</span>
+                Continue with {s.name}
+              </button>
+            ))}
+          </div>
+
+          {/* Divider */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
+            <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.08)' }} />
+            <span style={{ fontSize: 12, color: 'rgba(240,240,255,0.3)', fontWeight: 500 }}>or</span>
+            <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.08)' }} />
+          </div>
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            {error && (
+              <div style={{ background: 'rgba(244,63,94,0.1)', border: '1px solid rgba(244,63,94,0.25)', borderRadius: 10, padding: '12px 14px', fontSize: 13, color: '#fda4af' }}>
+                {error}
+              </div>
+            )}
+
+            <div>
+              <label style={{ fontSize: 13, fontWeight: 500, color: 'rgba(240,240,255,0.55)', display: 'block', marginBottom: 8 }}>Email</label>
+              <input
+                className="input-field"
+                type="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                autoComplete="email"
+              />
+            </div>
+
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                <label style={{ fontSize: 13, fontWeight: 500, color: 'rgba(240,240,255,0.55)' }}>Password</label>
+                <a href="#" style={{ fontSize: 12, color: '#a78bfa', textDecoration: 'none' }}>Forgot password?</a>
+              </div>
+              <div style={{ position: 'relative' }}>
+                <input
+                  className="input-field"
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  autoComplete="current-password"
+                  style={{ paddingRight: 48 }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(240,240,255,0.35)', display: 'flex', padding: 0 }}
+                >
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              className="btn-primary"
+              style={{ width: '100%', justifyContent: 'center', fontSize: 15, padding: '15px', marginTop: 8, opacity: loading ? 0.7 : 1 }}
+              disabled={loading}
+            >
+              {loading ? (
+                <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span style={{ width: 16, height: 16, border: '2px solid rgba(255,255,255,0.3)', borderTopColor: 'white', borderRadius: '50%', animation: 'spin 0.7s linear infinite', display: 'inline-block' }} />
+                  Signing in…
+                </span>
+              ) : (
+                <>Sign in <ArrowRight size={18} /></>
+              )}
+            </button>
+          </form>
+
+          <p style={{ fontSize: 12, color: 'rgba(240,240,255,0.25)', textAlign: 'center', marginTop: 28, lineHeight: 1.7 }}>
+            By signing in, you agree to our{' '}
+            <a href="#" style={{ color: 'rgba(240,240,255,0.45)', textDecoration: 'none' }}>Terms of Service</a>
+            {' '}and{' '}
+            <a href="#" style={{ color: 'rgba(240,240,255,0.45)', textDecoration: 'none' }}>Privacy Policy</a>.
+          </p>
+        </div>
+      </div>
+
+      <style>{`
+        @keyframes spin { to { transform: rotate(360deg); } }
+      `}</style>
+    </div>
+  );
+}
