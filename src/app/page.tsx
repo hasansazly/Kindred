@@ -177,7 +177,7 @@ export default function LandingPage() {
           </Link>
 
           {/* Nav links */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 32 }} className="hidden md:flex">
+          <div style={{ display: 'flex', alignItems: 'center', gap: 32 }} className="nav-desktop-links">
             {NAV_LINKS.map(l => (
               <a key={l.label} href={l.href} style={{
                 color: 'rgba(240,240,255,0.6)', fontSize: 14, fontWeight: 500,
@@ -193,7 +193,7 @@ export default function LandingPage() {
 
           {/* CTA */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-            <Link href="/auth/login" className="btn-ghost hidden-mobile" style={{ padding: '9px 20px', fontSize: 14 }}>
+            <Link href="/auth/login" className="btn-ghost nav-login-link" style={{ padding: '9px 20px', fontSize: 14 }}>
               Sign in
             </Link>
             <Link href="/auth/signup" className="btn-primary" style={{ padding: '9px 20px', fontSize: 14 }}>
@@ -666,6 +666,7 @@ export default function LandingPage() {
       {/* Responsive styles */}
       <style>{`
         @media (max-width: 767px) {
+          .nav-desktop-links { display: none !important; }
           .hero-grid { grid-template-columns: 1fr !important; gap: 24px !important; text-align: center; }
           .hero-phone-wrap { margin-top: 24px; }
           .hero-phone-frame { width: min(280px, 100%) !important; max-width: 280px !important; }
@@ -686,7 +687,7 @@ export default function LandingPage() {
         }
         @media (max-width: 767px) {
           .hamburger-btn { display: flex !important; }
-          .hidden-mobile { display: none !important; }
+          .nav-login-link { display: none !important; }
           .mobile-menu { display: flex !important; }
           .cta-banner { padding: 40px 24px !important; }
           /* Footer flex */

@@ -89,7 +89,7 @@ function MobileBottomNav() {
   const pathname = usePathname();
   return (
     <div
-      className="md:hidden"
+      className="mobile-only"
       style={{
         flexShrink: 0,
         position: 'fixed',
@@ -184,7 +184,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     <div style={{ height: '100dvh', background: '#07070f', display: 'flex', overflow: 'hidden' }}>
       {/* Desktop sidebar */}
       <div
-        className="hidden md:flex md:flex-col"
+        className="desktop-only"
         style={{
           width: 260,
           flexShrink: 0,
@@ -202,7 +202,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, height: '100dvh', overflow: 'hidden' }}>
         {/* Mobile top bar */}
         <div
-          className="md:hidden"
+          className="mobile-only"
           style={{
             flexShrink: 0,
             background: 'rgba(7,7,15,0.95)',
@@ -243,7 +243,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <MobileBottomNav />
       </div>
       <style>{`
+        .mobile-only { display: none; }
+        .desktop-only { display: flex; }
         @media (max-width: 767px) {
+          .mobile-only { display: flex !important; }
+          .desktop-only { display: none !important; }
           .app-main-scroll {
             padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px)) !important;
           }

@@ -27,7 +27,7 @@ export default function LoginPage() {
   return (
     <div style={{ minHeight: '100vh', background: '#07070f', display: 'flex' }}>
       {/* Left panel — decorative */}
-      <div style={{ flex: 1, position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: 48 }} className="hidden md:flex">
+      <div style={{ flex: 1, position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: 48 }} className="auth-desktop-panel">
         {/* Gradient BG */}
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(124,58,237,0.2) 0%, rgba(219,39,119,0.15) 50%, rgba(7,7,15,0) 100%)' }} />
         <div className="orb" style={{ width: 500, height: 500, background: 'rgba(124,58,237,0.15)', top: -100, left: -100 }} />
@@ -73,7 +73,7 @@ export default function LoginPage() {
       <div className="auth-form-shell" style={{ width: '100%', maxWidth: 520, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 40px' }}>
         <div style={{ width: '100%' }}>
           {/* Mobile logo */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 40 }} className="lg:hidden">
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 40 }} className="auth-mobile-logo">
             <div style={{ width: 34, height: 34, borderRadius: 9, background: 'linear-gradient(135deg, #7c3aed, #db2777)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Heart size={16} color="white" fill="white" />
             </div>
@@ -184,7 +184,10 @@ export default function LoginPage() {
 
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
+        .auth-mobile-logo { display: none; }
         @media (max-width: 767px) {
+          .auth-desktop-panel { display: none !important; }
+          .auth-mobile-logo { display: flex !important; }
           .auth-form-shell { padding: 24px 16px !important; }
           .auth-form-shell { max-width: 100% !important; }
           .auth-social-row { flex-direction: column; }
