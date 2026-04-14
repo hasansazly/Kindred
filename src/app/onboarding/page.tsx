@@ -183,13 +183,13 @@ export default function OnboardingPage() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: '#07070f', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px 20px', position: 'relative' }}>
+    <div className="onboarding-page" style={{ minHeight: '100vh', background: '#07070f', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px 20px', position: 'relative' }}>
       {/* BG orbs */}
       <div className="orb" style={{ width: 600, height: 600, background: 'rgba(124,58,237,0.1)', top: -200, right: -100 }} />
       <div className="orb" style={{ width: 400, height: 400, background: 'rgba(244,63,94,0.08)', bottom: -100, left: -100 }} />
 
       {/* Container */}
-      <div style={{ width: '100%', maxWidth: 600, position: 'relative', zIndex: 1 }}>
+      <div className="onboarding-shell" style={{ width: '100%', maxWidth: 600, position: 'relative', zIndex: 1 }}>
         {/* Logo */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, marginBottom: 40 }}>
           <div style={{ width: 34, height: 34, borderRadius: 10, background: 'linear-gradient(135deg, #7c3aed, #db2777)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -492,10 +492,32 @@ export default function OnboardingPage() {
       </div>
       <style>{`
         @media (max-width: 767px) {
-          .onboarding-card { padding: 28px 20px !important; }
+          .onboarding-page {
+            justify-content: flex-start !important;
+            align-items: stretch !important;
+            padding: 24px 16px 12px !important;
+            overflow-y: auto;
+          }
+          .onboarding-shell {
+            max-width: 100% !important;
+          }
+          .onboarding-card {
+            padding: 24px 16px 96px !important;
+            max-height: calc(100dvh - 170px);
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+          }
           .onboarding-two-col { grid-template-columns: 1fr !important; }
           .onboarding-interest-row > button { flex: 1 1 calc(50% - 5px) !important; }
-          .onboarding-nav { flex-wrap: wrap; gap: 12px; }
+          .onboarding-nav {
+            flex-wrap: wrap;
+            gap: 12px;
+            position: sticky;
+            bottom: 0;
+            background: rgba(7,7,15,0.96);
+            border-top: 1px solid rgba(255,255,255,0.06);
+            padding-top: 12px;
+          }
           .onboarding-nav > button { flex: 1 1 auto; justify-content: center; }
         }
       `}</style>

@@ -44,8 +44,9 @@ body {
   max-width: 100vw;
   min-height: 100vh;
   min-height: 100dvh;
-  /* Prevent body scroll when app layout handles it */
-  overscroll-behavior: none;
+  /* Allow natural page scrolling on mobile browsers */
+  overscroll-behavior-y: auto;
+  -webkit-overflow-scrolling: touch;
   /* Prevent words from breaking out of containers */
   overflow-wrap: break-word;
   word-break: break-word;
