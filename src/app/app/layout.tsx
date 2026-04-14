@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Heart, Compass, Users, MessageCircle, User, Settings, Bell, Sparkles, LogOut, Flame, Brain, BookOpen } from 'lucide-react';
 import { CURRENT_USER } from '@/lib/mockData';
+import AssistantShell from '@/components/ai/AssistantShell';
 
 const NAV = [
   { href: '/app/discover', icon: Compass,       label: 'Discover',  notif: 0 },
@@ -244,6 +245,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         {/* Mobile bottom nav */}
         <MobileBottomNav />
       </div>
+      <AssistantShell />
       <style>{`
         .mobile-only { display: none; }
         .desktop-only { display: flex; }

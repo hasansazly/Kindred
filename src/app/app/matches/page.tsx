@@ -6,6 +6,7 @@ import { Heart, MessageCircle, Brain, Star, ChevronRight, Filter, Search, Sparkl
 import { MATCHES } from '@/lib/mockData';
 import { getCompatibilityColor, getCompatibilityLabel, formatRelativeTime } from '@/lib/utils';
 import type { Match } from '@/lib/types';
+import { useAiV2 } from '@/hooks/useAiV2';
 
 type FilterType = 'all' | 'new' | 'high-compat' | 'replied';
 
@@ -28,11 +29,15 @@ function CompatRing({ score, size = 56 }: { score: number; size?: number }) {
   );
 }
 
-function MatchCard({ match, onClick }: { match: Match; onClick: () => void }) {
+function MatchCard({ match, onClick, aiV2Enabled }: { match: Match; onClick: () => void; aiV2Enabled: boolean }) {
   const router = useRouter();
+  const [showWhy, setShowWhy] = useState(false);
   const lastMsg = match.conversation?.[match.conversation.length - 1];
   const hasUnread = match.conversation?.some(m => m.senderId !== 'user-1' && !m.read);
   const compatColor = getCompatibilityColor(match.compatibilityScore);
+  const topSignals = Object.entries(match.compatibilityBreakdown)
+    .sort(([, a], [, b]) => b - a)
+    .slice(0, 3);
 
   return (
     <div
@@ -107,6 +112,31 @@ function MatchCard({ match, onClick }: { match: Match; onClick: () => void }) {
           {match.aiReason.slice(0, 120)}…
         </p>
       </div>
+      {aiV2Enabled && (
+        <div style={{ background: 'rgba(52,211,153,0.05)', border: '1px solid rgba(52,211,153,0.16)', borderRadius: 10, padding: '10px 12px', marginBottom: 14 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+            <span style={{ fontSize: 11, fontWeight: 700, color: '#86efac', textTransform: 'uppercase', letterSpacing: '0.06em' }}>V2 Match Explanation</span>
+            <button
+              onClick={e => { e.stopPropagation(); setShowWhy(v => !v); }}
+              style={{ border: '1px solid rgba(52,211,153,0.24)', background: 'rgba(52,211,153,0.08)', color: '#bbf7d0', borderRadius: 999, padding: '4px 10px', fontSize: 11, cursor: 'pointer', fontFamily: 'inherit' }}
+            >
+              {showWhy ? 'Hide why' : 'Show why'}
+            </button>
+          </div>
+          {showWhy && (
+            <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 5 }}>
+              {topSignals.map(([key, value]) => (
+                <div key={key} style={{ fontSize: 11, color: 'rgba(240,240,255,0.65)' }}>
+                  • {key}: {value}% signal
+                </div>
+              ))}
+              <div style={{ fontSize: 11, color: 'rgba(240,240,255,0.55)', marginTop: 4 }}>
+                Next action: reference one shared interest and suggest a specific, low-pressure plan.
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Last message */}
       {lastMsg && (
@@ -143,6 +173,7 @@ function MatchCard({ match, onClick }: { match: Match; onClick: () => void }) {
 
 export default function MatchesPage() {
   const router = useRouter();
+  const { enabled: aiV2Enabled } = useAiV2('user-1');
   const [filter, setFilter] = useState<FilterType>('all');
   const [search, setSearch] = useState('');
 
@@ -232,6 +263,7 @@ export default function MatchesPage() {
             <MatchCard
               key={match.id}
               match={match}
+              aiV2Enabled={aiV2Enabled}
               onClick={() => router.push(`/app/messages/${match.id}`)}
             />
           ))}

@@ -9,6 +9,7 @@ import {
 import { MATCHES, DATE_IDEAS, AI_CONVERSATION_TIPS } from '@/lib/mockData';
 import { formatTime, getCompatibilityColor } from '@/lib/utils';
 import type { Message } from '@/lib/types';
+import { useAiV2 } from '@/hooks/useAiV2';
 
 const CURRENT_USER_ID = 'user-1';
 const CURRENT_USER_PHOTO = 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&q=80';
@@ -38,8 +39,16 @@ export default function ChatPage() {
   const [showDateIdeas, setShowDateIdeas] = useState(false);
   const [aiTipIdx, setAiTipIdx] = useState(0);
   const [sending, setSending] = useState(false);
+  const [threadSummaryLoading, setThreadSummaryLoading] = useState(false);
+  const [threadInsight, setThreadInsight] = useState<{
+    summary: string;
+    tone: string;
+    replyCoach: string;
+    why: string[];
+  } | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const { enabled: aiV2Enabled } = useAiV2(CURRENT_USER_ID);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -87,6 +96,34 @@ export default function ChatPage() {
   }
 
   const compatColor = getCompatibilityColor(match.compatibilityScore);
+
+  async function generateThreadInsight() {
+    setThreadSummaryLoading(true);
+    try {
+      const raw = messages.map(m => `${m.senderId === CURRENT_USER_ID ? 'Me' : profile.name}: ${m.content}`).join('\n');
+      const res = await fetch('/api/ai', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'conversation_summary',
+          context: { messages: raw },
+        }),
+      });
+      const data = await res.json();
+      if (data?.result && typeof data.result === 'object') {
+        setThreadInsight(data.result as { summary: string; tone: string; replyCoach: string; why: string[] });
+      }
+    } catch {
+      setThreadInsight({
+        summary: 'Could not summarize this thread right now.',
+        tone: 'Try again shortly.',
+        replyCoach: '',
+        why: ['API temporarily unavailable'],
+      });
+    } finally {
+      setThreadSummaryLoading(false);
+    }
+  }
 
   return (
     <div style={{ display: 'flex', height: '100%', overflow: 'hidden' }} className="chat-root">
@@ -251,8 +288,44 @@ export default function ChatPage() {
               <span style={{ fontSize: 13, fontWeight: 700, color: '#a78bfa' }}>AI Conversation Coach</span>
             </div>
 
-            {/* Current tip */}
-            <div style={{ background: 'rgba(139,92,246,0.08)', border: '1px solid rgba(139,92,246,0.18)', borderRadius: 12, padding: '12px 14px', marginBottom: 16 }}>
+          {/* Current tip */}
+          {aiV2Enabled && (
+            <div style={{ background: 'rgba(52,211,153,0.06)', border: '1px solid rgba(52,211,153,0.18)', borderRadius: 12, padding: '12px 14px', marginBottom: 16 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginBottom: 8 }}>
+                <div style={{ fontSize: 11, fontWeight: 600, color: '#34d399', textTransform: 'uppercase', letterSpacing: '0.06em' }}>V2 Assistant</div>
+                <button
+                  onClick={generateThreadInsight}
+                  disabled={threadSummaryLoading}
+                  style={{ border: '1px solid rgba(52,211,153,0.25)', background: 'rgba(52,211,153,0.1)', color: '#86efac', fontSize: 11, fontWeight: 600, borderRadius: 999, padding: '5px 10px', cursor: 'pointer', fontFamily: 'inherit' }}
+                >
+                  {threadSummaryLoading ? 'Working…' : 'Summarize'}
+                </button>
+              </div>
+              {threadInsight ? (
+                <>
+                  <div style={{ fontSize: 12, color: 'rgba(240,240,255,0.7)', lineHeight: 1.6, marginBottom: 6 }}>
+                    {threadInsight.summary}
+                  </div>
+                  {threadInsight.replyCoach && (
+                    <button
+                      onClick={() => { setInput(threadInsight.replyCoach); inputRef.current?.focus(); }}
+                      style={{ width: '100%', textAlign: 'left', border: '1px solid rgba(52,211,153,0.22)', background: 'rgba(52,211,153,0.08)', color: '#bbf7d0', borderRadius: 10, padding: '8px 10px', fontSize: 11, fontFamily: 'inherit', cursor: 'pointer', marginBottom: 6 }}
+                    >
+                      Coach reply: {threadInsight.replyCoach}
+                    </button>
+                  )}
+                  <div style={{ fontSize: 10, color: 'rgba(240,240,255,0.42)' }}>Why: {(threadInsight.why ?? []).slice(0, 2).join(' • ')}</div>
+                </>
+              ) : (
+                <div style={{ fontSize: 11, color: 'rgba(240,240,255,0.45)' }}>
+                  Generate a concise thread summary, suggested reply, and why signals.
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Current tip */}
+          <div style={{ background: 'rgba(139,92,246,0.08)', border: '1px solid rgba(139,92,246,0.18)', borderRadius: 12, padding: '12px 14px', marginBottom: 16 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
                 <Sparkles size={11} color="#a78bfa" />
                 <span style={{ fontSize: 11, fontWeight: 600, color: '#a78bfa', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Suggestion</span>

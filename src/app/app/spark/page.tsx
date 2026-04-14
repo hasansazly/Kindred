@@ -8,9 +8,11 @@ import {
 } from 'lucide-react';
 import { TODAY_SPARKS, PAST_SPARKS, CATEGORY_COLORS } from '@/lib/sparkData';
 import type { SparkEntry } from '@/lib/sparkData';
+import { useAiV2 } from '@/hooks/useAiV2';
 
 function CountdownTimer({ expiresAt }: { expiresAt: string }) {
   const [timeLeft, setTimeLeft] = useState('');
+  const [isUrgent, setIsUrgent] = useState(false);
 
   useEffect(() => {
     function calc() {
@@ -19,14 +21,12 @@ function CountdownTimer({ expiresAt }: { expiresAt: string }) {
       const h = Math.floor(diff / 3600000);
       const m = Math.floor((diff % 3600000) / 60000);
       setTimeLeft(`${h}h ${m}m left`);
+      setIsUrgent(diff < 3 * 3600000);
     }
     calc();
     const id = setInterval(calc, 60000);
     return () => clearInterval(id);
   }, [expiresAt]);
-
-  const diff = new Date(expiresAt).getTime() - Date.now();
-  const isUrgent = diff < 3 * 3600000; // < 3 hours
 
   return (
     <span style={{ fontSize: 11, fontWeight: 600, color: isUrgent ? '#fb7185' : 'rgba(240,240,255,0.35)', display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -46,9 +46,41 @@ function StreakBadge({ days }: { days: number }) {
   );
 }
 
-function RevealedCard({ spark }: { spark: SparkEntry }) {
+function RevealedCard({ spark, aiV2Enabled }: { spark: SparkEntry; aiV2Enabled: boolean }) {
   const [showFollowUp, setShowFollowUp] = useState(false);
+  const [followUpLoading, setFollowUpLoading] = useState(false);
+  const [followUpText, setFollowUpText] = useState('');
+  const [followUpWhy, setFollowUpWhy] = useState<string[]>([]);
   const colors = CATEGORY_COLORS[spark.question.category];
+
+  async function generateFollowUp() {
+    setFollowUpLoading(true);
+    try {
+      const res = await fetch('/api/ai', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'spark_followup',
+          context: {
+            question: spark.question.question,
+            myAnswer: spark.myAnswer,
+            theirAnswer: spark.theirAnswer,
+          },
+        }),
+      });
+      const data = await res.json();
+      const result = data?.result;
+      if (result && typeof result === 'object') {
+        setFollowUpText(String(result.followUp ?? ''));
+        setFollowUpWhy(Array.isArray(result.why) ? result.why.slice(0, 3) : []);
+      }
+    } catch {
+      setFollowUpText('I love your answer. Want to continue this in chat?');
+      setFollowUpWhy(['Uses shared Spark context', 'Turns insight into action']);
+    } finally {
+      setFollowUpLoading(false);
+    }
+  }
 
   return (
     <div className="glass" style={{ borderRadius: 22, overflow: 'hidden', marginBottom: 16 }}>
@@ -117,6 +149,28 @@ function RevealedCard({ spark }: { spark: SparkEntry }) {
             <ArrowRight size={13} /> Continue in chat
           </button>
         </div>
+        {aiV2Enabled && (
+          <div style={{ marginTop: 10, borderRadius: 10, border: '1px solid rgba(52,211,153,0.18)', background: 'rgba(52,211,153,0.06)', padding: '10px 12px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginBottom: 6 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: '#86efac', textTransform: 'uppercase', letterSpacing: '0.06em' }}>V2 Follow-up Generator</div>
+              <button
+                onClick={generateFollowUp}
+                disabled={followUpLoading}
+                style={{ border: '1px solid rgba(52,211,153,0.24)', background: 'rgba(52,211,153,0.08)', color: '#bbf7d0', borderRadius: 999, padding: '4px 10px', fontSize: 11, cursor: 'pointer', fontFamily: 'inherit' }}
+              >
+                {followUpLoading ? 'Generating…' : 'Generate'}
+              </button>
+            </div>
+            {followUpText ? (
+              <>
+                <div style={{ fontSize: 12, color: 'rgba(240,240,255,0.75)', lineHeight: 1.6, marginBottom: 6 }}>{followUpText}</div>
+                <div style={{ fontSize: 10, color: 'rgba(240,240,255,0.45)' }}>Why: {followUpWhy.join(' • ')}</div>
+              </>
+            ) : (
+              <div style={{ fontSize: 11, color: 'rgba(240,240,255,0.5)' }}>Create one natural message to continue this Spark in chat.</div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -252,6 +306,7 @@ function WaitingCard({ spark, pinLockCta = false }: { spark: SparkEntry; pinLock
 
 export default function SparkPage() {
   const router = useRouter();
+  const { enabled: aiV2Enabled } = useAiV2('user-1');
   const [tab, setTab] = useState<'today' | 'archive'>('today');
 
   const pending = TODAY_SPARKS.filter(s => !s.bothAnswered);
@@ -341,7 +396,7 @@ export default function SparkPage() {
               <div style={{ fontSize: 13, fontWeight: 700, color: 'rgba(240,240,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 14 }}>
                 Both answered ✓ ({revealed.length})
               </div>
-              {revealed.map(spark => <RevealedCard key={spark.matchId} spark={spark} />)}
+              {revealed.map(spark => <RevealedCard key={spark.matchId} spark={spark} aiV2Enabled={aiV2Enabled} />)}
             </div>
           )}
         </div>
@@ -354,7 +409,7 @@ export default function SparkPage() {
               No past Sparks yet. Keep answering daily to build your archive.
             </div>
           ) : (
-            PAST_SPARKS.map(spark => <RevealedCard key={`${spark.matchId}-${spark.date}`} spark={spark} />)
+            PAST_SPARKS.map(spark => <RevealedCard key={`${spark.matchId}-${spark.date}`} spark={spark} aiV2Enabled={aiV2Enabled} />)
           )}
         </div>
       )}
