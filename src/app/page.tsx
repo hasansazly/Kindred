@@ -16,26 +16,26 @@ const NAV_LINKS = [
 const FEATURES = [
   {
     icon: ScanLine,
-    title: 'Compatibility Clarity',
-    desc: 'See exactly why a match fits before you invest time or emotional energy.',
+    title: 'Match Clarity',
+    desc: 'See why this match fits before you invest your time or emotional energy.',
     color: 'violet',
   },
   {
     icon: Zap,
-    title: 'Daily Five',
-    desc: 'Get five intentional introductions each day so depth stays higher than noise.',
+    title: 'Daily Five Matches',
+    desc: 'Get five curated introductions each day so quality stays higher than noise.',
     color: 'amber',
   },
   {
     icon: Brain,
-    title: 'AI Conversation Coach',
-    desc: 'Get concise guidance that helps conversations stay clear, human, and forward-moving.',
+    title: 'Conversation Guide',
+    desc: 'Get guided prompts that help conversations stay clear, natural, and moving forward.',
     color: 'rose',
   },
   {
     icon: Shield,
-    title: 'Safety Score',
-    desc: 'Spot pressure patterns early so you can date with context and confidence.',
+    title: 'Trust Signals',
+    desc: 'Use clear trust signals to spot pressure patterns early and date with confidence.',
     color: 'rose',
   },
 ];
@@ -313,19 +313,19 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── Connection Track ── */}
+      {/* ── Connection Momentum ── */}
       <section style={{ padding: '20px 24px 90px' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <div className="glass" style={{ borderRadius: 24, padding: '30px 28px', border: '1px solid rgba(139,92,246,0.25)' }}>
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(139,92,246,0.12)', border: '1px solid rgba(139,92,246,0.2)', borderRadius: 999, padding: '5px 12px', marginBottom: 14 }}>
               <CircleDashed size={12} color="#a78bfa" />
-              <span style={{ fontSize: 11, color: '#c4b5fd', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase' }}>New: Connection Track v1</span>
+              <span style={{ fontSize: 11, color: '#c4b5fd', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase' }}>New: Connection Momentum</span>
             </div>
             <h3 style={{ fontSize: 'clamp(26px, 3.4vw, 40px)', fontWeight: 800, letterSpacing: '-0.02em', marginBottom: 12 }}>
               Keep promising matches moving with purpose.
             </h3>
             <p style={{ fontSize: 16, color: 'rgba(240,240,255,0.5)', lineHeight: 1.65, maxWidth: 760, marginBottom: 20 }}>
-              Connection Track gives each match a lightweight shared cadence so conversations keep moving with purpose.
+              Connection Momentum gives each match a lightweight shared cadence so conversations keep moving with purpose.
             </p>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 14 }} className="connection-grid">
               <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: '16px 18px' }}>
@@ -357,7 +357,7 @@ export default function LandingPage() {
               Built for calm, confident decisions.
             </h2>
             <p style={{ fontSize: 17, color: 'rgba(240,240,255,0.45)', maxWidth: 500, margin: '0 auto', lineHeight: 1.65 }}>
-              Connection Track leads the experience. Everything else exists to make your next choice clearer.
+              Match Clarity leads the experience. Everything else exists to make your next choice clearer.
             </p>
           </div>
 
@@ -371,7 +371,7 @@ export default function LandingPage() {
                 green: { bg: 'rgba(52,211,153,0.1)', border: 'rgba(52,211,153,0.2)', icon: '#6ee7b7' },
               }[f.color];
               return (
-                <div key={f.title} className="glass card-lift" style={{ borderRadius: 20, padding: 28, border: f.title === 'Compatibility Clarity' ? '1px solid rgba(139,92,246,0.35)' : undefined }}>
+                <div key={f.title} className="glass card-lift" style={{ borderRadius: 20, padding: 28, border: f.title === 'Match Clarity' ? '1px solid rgba(139,92,246,0.35)' : undefined }}>
                   <div style={{ width: 48, height: 48, borderRadius: 14, background: colors?.bg, border: `1px solid ${colors?.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 20 }}>
                     <Icon size={22} color={colors?.icon} />
                   </div>
@@ -481,7 +481,7 @@ export default function LandingPage() {
                 name: 'Clarity',
                 price: '$19',
                 period: 'per month',
-                features: ['5 daily matches', 'Full match explanation', 'AI Conversation Coach', 'Connection Track', 'Safety Score', 'Priority matching'],
+                features: ['5 daily matches', 'Full match explanation', 'Conversation Guide', 'Connection Momentum', 'Trust Signals', 'Priority matching'],
                 cta: 'Start 7-Day Free Trial',
                 href: '/auth/signup',
                 highlight: true,
