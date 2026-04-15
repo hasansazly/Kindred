@@ -67,25 +67,25 @@ const STEPS = [
   {
     step: '01',
     title: 'Build Your Compatibility Profile',
-    desc: 'Go beyond photos. Complete a short profile that captures your communication style, values, and relationship intent.',
+    desc: 'Tell us your values, communication style, and relationship goals in a few quick steps.',
     icon: Users,
   },
   {
     step: '02',
-    title: 'See how you match',
-    desc: 'Our model analyzes thousands of compatibility signals — not just who you say you are, but who you show up as.',
+    title: 'Meet Better Matches Daily',
+    desc: 'We send a limited number of aligned matches each day to keep quality high.',
     icon: Brain,
   },
   {
     step: '03',
-    title: 'Receive Your Daily 5',
-    desc: 'Every morning, 5 new matches arrive with a full compatibility report. Read why you\'re a match before you even say hello.',
+    title: 'Understand the Match',
+    desc: 'You’ll see the key reasons a person fits before you invest your time or energy.',
     icon: Sparkles,
   },
   {
     step: '04',
-    title: 'Move toward a real date',
-    desc: 'Chat with AI coaching support. When it feels right, let our Date Planner craft the perfect first meeting.',
+    title: 'Keep Momentum Going',
+    desc: 'Simple conversation support helps you avoid stalled chats and move forward clearly.',
     icon: Heart,
   },
 ];
