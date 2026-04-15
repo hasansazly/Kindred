@@ -1,0 +1,161 @@
+export type ConversationStage = 'opening' | 'substance' | 'plan';
+export type ConversationTone = 'thoughtful' | 'playful' | 'direct';
+
+export const CONVERSATION_STAGE_LABELS: Record<ConversationStage, string> = {
+  opening: 'Opening a conversation',
+  substance: 'Building substance',
+  plan: 'Moving toward a date or call',
+};
+
+export const CONVERSATION_PROMPTS: Record<ConversationStage, Record<ConversationTone, string[]>> = {
+  opening: {
+    thoughtful: [
+      "What stood out to me is how intentional your profile feels. What are you hoping to find here?",
+      "You seem like someone who enjoys meaningful conversation. What topic can you talk about for hours?",
+      "Your profile felt calm and genuine. What has your week been like so far?",
+      "I liked your take on [interest]. What got you into it in the first place?",
+      "You seem clear about what you value. What matters most to you when getting to know someone?",
+      "What is one small thing that made your day better this week?",
+      "What does a good first conversation on here look like to you?",
+      "You mentioned [hobby]. What do you enjoy most about it lately?",
+      "What kind of connection are you most open to right now?",
+      "If we met for coffee this week, what would we probably end up talking about?",
+    ],
+    playful: [
+      "Quick warm-up question: coffee walk, bookstore date, or tacos and a sunset?",
+      "Serious question: are you team early morning plans or team late-night chats?",
+      "If your week had a soundtrack, what song is playing today?",
+      "Two truths: I like good conversation and bad puns. Your move.",
+      "Pick one: weekend road trip, farmers market, or movie night at home?",
+      "What is your low-stakes hot take this week?",
+      "Would you rather plan the date or discover the neighborhood together?",
+      "What is one thing your friends always tease you about?",
+      "If we had 45 minutes free right now, what would be a fun plan?",
+      "Tiny debate: spontaneous plans or beautifully overplanned plans?",
+    ],
+    direct: [
+      "Hey, I would love to get to know you. How is your day going?",
+      "You seem great. What are you looking for right now?",
+      "What is your ideal first date vibe?",
+      "What does your weekend usually look like?",
+      "What do you enjoy most outside of work?",
+      "What is one thing you value in a relationship?",
+      "How do you usually like to keep a conversation going here?",
+      "What is something simple that always makes you smile?",
+      "Would you rather text more or meet sooner if the vibe is good?",
+      "What is one topic you never get bored talking about?",
+    ],
+  },
+  substance: {
+    thoughtful: [
+      "You mentioned consistency matters to you. What does that look like in practice?",
+      "When a connection feels right, what usually tells you that early on?",
+      "What helps you feel comfortable opening up with someone new?",
+      "How do you like to handle misunderstandings when they happen?",
+      "What values are non-negotiable for you in a relationship?",
+      "What is one life rhythm you want a partner to understand about you?",
+      "How do you balance independence and closeness when dating someone?",
+      "What kind of support feels most meaningful when life gets stressful?",
+      "What has helped you build trust in past relationships?",
+      "What would make this conversation feel worth continuing for you?",
+    ],
+    playful: [
+      "Speed round: mountains, city, or beach for a reset weekend?",
+      "What is your comfort show when your brain is done for the day?",
+      "If you could instantly get good at one hobby, what would you pick?",
+      "What is your strongest niche recommendation right now?",
+      "What is a small hill you are willing to die on?",
+      "What is your go-to way to turn a bad day around?",
+      "Would your friends describe you as planner, improviser, or both?",
+      "What is your signature move when hosting people?",
+      "What is one underrated green flag in dating?",
+      "What is your most repeated phrase lately?",
+    ],
+    direct: [
+      "What are you hoping your next relationship feels like day to day?",
+      "How do you usually communicate when you are busy?",
+      "Do you prefer talking a bit more before meeting, or meeting sooner?",
+      "What does emotional consistency look like for you?",
+      "What is one thing people often misunderstand about you?",
+      "How important is shared routine versus separate space for you?",
+      "What is your preferred pace when getting to know someone?",
+      "What kind of dates do you enjoy most after the first meet?",
+      "What helps you decide if a match is worth exploring?",
+      "What would make this connection feel aligned for you?",
+    ],
+  },
+  plan: {
+    thoughtful: [
+      "I am enjoying this. Would you be open to a low-key coffee this week?",
+      "This has been easy to talk through. Want to pick a day for a quick call?",
+      "I like our pace so far. Should we turn this into a real plan?",
+      "Would you be up for meeting somewhere simple and seeing how it feels?",
+      "I would rather keep momentum than overtext. Want to choose a time?",
+      "What kind of first meet would feel most comfortable for you?",
+      "Would Friday or Sunday be better for a short, no-pressure date?",
+      "Should we do a 15-minute call first and then plan something in person?",
+      "I would be glad to meet you this week. Want to pick a spot together?",
+      "If you are open, I can suggest two options and you choose what feels best.",
+    ],
+    playful: [
+      "I think we have earned a real-world cameo. Coffee or walk this week?",
+      "This chat deserves a sequel. Should we schedule episode two in person?",
+      "I vote we graduate from texting to snacks and conversation.",
+      "Want to trade this app for a 30-minute coffee adventure?",
+      "We might be better at talking in 3D. Want to test that theory?",
+      "I can promise decent conversation and at least one bad joke. Interested?",
+      "How do you feel about a quick call so we can put voices to the messages?",
+      "Shall we pick a day before life gets chaotic again?",
+      "If I send two date ideas, will you pick your favorite?",
+      "This feels promising. Want to lock a simple plan?",
+    ],
+    direct: [
+      "Want to meet for coffee this week?",
+      "Are you open to a quick call tomorrow evening?",
+      "Would Friday at 7 work for you?",
+      "I would like to meet. Does this weekend work?",
+      "Do you want to pick a place and time together?",
+      "I am interested in meeting in person. Are you?",
+      "Would a 20-minute walk date feel good to you?",
+      "Should we move this to a quick call first?",
+      "I am free Thursday or Sunday. Any preference?",
+      "If this feels aligned, lets choose a time now.",
+    ],
+  },
+};
+
+export const CONVERSATION_DECLINE_PATTERNS: string[] = [
+  "I appreciate the chat, but I do not think this is the right fit for me. Wishing you the best here.",
+  "Thank you for the conversation. I am going to step back, but I genuinely hope you find a great match.",
+  "You seem kind, but I am not feeling the connection I am looking for. Take care.",
+  "I have enjoyed talking, but I do not think we are aligned. Wishing you good luck out there.",
+  "I want to be respectful and clear - I do not see this moving forward on my side.",
+  "Thanks for your time. I do not feel the right match here, but I appreciate the conversation.",
+  "I am going to pass here, but I wanted to say thanks for being thoughtful in chat.",
+  "I do not want to waste your time, and I think we are better as a no-match. Wishing you well.",
+  "I am not feeling a romantic fit, so I will step away here. Hope things go great for you.",
+  "You deserve someone fully aligned, and I do not think that is me. Thanks again for the conversation.",
+];
+
+export const CONVERSATION_BUTTON_COPY = {
+  startEasy: {
+    label: 'Start easy',
+    helper: 'Low-pressure openers to break the ice naturally.',
+  },
+  goDeeper: {
+    label: 'Go deeper',
+    helper: 'Questions that build clarity, not small talk loops.',
+  },
+  suggestPlan: {
+    label: 'Suggest a plan',
+    helper: 'Simple next-step prompts for date or call momentum.',
+  },
+  keepChatting: {
+    label: 'Keep chatting',
+    helper: 'Stay in conversation mode with lighter follow-ups.',
+  },
+  notRightFit: {
+    label: 'Not the right fit',
+    helper: 'Respectful close-out language with clear boundaries.',
+  },
+} as const;

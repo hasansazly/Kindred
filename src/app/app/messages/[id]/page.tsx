@@ -7,6 +7,13 @@ import {
   Phone, Video, CheckCircle, Heart, Flame,
 } from 'lucide-react';
 import { MATCHES, DATE_IDEAS, AI_CONVERSATION_TIPS } from '@/lib/mockData';
+import {
+  CONVERSATION_BUTTON_COPY,
+  CONVERSATION_DECLINE_PATTERNS,
+  CONVERSATION_PROMPTS,
+  type ConversationStage,
+  type ConversationTone,
+} from '@/lib/conversationSupportCopy';
 import { formatTime, getCompatibilityColor } from '@/lib/utils';
 import type { Message } from '@/lib/types';
 import { useAiV2 } from '@/hooks/useAiV2';
@@ -46,6 +53,8 @@ export default function ChatPage() {
     replyCoach: string;
     why: string[];
   } | null>(null);
+  const [coachStage, setCoachStage] = useState<ConversationStage>('opening');
+  const [coachTone, setCoachTone] = useState<ConversationTone>('thoughtful');
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const { enabled: aiV2Enabled } = useAiV2(CURRENT_USER_ID);
@@ -124,6 +133,17 @@ export default function ChatPage() {
       setThreadSummaryLoading(false);
     }
   }
+
+  const stageActionButtons: Array<{
+    key: ConversationStage;
+    label: string;
+    helper: string;
+  }> = [
+    { key: 'opening', label: CONVERSATION_BUTTON_COPY.startEasy.label, helper: CONVERSATION_BUTTON_COPY.startEasy.helper },
+    { key: 'substance', label: CONVERSATION_BUTTON_COPY.goDeeper.label, helper: CONVERSATION_BUTTON_COPY.goDeeper.helper },
+    { key: 'plan', label: CONVERSATION_BUTTON_COPY.suggestPlan.label, helper: CONVERSATION_BUTTON_COPY.suggestPlan.helper },
+  ];
+  const coachPrompts = CONVERSATION_PROMPTS[coachStage][coachTone];
 
   return (
     <div style={{ display: 'flex', height: '100%', overflow: 'hidden' }} className="chat-root">
@@ -337,14 +357,54 @@ export default function ChatPage() {
 
             {/* Quick replies */}
             <div style={{ marginBottom: 16 }}>
-              <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(240,240,255,0.4)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Quick starters</div>
+              <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(240,240,255,0.4)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Conversation support</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 10 }}>
+                {stageActionButtons.map(action => (
+                  <button
+                    key={action.key}
+                    onClick={() => setCoachStage(action.key)}
+                    style={{
+                      textAlign: 'left',
+                      background: coachStage === action.key ? 'rgba(139,92,246,0.1)' : 'rgba(255,255,255,0.03)',
+                      border: coachStage === action.key ? '1px solid rgba(139,92,246,0.28)' : '1px solid rgba(255,255,255,0.07)',
+                      borderRadius: 10,
+                      padding: '8px 10px',
+                      cursor: 'pointer',
+                      fontFamily: 'inherit',
+                    }}
+                  >
+                    <div style={{ fontSize: 12, fontWeight: 600, color: coachStage === action.key ? '#c4b5fd' : 'rgba(240,240,255,0.65)', marginBottom: 2 }}>{action.label}</div>
+                    <div style={{ fontSize: 11, color: 'rgba(240,240,255,0.4)', lineHeight: 1.4 }}>{action.helper}</div>
+                  </button>
+                ))}
+              </div>
+              <div style={{ display: 'flex', gap: 6, marginBottom: 8 }}>
+                {([
+                  ['thoughtful', 'Thoughtful'],
+                  ['playful', 'Playful'],
+                  ['direct', 'Direct'],
+                ] as const).map(([tone, label]) => (
+                  <button
+                    key={tone}
+                    onClick={() => setCoachTone(tone)}
+                    style={{
+                      border: coachTone === tone ? '1px solid rgba(139,92,246,0.28)' : '1px solid rgba(255,255,255,0.08)',
+                      background: coachTone === tone ? 'rgba(139,92,246,0.08)' : 'rgba(255,255,255,0.03)',
+                      color: coachTone === tone ? '#c4b5fd' : 'rgba(240,240,255,0.55)',
+                      borderRadius: 999,
+                      padding: '6px 10px',
+                      fontSize: 11,
+                      cursor: 'pointer',
+                      fontFamily: 'inherit',
+                      fontWeight: 600,
+                    }}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                {[
-                  "What's been the highlight of your week?",
-                  `I noticed you're into ${profile.interests[0]} — how'd you get into that?`,
-                  "If you could go anywhere this weekend, where would it be?",
-                  "What's your idea of a perfect Sunday?",
-                ].map((msg, i) => (
+                {coachPrompts.slice(0, 10).map((msg, i) => (
                   <button
                     key={i}
                     onClick={() => { setInput(msg); inputRef.current?.focus(); }}
@@ -353,6 +413,43 @@ export default function ChatPage() {
                     onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)'; e.currentTarget.style.color = 'rgba(240,240,255,0.55)'; }}
                   >
                     {msg}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div style={{ marginBottom: 16 }}>
+              <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(240,240,255,0.4)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Conversation actions</div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6, marginBottom: 8 }}>
+                <button
+                  onClick={() => {
+                    setCoachStage('substance');
+                    setCoachTone('playful');
+                  }}
+                  style={{ textAlign: 'left', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, padding: '8px 10px', cursor: 'pointer', fontFamily: 'inherit' }}
+                >
+                  <div style={{ fontSize: 12, fontWeight: 600, color: 'rgba(240,240,255,0.65)' }}>{CONVERSATION_BUTTON_COPY.keepChatting.label}</div>
+                  <div style={{ fontSize: 10, color: 'rgba(240,240,255,0.4)', lineHeight: 1.4 }}>{CONVERSATION_BUTTON_COPY.keepChatting.helper}</div>
+                </button>
+                <button
+                  onClick={() => {
+                    setInput(CONVERSATION_DECLINE_PATTERNS[0]);
+                    inputRef.current?.focus();
+                  }}
+                  style={{ textAlign: 'left', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, padding: '8px 10px', cursor: 'pointer', fontFamily: 'inherit' }}
+                >
+                  <div style={{ fontSize: 12, fontWeight: 600, color: 'rgba(240,240,255,0.65)' }}>{CONVERSATION_BUTTON_COPY.notRightFit.label}</div>
+                  <div style={{ fontSize: 10, color: 'rgba(240,240,255,0.4)', lineHeight: 1.4 }}>{CONVERSATION_BUTTON_COPY.notRightFit.helper}</div>
+                </button>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                {CONVERSATION_DECLINE_PATTERNS.slice(0, 3).map((line, i) => (
+                  <button
+                    key={i}
+                    onClick={() => { setInput(line); inputRef.current?.focus(); }}
+                    style={{ textAlign: 'left', background: 'rgba(244,63,94,0.05)', border: '1px solid rgba(244,63,94,0.16)', borderRadius: 10, padding: '8px 10px', fontSize: 11, color: 'rgba(240,240,255,0.6)', cursor: 'pointer', fontFamily: 'inherit', lineHeight: 1.45 }}
+                  >
+                    {line}
                   </button>
                 ))}
               </div>
