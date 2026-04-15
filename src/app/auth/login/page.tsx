@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { Heart, Eye, EyeOff, ArrowRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { supabase } from '../../../../../utils/supabase/client';
+import { supabase } from '../../../../utils/supabase/client';
 
 export default function LoginPage() {
   const router = useRouter();
