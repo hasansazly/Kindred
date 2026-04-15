@@ -308,7 +308,7 @@ export default function LandingPage() {
               <span style={{ fontSize: 11, color: '#c4b5fd', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase' }}>New: Connection Track v1</span>
             </div>
             <h3 style={{ fontSize: 'clamp(26px, 3.4vw, 40px)', fontWeight: 800, letterSpacing: '-0.02em', marginBottom: 12 }}>
-              A daily ritual that keeps momentum real.
+              Keep good matches moving.
             </h3>
             <p style={{ fontSize: 16, color: 'rgba(240,240,255,0.5)', lineHeight: 1.65, maxWidth: 760, marginBottom: 20 }}>
               Connection Track gives each match a lightweight shared cadence so conversations keep moving with purpose.
