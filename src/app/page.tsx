@@ -8,48 +8,41 @@ import {
 } from 'lucide-react';
 
 const NAV_LINKS = [
-  { label: 'Features', href: '#features' },
   { label: 'How It Works', href: '#how-it-works' },
-  { label: 'Testimonials', href: '#testimonials' },
   { label: 'Pricing', href: '#pricing' },
+  { label: 'Sign in', href: '/auth/login' },
 ];
 
 const FEATURES = [
   {
-    icon: CircleDashed,
-    title: 'Connection Track',
-    desc: 'A shared ritual for each match: daily micro-questions, a weekly compatibility pulse, and a pre-date intention check that keeps momentum between chats.',
-    color: 'violet',
-  },
-  {
     icon: ScanLine,
-    title: 'Transparent Match Clarity',
-    desc: 'Don’t just get a score. See exactly what drives compatibility across values, communication, lifestyle, goals, and emotional fit.',
+    title: 'Compatibility Clarity',
+    desc: 'See exactly why a match fits before you invest your time or emotional energy.',
     color: 'violet',
   },
   {
     icon: Zap,
     title: 'Daily Five, Not Endless Swipe',
-    desc: 'Every day you get five intentional introductions. Less noise, less burnout, more focus on people who are actually aligned.',
+    desc: 'Get five intentional introductions each day so you can focus instead of scroll.',
     color: 'rose',
   },
   {
     icon: MessageCircle,
     title: 'AI Conversation Coach',
-    desc: 'Get grounded reply suggestions that sound like you, not a script. Keep conversations clear, warm, and intentional.',
+    desc: 'Get natural reply support when you need it, so conversations feel clear and confident.',
     color: 'amber',
   },
   {
     icon: Shield,
     title: 'Safety Score',
-    desc: 'Behavioral signal checks surface pressure patterns and red flags early so users can decide with confidence.',
+    desc: 'Spot pressure patterns early and make decisions with context, not guesswork.',
     color: 'rose',
   },
 ];
 
 const PROBLEM_COMPARE = [
   {
-    title: 'What Most Dating Apps Do',
+    title: 'Every other app',
     points: [
       'Reward endless swiping and short-term dopamine.',
       'Show a match, but give no clear reason why.',
@@ -59,12 +52,12 @@ const PROBLEM_COMPARE = [
     tone: 'muted' as const,
   },
   {
-    title: 'What Kindred Does',
+    title: 'Vinculo',
     points: [
       'Prioritizes depth over volume with daily intentional matches.',
       'Explains each match with transparent compatibility signals.',
       'Uses Connection Track to build shared momentum before dates.',
-      'Supports safer, clearer conversations with AI coaching.',
+      'Supports safer, clearer conversations without chaos.',
     ],
     tone: 'bright' as const,
   },
@@ -102,8 +95,8 @@ const TESTIMONIALS = [
     name: 'Natalie R.',
     age: 29,
     city: 'New York',
-    photo: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=200&q=80',
-    text: 'I was on Hinge for two years and got nowhere. Kindred matched me with my now-boyfriend in week one. The compatibility report was scarily accurate — it explained things about us I couldn\'t have articulated myself.',
+    initials: 'NR',
+    text: 'I finally knew why a match made sense before the first message. That changed everything about how I date.',
     stars: 5,
     verified: true,
   },
@@ -111,8 +104,8 @@ const TESTIMONIALS = [
     name: 'Marcus T.',
     age: 32,
     city: 'Los Angeles',
-    photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80',
-    text: 'The AI coach actually helped me open up in ways I normally don\'t. The conversation suggestions weren\'t cringey — they were thoughtful. I genuinely had better first conversations here than anywhere else.',
+    initials: 'MT',
+    text: 'Vinculo gave me confidence instead of confusion. Fewer matches, better conversations, and no emotional whiplash.',
     stars: 5,
     verified: true,
   },
@@ -151,7 +144,7 @@ export default function LandingPage() {
             }}>
               <Heart size={18} color="white" fill="white" />
             </div>
-            <span style={{ fontWeight: 700, fontSize: 20, letterSpacing: '-0.03em' }}>kindred</span>
+            <span style={{ fontWeight: 700, fontSize: 20, letterSpacing: '-0.03em' }}>vinculo</span>
           </Link>
 
           {/* Nav links */}
@@ -171,9 +164,6 @@ export default function LandingPage() {
 
           {/* CTA */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-            <Link href="/auth/login" className="btn-ghost nav-login-link" style={{ padding: '9px 20px', fontSize: 14 }}>
-              Sign in
-            </Link>
             <Link href="/auth/signup" className="btn-primary" style={{ padding: '9px 20px', fontSize: 14 }}>
               Get Started
             </Link>
@@ -209,9 +199,6 @@ export default function LandingPage() {
                 {l.label}
               </a>
             ))}
-            <Link href="/auth/login" onClick={() => setMenuOpen(false)} style={{ color: 'rgba(240,240,255,0.65)', fontSize: 15, fontWeight: 500, textDecoration: 'none', padding: '12px 4px', display: 'block' }}>
-              Sign in
-            </Link>
           </div>
         )}
       </nav>
@@ -241,7 +228,7 @@ export default function LandingPage() {
               </h1>
 
               <p style={{ fontSize: 18, lineHeight: 1.65, color: 'rgba(240,240,255,0.55)', marginBottom: 36, maxWidth: 460 }}>
-                Most apps waste your time and emotional energy on random swipes. Kindred gives you clear compatibility logic, guided momentum, and intentional next steps.
+                Most apps waste your time with guesswork. Vinculo helps you avoid confusion and emotional burnout by showing why a match fits before you invest.
               </p>
 
               <div className="hero-cta-group" style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
@@ -269,95 +256,39 @@ export default function LandingPage() {
               </div>
             </div>
 
-            {/* Right — app mockup */}
+            {/* Right — compatibility report mockup */}
             <div className="hero-phone-wrap" style={{ position: 'relative', display: 'flex', justifyContent: 'center' }}>
-              {/* Phone frame */}
-              <div className="hero-phone-frame" style={{
-                width: 280, height: 560,
-                background: 'rgba(15,15,26,0.9)',
-                borderRadius: 40,
-                border: '1.5px solid rgba(255,255,255,0.1)',
-                boxShadow: '0 40px 100px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.03), inset 0 0 0 1px rgba(255,255,255,0.05)',
-                overflow: 'hidden',
-                position: 'relative',
-                animation: 'float 6s ease-in-out infinite',
-              }}>
-                {/* Status bar */}
-                <div style={{ padding: '14px 20px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.7)' }}>9:41</span>
-                  <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-                    {[1, 2, 3].map(i => <div key={i} style={{ width: 3, height: 6 + i * 3, background: 'rgba(255,255,255,0.5)', borderRadius: 1 }} />)}
+              <div className="hero-phone-frame glass" style={{ width: 320, borderRadius: 28, padding: 22, animation: 'float 6s ease-in-out infinite' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+                  <div>
+                    <div style={{ fontSize: 12, color: 'rgba(240,240,255,0.45)', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 600 }}>Compatibility Report</div>
+                    <div style={{ fontSize: 18, fontWeight: 800, marginTop: 2 }}>Vinculo Match Clarity</div>
                   </div>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: '#34d399' }}>92%</div>
                 </div>
-
-                {/* Match card */}
-                <div style={{ padding: '16px 16px 0' }}>
-                  <div style={{ height: 280, borderRadius: 24, overflow: 'hidden', position: 'relative' }}>
-                    <img
-                      src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400&q=80"
-                      alt="Match preview"
-                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                    />
-                    <div className="match-overlay" />
-
-                    {/* Compat badge */}
-                    <div style={{ position: 'absolute', top: 12, right: 12, background: 'rgba(52,211,153,0.15)', border: '1px solid rgba(52,211,153,0.3)', borderRadius: 999, padding: '4px 10px', display: 'flex', alignItems: 'center', gap: 4 }}>
-                      <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#34d399' }} />
-                      <span style={{ fontSize: 11, fontWeight: 700, color: '#34d399' }}>94% match</span>
-                    </div>
-
-                    <div style={{ position: 'absolute', bottom: 14, left: 14 }}>
-                      <div style={{ fontSize: 18, fontWeight: 700, color: 'white' }}>Sophie, 26</div>
-                      <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', marginTop: 2 }}>Art Director · 2 km away</div>
-                    </div>
-                  </div>
-
-                  {/* Compat bars */}
-                  <div style={{ marginTop: 14, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                    {[['Values', 92], ['Communication', 95], ['Lifestyle', 91]].map(([label, val]) => (
-                      <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                        <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.45)', width: 72, flexShrink: 0 }}>{label}</span>
-                        <div style={{ flex: 1, height: 3, background: 'rgba(255,255,255,0.07)', borderRadius: 2, overflow: 'hidden' }}>
-                          <div style={{ height: '100%', width: `${val}%`, borderRadius: 2, background: 'linear-gradient(90deg, #7c3aed, #db2777)' }} />
-                        </div>
-                        <span style={{ fontSize: 10, fontWeight: 600, color: '#a78bfa' }}>{val}%</span>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 16 }}>
+                  {[
+                    ['Values', 94],
+                    ['Communication', 91],
+                    ['Lifestyle', 88],
+                    ['Goals', 95],
+                    ['Emotional', 90],
+                    ['Interests', 86],
+                  ].map(([label, value]) => (
+                    <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <span style={{ width: 100, fontSize: 12, color: 'rgba(240,240,255,0.52)' }}>{label}</span>
+                      <div style={{ flex: 1, height: 4, borderRadius: 3, background: 'rgba(255,255,255,0.08)', overflow: 'hidden' }}>
+                        <div style={{ width: `${value}%`, height: '100%', borderRadius: 3, background: 'linear-gradient(90deg, #7c3aed, #db2777)' }} />
                       </div>
-                    ))}
-                  </div>
-
-                  {/* Action buttons */}
-                  <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 14, marginTop: 16 }}>
-                    <div style={{ width: 44, height: 44, borderRadius: '50%', border: '1.5px solid rgba(244,63,94,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(244,63,94,0.08)' }}>
-                      <span style={{ fontSize: 16 }}>✕</span>
+                      <span style={{ width: 30, textAlign: 'right', fontSize: 11, fontWeight: 700, color: '#a78bfa' }}>{value}%</span>
                     </div>
-                    <div style={{ width: 56, height: 56, borderRadius: '50%', border: '1.5px solid rgba(139,92,246,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(139,92,246,0.12)', boxShadow: '0 0 20px rgba(139,92,246,0.25)' }}>
-                      <Heart size={22} color="#a78bfa" fill="rgba(139,92,246,0.4)" />
-                    </div>
-                    <div style={{ width: 44, height: 44, borderRadius: '50%', border: '1.5px solid rgba(251,191,36,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(251,191,36,0.08)' }}>
-                      <Star size={16} color="#fbbf24" />
-                    </div>
-                  </div>
+                  ))}
                 </div>
-              </div>
-
-              {/* Floating cards */}
-              <div style={{ position: 'absolute', left: -60, top: '15%', width: 180 }} className="glass rounded-xl p-3 hero-floating-card">
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                  <Brain size={14} color="#a78bfa" />
-                  <span style={{ fontSize: 11, fontWeight: 600, color: '#a78bfa' }}>AI Insight</span>
-                </div>
-                <p style={{ fontSize: 11, color: 'rgba(240,240,255,0.55)', lineHeight: 1.5 }}>You both have secure attachment styles and share creativity as a core value.</p>
-              </div>
-
-              <div style={{ position: 'absolute', right: -50, bottom: '20%', width: 160 }} className="glass rounded-xl p-3 hero-floating-card" >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <div style={{ width: 28, height: 28, borderRadius: '50%', overflow: 'hidden', flexShrink: 0 }}>
-                    <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&q=80" style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 11, fontWeight: 600, color: '#f0f0ff' }}>New match! 🎉</div>
-                    <div style={{ fontSize: 10, color: 'rgba(240,240,255,0.45)' }}>Sophie liked you back</div>
-                  </div>
+                <div style={{ background: 'rgba(139,92,246,0.08)', border: '1px solid rgba(139,92,246,0.2)', borderRadius: 12, padding: '10px 12px' }}>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: '#a78bfa', marginBottom: 5 }}>Why this match works</div>
+                  <p style={{ fontSize: 12, color: 'rgba(240,240,255,0.58)', lineHeight: 1.6 }}>
+                    Strong alignment on values and relationship intent, with balanced communication styles that reduce early-stage friction.
+                  </p>
                 </div>
               </div>
             </div>
@@ -370,10 +301,10 @@ export default function LandingPage() {
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 52 }}>
             <h2 style={{ fontSize: 'clamp(30px, 4vw, 46px)', fontWeight: 800, letterSpacing: '-0.03em', marginBottom: 14 }}>
-              The real problem isn&apos;t finding people.
+              Most apps match you. None explain why.
             </h2>
             <p style={{ fontSize: 17, color: 'rgba(240,240,255,0.45)', maxWidth: 640, margin: '0 auto', lineHeight: 1.65 }}>
-              It&apos;s knowing who is worth your emotional attention before you spend it.
+              Vinculo helps you decide where to invest your emotional energy before it gets wasted.
             </p>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }} className="problem-grid">
@@ -390,6 +321,38 @@ export default function LandingPage() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Connection Track ── */}
+      <section style={{ padding: '20px 24px 90px' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+          <div className="glass" style={{ borderRadius: 24, padding: '30px 28px', border: '1px solid rgba(139,92,246,0.25)' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(139,92,246,0.12)', border: '1px solid rgba(139,92,246,0.2)', borderRadius: 999, padding: '5px 12px', marginBottom: 14 }}>
+              <CircleDashed size={12} color="#a78bfa" />
+              <span style={{ fontSize: 11, color: '#c4b5fd', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase' }}>New: Connection Track v1</span>
+            </div>
+            <h3 style={{ fontSize: 'clamp(26px, 3.4vw, 40px)', fontWeight: 800, letterSpacing: '-0.02em', marginBottom: 12 }}>
+              A daily ritual that keeps momentum real.
+            </h3>
+            <p style={{ fontSize: 16, color: 'rgba(240,240,255,0.5)', lineHeight: 1.65, maxWidth: 760, marginBottom: 20 }}>
+              Connection Track gives each match a lightweight shared cadence so conversations keep moving with purpose.
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 14 }} className="connection-grid">
+              <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: '16px 18px' }}>
+                <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 6 }}>Daily micro-question</div>
+                <p style={{ fontSize: 13, color: 'rgba(240,240,255,0.52)', lineHeight: 1.6 }}>Each matched person answers one short reflection prompt privately each day.</p>
+              </div>
+              <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: '16px 18px' }}>
+                <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 6 }}>Weekly compatibility pulse</div>
+                <p style={{ fontSize: 13, color: 'rgba(240,240,255,0.52)', lineHeight: 1.6 }}>Both users see how their answers align over time, not just at first glance.</p>
+              </div>
+              <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: '16px 18px' }}>
+                <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 6 }}>Pre-date intention check</div>
+                <p style={{ fontSize: 13, color: 'rgba(240,240,255,0.52)', lineHeight: 1.6 }}>Before meeting, both people set a simple intention to reduce anxiety, ghosting, and mixed signals.</p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -490,8 +453,8 @@ export default function LandingPage() {
                 </div>
                 <p style={{ fontSize: 15, lineHeight: 1.7, color: 'rgba(240,240,255,0.7)', flex: 1 }}>&ldquo;{t.text}&rdquo;</p>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <div style={{ width: 44, height: 44, borderRadius: '50%', overflow: 'hidden', flexShrink: 0 }}>
-                    <img src={t.photo} alt={t.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <div style={{ width: 44, height: 44, borderRadius: '50%', flexShrink: 0, background: 'rgba(139,92,246,0.18)', border: '1px solid rgba(139,92,246,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color: '#c4b5fd' }}>
+                    {t.initials}
                   </div>
                   <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -527,7 +490,7 @@ export default function LandingPage() {
                 highlight: false,
               },
               {
-                name: 'Spark',
+                name: 'Clarity',
                 price: '$19',
                 period: 'per month',
                 features: ['5 daily matches', 'Full match explanation', 'AI Conversation Coach', 'Connection Track', 'Safety Score', 'Priority matching'],
@@ -536,7 +499,7 @@ export default function LandingPage() {
                 highlight: true,
               },
               {
-                name: 'Deep',
+                name: 'Intelligence',
                 price: '$39',
                 period: 'per month',
                 features: ['Unlimited matches', 'Everything in Spark', 'Advanced compatibility report', 'Dedicated AI coach', 'Date intention tools', 'VIP support'],
@@ -635,7 +598,7 @@ export default function LandingPage() {
             <div style={{ width: 30, height: 30, borderRadius: 8, background: 'linear-gradient(135deg, #7c3aed, #db2777)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Heart size={14} color="white" fill="white" />
             </div>
-            <span style={{ fontWeight: 700, fontSize: 18, letterSpacing: '-0.03em' }}>kindred</span>
+            <span style={{ fontWeight: 700, fontSize: 18, letterSpacing: '-0.03em' }}>vinculo</span>
           </div>
           <div style={{ display: 'flex', gap: 28, flexWrap: 'wrap' }}>
             {['Privacy', 'Terms', 'Safety', 'Blog', 'Careers', 'Contact'].map(l => (
@@ -647,7 +610,7 @@ export default function LandingPage() {
               </a>
             ))}
           </div>
-          <div style={{ fontSize: 12, color: 'rgba(240,240,255,0.25)' }}>© 2026 Kindred. Made with ♥</div>
+          <div style={{ fontSize: 12, color: 'rgba(240,240,255,0.25)' }}>© 2026 Vinculo. Made with ♥</div>
         </div>
       </footer>
 
@@ -663,6 +626,7 @@ export default function LandingPage() {
           .hero-cta-group { flex-direction: column !important; }
           .hero-cta-group > a { width: 100% !important; }
           .problem-grid { grid-template-columns: 1fr !important; }
+          .connection-grid { grid-template-columns: 1fr !important; }
           .features-grid { grid-template-columns: 1fr !important; }
           .steps-grid { grid-template-columns: repeat(2, 1fr) !important; }
           .testimonials-grid { grid-template-columns: 1fr !important; }
