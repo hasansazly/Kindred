@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import {
-  Heart, Sparkles, Shield, MessageCircle, Star,
+  Heart, Sparkles, Shield, Star,
   Brain, Zap, Users, CheckCircle, ArrowRight, Menu, X, CircleDashed, ScanLine,
 } from 'lucide-react';
 
@@ -16,26 +16,20 @@ const NAV_LINKS = [
 const FEATURES = [
   {
     icon: ScanLine,
-    title: 'Compatibility Clarity',
-    desc: 'See exactly why a match fits before you invest your time or emotional energy.',
+    title: 'See the fit',
+    desc: 'Compatibility Clarity shows exactly why a match makes sense before you invest your time.',
     color: 'violet',
   },
   {
     icon: Zap,
-    title: 'Daily Five, Not Endless Swipe',
-    desc: 'Get five intentional introductions each day so you can focus instead of scroll.',
-    color: 'rose',
-  },
-  {
-    icon: MessageCircle,
-    title: 'AI Conversation Coach',
-    desc: 'Get natural reply support when you need it, so conversations feel clear and confident.',
+    title: 'Move with momentum',
+    desc: 'Daily Five and Connection Track keep strong matches moving toward a real meeting.',
     color: 'amber',
   },
   {
     icon: Shield,
-    title: 'Safety Score',
-    desc: 'Spot pressure patterns early and make decisions with context, not guesswork.',
+    title: 'Date with confidence',
+    desc: 'Conversation Coach and Safety Signals help you communicate clearly and avoid avoidable risk.',
     color: 'rose',
   },
 ];
