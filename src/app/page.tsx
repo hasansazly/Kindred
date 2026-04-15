@@ -224,20 +224,20 @@ export default function LandingPage() {
             <div>
               <h1 style={{ fontSize: 'clamp(42px, 5vw, 68px)', fontWeight: 800, lineHeight: 1.08, letterSpacing: '-0.03em', marginBottom: 24 }}>
                 Don&apos;t just get a match
-                <br /> <span className="gradient-text">understand it.</span>
+                <br /> <span className="gradient-text">understand the match.</span>
               </h1>
 
               <p style={{ fontSize: 18, lineHeight: 1.65, color: 'rgba(240,240,255,0.55)', marginBottom: 36, maxWidth: 460 }}>
-                See why someone fits before you invest your time or emotional energy.
+                Fewer, better matches with clear reasons, so you can invest your time and emotions with confidence.
               </p>
 
               <div className="hero-cta-group" style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
                 <Link href="/auth/signup" className="btn-primary" style={{ fontSize: 16, padding: '15px 32px' }}>
-                  Start with Clarity
+                  Start Dating with Clarity
                   <ArrowRight size={18} />
                 </Link>
                 <a href="#how-it-works" style={{ fontSize: 14, fontWeight: 500, color: 'rgba(240,240,255,0.48)', textDecoration: 'none' }}>
-                  See How It Works
+                  See a Sample Match Breakdown
                 </a>
               </div>
 
