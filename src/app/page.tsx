@@ -470,7 +470,7 @@ export default function LandingPage() {
                 name: 'Intelligence',
                 price: '$39',
                 period: 'per month',
-                features: ['Expanded curated recommendations', 'Everything in Clarity', 'Advanced compatibility report', 'Dedicated AI coach', 'Date intention tools', 'VIP support'],
+                features: ['Expanded match access', 'Everything in Clarity', 'Deeper compatibility insights', 'Advanced connection guidance', 'Date intention tools', 'VIP support'],
                 cta: 'Go Deep',
                 href: '/auth/signup',
                 highlight: false,
