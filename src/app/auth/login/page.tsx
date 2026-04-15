@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { Heart, Eye, EyeOff, ArrowRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { supabase } from '../../../../../utils/supabase/client';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -12,16 +13,73 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [codeMode, setCodeMode] = useState(false);
+  const [otpCode, setOtpCode] = useState('');
+  const [otpSent, setOtpSent] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError('');
+    setSuccess('');
     if (!email || !password) { setError('Please fill in all fields.'); return; }
     setLoading(true);
     // Simulate auth
     await new Promise(r => setTimeout(r, 1200));
     setLoading(false);
     router.push('/app/discover');
+  }
+
+  async function handleSendCode() {
+    setError('');
+    setSuccess('');
+    if (!email) {
+      setError('Please enter your email first.');
+      return;
+    }
+
+    setLoading(true);
+    const { error: otpError } = await supabase.auth.signInWithOtp({
+      email,
+      options: {
+        shouldCreateUser: false,
+      },
+    });
+    setLoading(false);
+
+    if (otpError) {
+      setError(otpError.message);
+      return;
+    }
+
+    setCodeMode(true);
+    setOtpSent(true);
+    setSuccess('Verification code sent. Check your email and enter the code below.');
+  }
+
+  async function handleVerifyCode(e: React.FormEvent) {
+    e.preventDefault();
+    setError('');
+    setSuccess('');
+    if (!email || !otpCode) {
+      setError('Please enter your email and verification code.');
+      return;
+    }
+
+    setLoading(true);
+    const { error: verifyError } = await supabase.auth.verifyOtp({
+      email,
+      token: otpCode,
+      type: 'email',
+    });
+    setLoading(false);
+
+    if (verifyError) {
+      setError(verifyError.message);
+      return;
+    }
+
+    router.push('/onboarding');
   }
 
   return (
@@ -112,66 +170,152 @@ export default function LoginPage() {
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            {error && (
-              <div style={{ background: 'rgba(244,63,94,0.1)', border: '1px solid rgba(244,63,94,0.25)', borderRadius: 10, padding: '12px 14px', fontSize: 13, color: '#fda4af' }}>
-                {error}
-              </div>
-            )}
+          {!codeMode ? (
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              {error && (
+                <div style={{ background: 'rgba(244,63,94,0.1)', border: '1px solid rgba(244,63,94,0.25)', borderRadius: 10, padding: '12px 14px', fontSize: 13, color: '#fda4af' }}>
+                  {error}
+                </div>
+              )}
+              {success && (
+                <div style={{ background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', borderRadius: 10, padding: '12px 14px', fontSize: 13, color: '#6ee7b7' }}>
+                  {success}
+                </div>
+              )}
 
-            <div>
-              <label style={{ fontSize: 13, fontWeight: 500, color: 'rgba(240,240,255,0.55)', display: 'block', marginBottom: 8 }}>Email</label>
-              <input
-                className="input-field"
-                type="email"
-                placeholder="you@example.com"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                autoComplete="email"
-              />
-            </div>
-
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                <label style={{ fontSize: 13, fontWeight: 500, color: 'rgba(240,240,255,0.55)' }}>Password</label>
-                <a href="/auth/forgot-password" style={{ fontSize: 12, color: '#a78bfa', textDecoration: 'none' }}>Forgot password?</a>
-              </div>
-              <div style={{ position: 'relative' }}>
+              <div>
+                <label style={{ fontSize: 13, fontWeight: 500, color: 'rgba(240,240,255,0.55)', display: 'block', marginBottom: 8 }}>Email</label>
                 <input
                   className="input-field"
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  autoComplete="current-password"
-                  style={{ paddingRight: 48 }}
+                  type="email"
+                  placeholder="you@example.com"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  autoComplete="email"
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(240,240,255,0.35)', display: 'flex', padding: 0 }}
-                >
-                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                </button>
               </div>
-            </div>
 
-            <button
-              type="submit"
-              className="btn-primary"
-              style={{ width: '100%', justifyContent: 'center', fontSize: 15, padding: '15px', marginTop: 8, opacity: loading ? 0.7 : 1 }}
-              disabled={loading}
-            >
-              {loading ? (
-                <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <span style={{ width: 16, height: 16, border: '2px solid rgba(255,255,255,0.3)', borderTopColor: 'white', borderRadius: '50%', animation: 'spin 0.7s linear infinite', display: 'inline-block' }} />
-                  Signing in…
-                </span>
-              ) : (
-                <>Sign in <ArrowRight size={18} /></>
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                  <label style={{ fontSize: 13, fontWeight: 500, color: 'rgba(240,240,255,0.55)' }}>Password</label>
+                  <a href="/auth/forgot-password" style={{ fontSize: 12, color: '#a78bfa', textDecoration: 'none' }}>Forgot password?</a>
+                </div>
+                <div style={{ position: 'relative' }}>
+                  <input
+                    className="input-field"
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                    autoComplete="current-password"
+                    style={{ paddingRight: 48 }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(240,240,255,0.35)', display: 'flex', padding: 0 }}
+                  >
+                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                className="btn-primary"
+                style={{ width: '100%', justifyContent: 'center', fontSize: 15, padding: '15px', marginTop: 8, opacity: loading ? 0.7 : 1 }}
+                disabled={loading}
+              >
+                {loading ? (
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span style={{ width: 16, height: 16, border: '2px solid rgba(255,255,255,0.3)', borderTopColor: 'white', borderRadius: '50%', animation: 'spin 0.7s linear infinite', display: 'inline-block' }} />
+                    Signing in…
+                  </span>
+                ) : (
+                  <>Sign in <ArrowRight size={18} /></>
+                )}
+              </button>
+
+              <button
+                type="button"
+                className="btn-ghost"
+                style={{ width: '100%', justifyContent: 'center', fontSize: 14 }}
+                disabled={loading}
+                onClick={handleSendCode}
+              >
+                Send code to email
+              </button>
+            </form>
+          ) : (
+            <form onSubmit={handleVerifyCode} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              {error && (
+                <div style={{ background: 'rgba(244,63,94,0.1)', border: '1px solid rgba(244,63,94,0.25)', borderRadius: 10, padding: '12px 14px', fontSize: 13, color: '#fda4af' }}>
+                  {error}
+                </div>
               )}
-            </button>
-          </form>
+              {success && (
+                <div style={{ background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', borderRadius: 10, padding: '12px 14px', fontSize: 13, color: '#6ee7b7' }}>
+                  {success}
+                </div>
+              )}
+
+              <div>
+                <label style={{ fontSize: 13, fontWeight: 500, color: 'rgba(240,240,255,0.55)', display: 'block', marginBottom: 8 }}>Email</label>
+                <input
+                  className="input-field"
+                  type="email"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  autoComplete="email"
+                />
+              </div>
+
+              <div>
+                <label style={{ fontSize: 13, fontWeight: 500, color: 'rgba(240,240,255,0.55)', display: 'block', marginBottom: 8 }}>Verification code</label>
+                <input
+                  className="input-field"
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  placeholder="Enter the code from email"
+                  value={otpCode}
+                  onChange={e => setOtpCode(e.target.value.replace(/\s/g, ''))}
+                />
+              </div>
+
+              <button
+                type="submit"
+                className="btn-primary"
+                style={{ width: '100%', justifyContent: 'center', fontSize: 15, padding: '15px', marginTop: 8, opacity: loading ? 0.7 : 1 }}
+                disabled={loading}
+              >
+                {loading ? 'Verifying code…' : 'Verify code'}
+              </button>
+
+              <button
+                type="button"
+                className="btn-ghost"
+                style={{ width: '100%', justifyContent: 'center', fontSize: 14 }}
+                disabled={loading}
+                onClick={handleSendCode}
+              >
+                {otpSent ? 'Resend code' : 'Send code'}
+              </button>
+
+              <button
+                type="button"
+                style={{ background: 'none', border: 'none', color: 'rgba(240,240,255,0.4)', fontSize: 13, cursor: 'pointer' }}
+                onClick={() => {
+                  setCodeMode(false);
+                  setOtpCode('');
+                  setError('');
+                  setSuccess('');
+                }}
+              >
+                Use password instead
+              </button>
+            </form>
+          )}
 
           <p style={{ fontSize: 12, color: 'rgba(240,240,255,0.25)', textAlign: 'center', marginTop: 28, lineHeight: 1.7 }}>
             By signing in, you agree to our{' '}
