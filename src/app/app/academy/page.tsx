@@ -91,9 +91,9 @@ export default function AcademyPage() {
           <div style={{ width: 36, height: 36, borderRadius: 11, background: 'linear-gradient(135deg, rgba(96,165,250,0.3), rgba(167,139,250,0.3))', border: '1px solid rgba(96,165,250,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <BookOpen size={18} color="#60a5fa" />
           </div>
-          <h1 style={{ fontSize: 24, fontWeight: 800, letterSpacing: '-0.03em' }}>Vinculo Academy</h1>
+          <h1 style={{ fontSize: 24, fontWeight: 800, letterSpacing: '-0.03em' }}>Vinculo Guidance</h1>
         </div>
-        <p style={{ fontSize: 13, color: 'rgba(240,240,255,0.4)' }}>The science and skill of connection. Real research, practical application.</p>
+        <p style={{ fontSize: 13, color: 'rgba(240,240,255,0.4)' }}>Support layer for active matches: practical guidance that helps conversations and dates go better.</p>
       </div>
 
       {/* Progress */}
@@ -108,7 +108,7 @@ export default function AcademyPage() {
               <div style={{ height: '100%', width: `${pct}%`, background: 'linear-gradient(90deg, #7c3aed, #a78bfa)', borderRadius: 3 }} />
             </div>
             <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-              {['🔥 5-day streak', `⭐ ${pct}% complete`, '🏆 1 course finished'].map(s => (
+              {['🔥 5-day streak', `⭐ ${pct}% complete`, '🏆 1 guide completed'].map(s => (
                 <span key={s} style={{ fontSize: 12, color: 'rgba(240,240,255,0.4)' }}>{s}</span>
               ))}
             </div>
@@ -128,7 +128,7 @@ export default function AcademyPage() {
             <Zap size={18} color="#60a5fa" />
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: 11, fontWeight: 600, color: '#60a5fa', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 4 }}>Today&apos;s Lesson</div>
+            <div style={{ fontSize: 11, fontWeight: 600, color: '#60a5fa', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 4 }}>Today&apos;s Guidance</div>
             <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 6 }}>{DAILY_LESSON.title}</div>
             <p style={{ fontSize: 13, color: 'rgba(240,240,255,0.5)', lineHeight: 1.6, marginBottom: 12 }}>{DAILY_LESSON.preview}</p>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10 }}>
@@ -206,8 +206,8 @@ export default function AcademyPage() {
       <div style={{ marginTop: 24, background: 'linear-gradient(135deg, rgba(251,191,36,0.08), rgba(124,58,237,0.07))', border: '1px solid rgba(251,191,36,0.18)', borderRadius: 20, padding: '18px 20px', display: 'flex', alignItems: 'center', gap: 14 }}>
         <div style={{ fontSize: 32, flexShrink: 0 }}>🎓</div>
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 3 }}>Unlock all 6 courses with Spark plan</div>
-          <div style={{ fontSize: 12, color: 'rgba(240,240,255,0.4)' }}>Plus AI coaching, date planning, and priority match support.</div>
+          <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 3 }}>Unlock all 6 guidance tracks with Clarity</div>
+          <div style={{ fontSize: 12, color: 'rgba(240,240,255,0.4)' }}>Designed as support for active matches, not a separate product layer.</div>
         </div>
         <button className="btn-primary" style={{ fontSize: 12, padding: '9px 16px', flexShrink: 0 }}>Upgrade</button>
       </div>

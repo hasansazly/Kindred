@@ -414,7 +414,7 @@ export default function SparkPage() {
         </div>
       )}
 
-      {/* AI Coach + Academy promo cards */}
+      {/* AI Coach + Guidance promo cards */}
       <div className="spark-promo-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 24 }}>
         <div onClick={() => router.push('/app/coach')} className="card-lift" style={{ borderRadius: 18, padding: '18px', cursor: 'pointer', background: 'rgba(167,139,250,0.1)', border: '1px solid rgba(167,139,250,0.2)' }}>
           <Brain size={22} color="#a78bfa" style={{ marginBottom: 10 }} />
@@ -424,9 +424,9 @@ export default function SparkPage() {
         </div>
         <div onClick={() => router.push('/app/academy')} className="card-lift" style={{ borderRadius: 18, padding: '18px', cursor: 'pointer', background: 'rgba(96,165,250,0.1)', border: '1px solid rgba(96,165,250,0.2)' }}>
           <BookOpen size={22} color="#60a5fa" style={{ marginBottom: 10 }} />
-          <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 4 }}>Academy</div>
-          <div style={{ fontSize: 12, color: 'rgba(240,240,255,0.45)', lineHeight: 1.4, marginBottom: 10 }}>Attachment, communication, love languages.</div>
-          <span style={{ fontSize: 12, color: '#60a5fa', fontWeight: 600 }}>Learn →</span>
+          <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 4 }}>Match Guidance</div>
+          <div style={{ fontSize: 12, color: 'rgba(240,240,255,0.45)', lineHeight: 1.4, marginBottom: 10 }}>Short playbooks to help this match go better.</div>
+          <span style={{ fontSize: 12, color: '#60a5fa', fontWeight: 600 }}>Open →</span>
         </div>
       </div>
 

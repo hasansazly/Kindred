@@ -17,7 +17,7 @@ const NAV = [
 const SIDEBAR_NAV = [
   ...NAV,
   { href: '/app/coach',    icon: Brain,    label: 'AI Coach',  notif: 1, isSpark: false },
-  { href: '/app/academy',  icon: BookOpen, label: 'Academy',   notif: 0, isSpark: false },
+  { href: '/app/academy',  icon: BookOpen, label: 'Guidance',  notif: 0, isSpark: false },
   { href: '/app/settings', icon: Settings, label: 'Settings',  notif: 0, isSpark: false },
 ];
 
