@@ -84,7 +84,7 @@ export function toDiscoverProfiles(recs: MatchmakingRecommendation[]): Array<{
         breakdown: rec.breakdown ?? defaultBreakdown(rec.compatibilityScore),
         aiReason:
           rec.reasons?.[0] ??
-          'You share strong compatibility signals across values, communication style, and relationship intent.',
+          'You both show alignment on relationship intent, communication style, and emotional pace, which can make early conversations clearer and easier to build on.',
       };
     })
     .filter(Boolean) as Array<{
@@ -110,7 +110,7 @@ export function toMatches(recs: MatchmakingRecommendation[]): Match[] {
         aiReason:
           rec.reasons?.[0] ??
           existing?.aiReason ??
-          'Compatibility indicates strong alignment in values and communication style.',
+          'This match shows clear alignment in values, communication style, and future goals, with enough overlap to explore without guesswork.',
         conversation: existing?.conversation ?? [],
         isNew: existing?.isNew ?? idx < 2,
       } as Match;
@@ -146,4 +146,3 @@ export async function ingestSignal(input: {
     // Non-blocking signal ingestion
   }
 }
-

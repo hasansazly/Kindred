@@ -21,7 +21,17 @@ export async function POST(req: NextRequest) {
     if (type === 'conversation_coach') {
       prompt = `You are an empathetic dating conversation coach. Given this context: "${context.lastMessage}" from ${context.name}, suggest ONE thoughtful, genuine conversation response for the user. Keep it natural, warm, and under 100 words. Return only the suggested response text.`;
     } else if (type === 'compatibility_reason') {
-      prompt = `Explain in 2-3 warm, specific sentences why these two people are compatible. User: ${JSON.stringify(context.user)}. Match: ${JSON.stringify(context.match)}. Focus on their shared values and complementary traits. Be insightful and specific, not generic.`;
+      prompt = `Write a "Why this match makes sense" explanation in 1-3 natural sentences.
+User: ${JSON.stringify(context.user)}
+Match: ${JSON.stringify(context.match)}
+
+Requirements:
+- Be concrete and practical, not abstract.
+- Prioritize observable signals: relationship intent, communication style, life rhythm, values, social energy, emotional pace, future goals.
+- Use soft confidence ("can", "may", "tends to"), never certainty.
+- Avoid invasive, clinical, mystical, or pseudo-psychology wording.
+- Do not mention AI, algorithms, scoring formulas, or hidden traits.
+- Keep tone warm, calm, and trustworthy.`;
     } else if (type === 'date_idea') {
       prompt = `Suggest ONE perfect first date idea for two people who share these interests: ${context.interests.join(', ')} in ${context.city}. Give a title, 1-sentence description, estimated time, and cost (free/$/$$/$$$ ). Return as JSON: { title, description, time, cost }`;
     } else if (type === 'safety_analysis') {
@@ -102,7 +112,7 @@ function getMockResponse(type: string, context: Record<string, unknown>): unknow
     return `That's such a great perspective! I'd love to hear more about what drew you to that — it sounds like something you're genuinely passionate about.`;
   }
   if (type === 'compatibility_reason') {
-    return `You both share a rare combination of intellectual curiosity and emotional warmth. Your complementary communication styles — one more analytical, the other more expressive — create a natural balance that deepens over time. Shared values around growth and honesty lay a strong foundation.`;
+    return `You both want a relationship with clear intent and steady communication, which can reduce early guesswork. Your values and emotional pace look aligned, so conversations are more likely to feel natural than forced. This match has practical overlap worth exploring.`;
   }
   if (type === 'date_idea') {
     return JSON.stringify({ title: 'Sunrise Farmers Market', description: 'Explore the local market together, pick ingredients, and cook brunch at home.', time: '3-4 hours', cost: '$' });

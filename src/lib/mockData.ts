@@ -189,7 +189,7 @@ export const MATCHES: Match[] = [
       emotional: 96,
     },
     matchedAt: new Date(Date.now() - 86400000 * 2).toISOString(),
-    aiReason: 'Both of you prioritize meaningful growth and creative pursuits. Your communication styles complement each other — Sophie\'s visual thinking pairs beautifully with your analytical depth. You share a love of discovery, whether it\'s a hidden coffee shop or a new hiking trail.',
+    aiReason: 'You both want a long-term relationship and prefer consistent communication over mixed signals. Your values align around growth and creativity, and your routines support planning real time together. This match has strong fit on intent, communication style, and lifestyle pace.',
     isNew: false,
     conversation: [
       {
@@ -247,7 +247,7 @@ export const MATCHES: Match[] = [
       emotional: 93,
     },
     matchedAt: new Date(Date.now() - 86400000 * 5).toISOString(),
-    aiReason: 'Priya\'s nurturing nature and your warm personality create a rare emotional match. You both value intentionality — she in design, you in cooking. Your shared love of hosting and creating experiences for others suggests exceptional long-term compatibility.',
+    aiReason: 'You both are dating intentionally and care about building something stable. You each value thoughtful communication and shared experiences at home and with friends. This creates a practical fit for steady momentum, not just early chemistry.',
     isNew: true,
     conversation: [
       {
@@ -297,7 +297,7 @@ export const MATCHES: Match[] = [
       emotional: 89,
     },
     matchedAt: new Date(Date.now() - 86400000 * 8).toISOString(),
-    aiReason: 'Maya\'s adventurous spirit and scientific mind pair well with your curiosity-driven personality. You both value honesty deeply and show commitment through action rather than words. Shared outdoor interests lay groundwork for strong, activity-based bonding.',
+    aiReason: 'You both value honesty, active lifestyles, and relationships that grow through shared experiences. Your life rhythm and social energy look well matched, with similar balance between independence and connection. This match makes sense if you want clear communication and real follow-through.',
     isNew: false,
     conversation: [
       {

@@ -172,7 +172,7 @@ function MobileProfileCard({ profile, compat, aiReason, breakdown, onLike, onPas
             </div>
             <div>
               <div style={{ fontSize: 15, fontWeight: 700, color: '#f0f0ff', marginBottom: 2 }}>{getCompatibilityLabel(compat)}</div>
-              <div style={{ fontSize: 12, color: 'rgba(240,240,255,0.4)' }}>Aura compatibility score</div>
+              <div style={{ fontSize: 12, color: 'rgba(240,240,255,0.4)' }}>Compatibility overview</div>
             </div>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -184,7 +184,7 @@ function MobileProfileCard({ profile, compat, aiReason, breakdown, onLike, onPas
         <div className="glass" style={{ borderRadius: 20, padding: '16px 18px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
             <Brain size={14} color="#a78bfa" />
-            <span style={{ fontSize: 13, fontWeight: 600, color: '#a78bfa' }}>Why Vinculo matched you</span>
+            <span style={{ fontSize: 13, fontWeight: 600, color: '#a78bfa' }}>Why this match makes sense</span>
           </div>
           <p style={{ fontSize: 13, color: 'rgba(240,240,255,0.6)', lineHeight: 1.7 }}>{aiReason}</p>
         </div>
@@ -324,7 +324,7 @@ function DesktopProfileCard({ profile, compat, aiReason, breakdown, onLike, onPa
             </div>
             <div>
               <div style={{ fontSize: 16, fontWeight: 700, color: '#f0f0ff', marginBottom: 2 }}>{getCompatibilityLabel(compat)}</div>
-              <div style={{ fontSize: 12, color: 'rgba(240,240,255,0.4)' }}>Aura compatibility score</div>
+              <div style={{ fontSize: 12, color: 'rgba(240,240,255,0.4)' }}>Compatibility overview</div>
             </div>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -335,7 +335,7 @@ function DesktopProfileCard({ profile, compat, aiReason, breakdown, onLike, onPa
         <div className="glass" style={{ borderRadius: 20, padding: '18px 20px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
             <Brain size={15} color="#a78bfa" />
-            <span style={{ fontSize: 13, fontWeight: 600, color: '#a78bfa' }}>Why Vinculo matched you</span>
+            <span style={{ fontSize: 13, fontWeight: 600, color: '#a78bfa' }}>Why this match makes sense</span>
           </div>
           <p style={{ fontSize: 13, color: 'rgba(240,240,255,0.6)', lineHeight: 1.7 }}>{aiReason}</p>
         </div>
