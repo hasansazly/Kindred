@@ -287,8 +287,6 @@ export default function OnboardingClient({ userEmail, initialProfile }: Onboardi
         occupation: state.occupation.trim() || null,
         bio: state.bio.trim() || null,
         interests: state.interests,
-        core_values: state.values,
-        lifestyle_tags: state.lifestyle,
         onboarding_complete: true,
       },
       { onConflict: 'id' }
@@ -445,13 +443,27 @@ export default function OnboardingClient({ userEmail, initialProfile }: Onboardi
               <div>
                 <div style={{ fontSize: 13, color: 'rgba(240,240,255,0.55)', marginBottom: 8 }}>Dealbreakers</div>
                 <div style={{ display: 'flex', gap: 8 }}>
-                  <input className="input-field" placeholder="Type one and press Add" value={state.dealbreakerInput} onChange={e => setField('dealbreakerInput', e.target.value)} onKeyDown={e => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      addDealbreaker();
-                    }
-                  }} />
-                  <button type="button" className="btn-ghost" onClick={addDealbreaker}>Add</button>
+                  <input
+                    className="input-field"
+                    placeholder="Type one and press Add"
+                    value={state.dealbreakerInput}
+                    onChange={e => setField('dealbreakerInput', e.target.value)}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        addDealbreaker();
+                      }
+                    }}
+                    style={{ flex: 1, minWidth: 0 }}
+                  />
+                  <button
+                    type="button"
+                    className="btn-ghost"
+                    onClick={addDealbreaker}
+                    style={{ flexShrink: 0, minWidth: 72, whiteSpace: 'nowrap', justifyContent: 'center' }}
+                  >
+                    Add
+                  </button>
                 </div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 10 }}>
                   {state.dealbreakers.map(item => (

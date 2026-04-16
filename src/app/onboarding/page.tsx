@@ -16,7 +16,7 @@ export default async function OnboardingPage() {
     const { data: profile } = await supabase
       .from('profiles')
       .select(
-        'full_name, age, gender, location, occupation, bio, interests, core_values, lifestyle_tags, onboarding_complete'
+        'full_name, age, gender, location, occupation, bio, interests, onboarding_complete'
       )
       .eq('id', user.id)
       .maybeSingle();
@@ -36,8 +36,8 @@ export default async function OnboardingPage() {
           occupation: profile?.occupation ?? '',
           bio: profile?.bio ?? '',
           interests: Array.isArray(profile?.interests) ? profile.interests : [],
-          values: Array.isArray(profile?.core_values) ? profile.core_values : [],
-          lifestyle: Array.isArray(profile?.lifestyle_tags) ? profile.lifestyle_tags : [],
+          values: [],
+          lifestyle: [],
         }}
       />
     );
