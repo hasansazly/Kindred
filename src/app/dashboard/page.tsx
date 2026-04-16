@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import LogoutButton from '@/components/auth/LogoutButton';
+import MatchCard from '@/components/matches/MatchCard';
+import { getMatchesForUser } from '@/lib/matches';
 import { createSupabaseServerClient } from '../../../utils/supabase/server';
 
 export default async function DashboardPage() {
@@ -38,6 +40,7 @@ export default async function DashboardPage() {
       responsesCountError?.code === 'PGRST205' ||
       responsesCountError?.message?.includes("public.onboarding_responses");
     const responsesCount = responsesTableMissing ? 0 : rawResponsesCount;
+    const matches = await getMatchesForUser(supabase, user.id);
 
     return (
       <main className="min-h-screen bg-slate-950 text-slate-100 px-4 py-10">
@@ -68,12 +71,21 @@ export default async function DashboardPage() {
 
             <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-5">
               <h2 className="text-lg font-medium">Daily Matches</h2>
-              <p className="mt-2 text-sm text-slate-400">
-                Placeholder: your curated daily matches will appear here.
-              </p>
-              <div className="mt-4 rounded-lg border border-dashed border-slate-700 px-4 py-6 text-center text-sm text-slate-500">
-                No matches loaded yet
-              </div>
+              <p className="mt-2 text-sm text-slate-400">Active matches: {matches.length}</p>
+              {matches.length > 0 ? (
+                <div className="mt-4 space-y-4">
+                  {matches.slice(0, 2).map(match => (
+                    <MatchCard key={match.id} match={match} />
+                  ))}
+                  <Link href="/matches" className="inline-block text-sm text-violet-300 hover:text-violet-200">
+                    View all matches →
+                  </Link>
+                </div>
+              ) : (
+                <div className="mt-4 rounded-lg border border-dashed border-slate-700 px-4 py-6 text-center text-sm text-slate-500">
+                  No real matches yet. Add manual rows in `matches`.
+                </div>
+              )}
             </div>
           </section>
         </div>

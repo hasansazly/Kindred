@@ -25,7 +25,8 @@ export async function proxy(request: NextRequest) {
     const isOnboardingRoute = pathname.startsWith('/onboarding');
     const isDashboardRoute = pathname.startsWith('/dashboard');
     const isAppRoute = pathname.startsWith('/app');
-    const isProtectedRoute = isOnboardingRoute || isDashboardRoute || isAppRoute;
+    const isMatchesRoute = pathname.startsWith('/matches');
+    const isProtectedRoute = isOnboardingRoute || isDashboardRoute || isAppRoute || isMatchesRoute;
 
     const {
       data: { user },
@@ -49,7 +50,7 @@ export async function proxy(request: NextRequest) {
 
     const onboardingComplete = !!preferenceRow;
 
-    if (!onboardingComplete && (isDashboardRoute || isAppRoute)) {
+    if (!onboardingComplete && (isDashboardRoute || isAppRoute || isMatchesRoute)) {
       return NextResponse.redirect(new URL('/onboarding', request.url));
     }
 
@@ -74,7 +75,8 @@ export async function proxy(request: NextRequest) {
     const isProtectedRoute =
       pathname.startsWith('/onboarding') ||
       pathname.startsWith('/dashboard') ||
-      pathname.startsWith('/app');
+      pathname.startsWith('/app') ||
+      pathname.startsWith('/matches');
     if (isProtectedRoute) {
       return NextResponse.redirect(new URL('/auth/login', request.url));
     }
