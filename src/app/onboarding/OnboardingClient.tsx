@@ -280,7 +280,7 @@ export default function OnboardingClient({ userEmail, initialProfile }: Onboardi
       {
         id: user.id,
         email: user.email ?? userEmail,
-        full_name: state.fullName.trim(),
+        first_name: state.fullName.trim(),
         age: Number.isNaN(age) ? null : age,
         gender: state.gender,
         location: state.location.trim(),

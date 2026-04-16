@@ -16,7 +16,7 @@ export default async function DashboardPage() {
 
     const { data: profile } = await supabase
       .from('profiles')
-      .select('full_name, onboarding_complete')
+      .select('first_name, onboarding_complete')
       .eq('id', user.id)
       .maybeSingle();
 
@@ -36,7 +36,7 @@ export default async function DashboardPage() {
             <div>
               <p className="text-xs uppercase tracking-wider text-violet-300">Dashboard</p>
               <h1 className="mt-1 text-2xl font-semibold tracking-tight">
-                Welcome back, {profile?.full_name || user.email}
+                Welcome back, {profile?.first_name || user.email}
               </h1>
             </div>
             <LogoutButton className="rounded-lg border border-slate-700 px-4 py-2 text-sm hover:bg-slate-800" />

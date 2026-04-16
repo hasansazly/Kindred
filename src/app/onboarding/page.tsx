@@ -16,7 +16,7 @@ export default async function OnboardingPage() {
     const { data: profile } = await supabase
       .from('profiles')
       .select(
-        'full_name, age, gender, location, occupation, bio, interests, onboarding_complete'
+        'first_name, age, gender, location, occupation, bio, interests, onboarding_complete'
       )
       .eq('id', user.id)
       .maybeSingle();
@@ -29,7 +29,7 @@ export default async function OnboardingPage() {
       <OnboardingClient
         userEmail={user.email ?? ''}
         initialProfile={{
-          fullName: profile?.full_name ?? '',
+          fullName: profile?.first_name ?? '',
           age: profile?.age ? String(profile.age) : '',
           gender: profile?.gender ?? '',
           location: profile?.location ?? '',
