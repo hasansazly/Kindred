@@ -139,6 +139,39 @@ const TESTIMONIALS = [
   },
 ];
 
+function CompatibilityArc({ percentage, size = 64 }: { percentage: number; size?: number }) {
+  const stroke = 7;
+  const r = (size - stroke) / 2;
+  const c = 2 * Math.PI * r;
+  const offset = c * (1 - Math.max(0, Math.min(100, percentage)) / 100);
+
+  return (
+    <div className="compat-arc-wrap" style={{ width: size, height: size }}>
+      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="compat-arc">
+        <defs>
+          <linearGradient id="compatArcGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#D4537E" />
+            <stop offset="100%" stopColor="#7F77DD" />
+          </linearGradient>
+        </defs>
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#F4C0D1" strokeWidth={stroke} opacity={0.45} />
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={r}
+          fill="none"
+          stroke="url(#compatArcGradient)"
+          strokeWidth={stroke}
+          strokeLinecap="round"
+          strokeDasharray={c}
+          style={{ ['--final-offset' as string]: String(offset) }}
+        />
+      </svg>
+      <span className="compat-arc-label">{percentage}%</span>
+    </div>
+  );
+}
+
 export default function LandingPage() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -149,16 +182,36 @@ export default function LandingPage() {
     return () => window.removeEventListener('scroll', handler);
   }, []);
 
+  useEffect(() => {
+    const observed = Array.from(document.querySelectorAll('.fade-in-up'));
+    if (observed.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      entries => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        }
+      },
+      { threshold: 0.16 }
+    );
+
+    for (const el of observed) observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <div style={{ background: '#07070f', minHeight: '100vh', color: '#f0f0ff' }}>
+    <div style={{ background: '#FDF0F5', minHeight: '100vh', color: '#1A1A2E' }}>
       {/* ── Nav ── */}
       <nav
         style={{
           position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50,
           transition: 'all 0.3s ease',
-          background: scrolled ? 'rgba(7,7,15,0.92)' : 'transparent',
-          backdropFilter: scrolled ? 'blur(20px)' : 'none',
-          borderBottom: scrolled ? '1px solid rgba(255,255,255,0.07)' : '1px solid transparent',
+          background: scrolled ? 'rgba(253, 240, 245, 0.85)' : 'transparent',
+          backdropFilter: scrolled ? 'blur(12px)' : 'none',
+          borderBottom: scrolled ? '1px solid #F4C0D1' : '1px solid transparent',
         }}
       >
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', height: 68, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -168,22 +221,22 @@ export default function LandingPage() {
               width: 36, height: 36, borderRadius: 10,
               background: 'linear-gradient(135deg, #7c3aed, #db2777)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              boxShadow: '0 0 20px rgba(124,58,237,0.4)',
+              boxShadow: '0 8px 20px rgba(127,119,221,0.28)',
             }}>
               <Heart size={18} color="white" fill="white" />
             </div>
-            <span style={{ fontWeight: 700, fontSize: 20, letterSpacing: '-0.03em' }}>vinculo</span>
+            <span style={{ fontWeight: 500, fontSize: 24, letterSpacing: '-0.02em', fontFamily: "'Playfair Display', Georgia, serif" }}>vinculo</span>
           </Link>
 
           {/* Nav links */}
           <div style={{ alignItems: 'center', gap: 32 }} className="nav-desktop-links">
             {NAV_LINKS.map(l => (
               <a key={l.label} href={l.href} style={{
-                color: 'rgba(240,240,255,0.6)', fontSize: 14, fontWeight: 500,
+                color: '#534AB7', fontSize: 14, fontWeight: 500,
                 textDecoration: 'none', transition: 'color 0.2s',
               }}
-                onMouseEnter={e => (e.currentTarget.style.color = '#f0f0ff')}
-                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(240,240,255,0.6)')}
+                onMouseEnter={e => (e.currentTarget.style.color = '#1A1A2E')}
+                onMouseLeave={e => (e.currentTarget.style.color = '#534AB7')}
               >
                 {l.label}
               </a>
@@ -199,7 +252,7 @@ export default function LandingPage() {
             <button
               className="hamburger-btn"
               onClick={() => setMenuOpen(o => !o)}
-              style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(240,240,255,0.7)', padding: 4, display: 'none' }}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#534AB7', padding: 4, display: 'none' }}
             >
               {menuOpen ? <X size={22} /> : <Menu size={22} />}
             </button>
@@ -209,9 +262,9 @@ export default function LandingPage() {
         {/* Mobile nav menu */}
         {menuOpen && (
           <div className="mobile-menu" style={{
-            background: 'rgba(7,7,15,0.97)',
+            background: 'rgba(253,240,245,0.96)',
             backdropFilter: 'blur(20px)',
-            borderTop: '1px solid rgba(255,255,255,0.07)',
+            borderTop: '1px solid #F4C0D1',
             padding: '12px 24px 20px',
             display: 'none',
             flexDirection: 'column',
@@ -222,7 +275,7 @@ export default function LandingPage() {
                 key={l.label}
                 href={l.href}
                 onClick={() => setMenuOpen(false)}
-                style={{ color: 'rgba(240,240,255,0.65)', fontSize: 15, fontWeight: 500, textDecoration: 'none', padding: '12px 4px', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'block' }}
+                style={{ color: '#534AB7', fontSize: 15, fontWeight: 500, textDecoration: 'none', padding: '12px 4px', borderBottom: '1px solid #F4C0D1', display: 'block' }}
               >
                 {l.label}
               </a>
@@ -232,16 +285,16 @@ export default function LandingPage() {
       </nav>
 
       {/* ── Hero ── */}
-      <section style={{ position: 'relative', minHeight: '100vh', display: 'flex', alignItems: 'center', overflow: 'hidden', paddingTop: 100 }}>
+      <section className="fade-in-up" style={{ position: 'relative', minHeight: '100vh', display: 'flex', alignItems: 'center', overflow: 'hidden', paddingTop: 100, background: 'linear-gradient(135deg, #FDF0F5 0%, #EEEDFE 100%)' }}>
         {/* Orbs */}
-        <div className="orb" style={{ width: 600, height: 600, background: 'rgba(124,58,237,0.18)', top: -200, left: -200 }} />
-        <div className="orb" style={{ width: 500, height: 500, background: 'rgba(244,63,94,0.12)', bottom: -100, right: -100 }} />
-        <div className="orb" style={{ width: 300, height: 300, background: 'rgba(251,191,36,0.08)', top: '40%', right: '20%' }} />
+        <div className="orb" style={{ width: 600, height: 600, background: 'rgba(212,83,126,0.18)', top: -200, left: -200 }} />
+        <div className="orb" style={{ width: 500, height: 500, background: 'rgba(127,119,221,0.15)', bottom: -100, right: -100 }} />
+        <div className="hero-soft-blob" />
 
         {/* Grid overlay */}
         <div style={{
           position: 'absolute', inset: 0, opacity: 0.03,
-          backgroundImage: 'linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)',
+          backgroundImage: 'linear-gradient(rgba(83,74,183,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(83,74,183,0.08) 1px, transparent 1px)',
           backgroundSize: '60px 60px',
         }} />
 
@@ -255,7 +308,7 @@ export default function LandingPage() {
                 <br /> <span className="gradient-text">understand it.</span>
               </h1>
 
-              <p style={{ fontSize: 18, lineHeight: 1.65, color: 'rgba(240,240,255,0.55)', marginBottom: 36, maxWidth: 460 }}>
+              <p style={{ fontSize: 18, lineHeight: 1.65, color: '#534AB7', marginBottom: 36, maxWidth: 460 }}>
                 Date with less guesswork: fewer, better matches, clearer reasons to connect, and less emotional burnout.
               </p>
 
@@ -264,12 +317,12 @@ export default function LandingPage() {
                   Start Dating with Clarity
                   <ArrowRight size={18} />
                 </Link>
-                <a href="#how-it-works" style={{ fontSize: 14, fontWeight: 500, color: 'rgba(240,240,255,0.48)', textDecoration: 'none' }}>
+                <a href="#how-it-works" style={{ fontSize: 14, fontWeight: 500, color: '#534AB7', textDecoration: 'none' }}>
                   See a Sample Match Breakdown
                 </a>
               </div>
 
-              <div style={{ marginTop: 20, display: 'flex', gap: 14, alignItems: 'center', flexWrap: 'wrap', fontSize: 12, color: 'rgba(240,240,255,0.35)', fontWeight: 500 }}>
+              <div style={{ marginTop: 20, display: 'flex', gap: 14, alignItems: 'center', flexWrap: 'wrap', fontSize: 12, color: '#534AB7', fontWeight: 500 }}>
                 <span>Privacy first</span>
                 <span>·</span>
                 <span>Verified profiles</span>
@@ -280,13 +333,13 @@ export default function LandingPage() {
 
             {/* Right — compatibility report mockup */}
             <div className="hero-phone-wrap" style={{ position: 'relative', display: 'flex', justifyContent: 'center' }}>
-              <div className="hero-phone-frame glass" style={{ width: 320, borderRadius: 28, padding: 22, animation: 'float 6s ease-in-out infinite' }}>
+              <div className="hero-phone-frame glass card-lift" style={{ width: 320, borderRadius: 24, padding: 22, animation: 'float 6s ease-in-out infinite' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
                   <div>
-                    <div style={{ fontSize: 12, color: 'rgba(240,240,255,0.45)', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 600 }}>Compatibility Report</div>
+                    <div style={{ fontSize: 12, color: '#534AB7', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 600 }}>Compatibility Report</div>
                     <div style={{ fontSize: 18, fontWeight: 800, marginTop: 2 }}>Vinculo Match Clarity</div>
                   </div>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: '#34d399' }}>92%</div>
+                  <CompatibilityArc percentage={92} size={62} />
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 16 }}>
                   {[
@@ -295,15 +348,15 @@ export default function LandingPage() {
                     ['Goals', 95],
                   ].map(([label, value]) => (
                     <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                      <span style={{ width: 100, fontSize: 12, color: 'rgba(240,240,255,0.52)' }}>{label}</span>
-                      <div style={{ flex: 1, height: 4, borderRadius: 3, background: 'rgba(255,255,255,0.08)', overflow: 'hidden' }}>
-                        <div style={{ width: `${value}%`, height: '100%', borderRadius: 3, background: 'linear-gradient(90deg, #7c3aed, #db2777)' }} />
+                      <span style={{ width: 100, fontSize: 12, color: '#534AB7' }}>{label}</span>
+                      <div style={{ flex: 1, height: 4, borderRadius: 3, background: '#F4C0D1', overflow: 'hidden' }}>
+                        <div style={{ width: `${value}%`, height: '100%', borderRadius: 3, background: 'linear-gradient(90deg, #D4537E, #7F77DD)' }} />
                       </div>
-                      <span style={{ width: 30, textAlign: 'right', fontSize: 11, fontWeight: 700, color: '#a78bfa' }}>{value}%</span>
+                      <span style={{ width: 30, textAlign: 'right', fontSize: 11, fontWeight: 700, color: '#534AB7' }}>{value}%</span>
                     </div>
                   ))}
                 </div>
-                <div style={{ fontSize: 12, color: 'rgba(240,240,255,0.52)', lineHeight: 1.5 }}>
+                <div style={{ fontSize: 12, color: '#534AB7', lineHeight: 1.5 }}>
                   Why this match works: high alignment on values, communication style, and relationship intent.
                 </div>
               </div>
@@ -313,7 +366,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── Problem ── */}
-      <section style={{ padding: '90px 24px', borderTop: '1px solid rgba(255,255,255,0.05)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+      <section className="fade-in-up" style={{ padding: '90px 24px', borderTop: '1px solid #F4C0D1', borderBottom: '1px solid #F4C0D1' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 52 }}>
             <h2 style={{ fontSize: 'clamp(30px, 4vw, 46px)', fontWeight: 800, letterSpacing: '-0.03em', marginBottom: 14 }}>
@@ -342,7 +395,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── Connection Track ── */}
-      <section style={{ padding: '20px 24px 90px' }}>
+      <section className="fade-in-up" style={{ padding: '20px 24px 90px' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <div className="glass" style={{ borderRadius: 24, padding: '30px 28px', border: '1px solid rgba(139,92,246,0.25)' }}>
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(139,92,246,0.12)', border: '1px solid rgba(139,92,246,0.2)', borderRadius: 999, padding: '5px 12px', marginBottom: 14 }}>
@@ -374,7 +427,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── Features ── */}
-      <section id="features" style={{ padding: '100px 24px' }}>
+      <section id="features" className="fade-in-up" style={{ padding: '100px 24px' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 64 }}>
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(244,63,94,0.1)', border: '1px solid rgba(244,63,94,0.2)', borderRadius: 999, padding: '5px 14px', marginBottom: 20 }}>
@@ -416,7 +469,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── Trust ── */}
-      <section style={{ padding: '0 24px 90px' }}>
+      <section className="fade-in-up" style={{ padding: '0 24px 90px' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <div className="glass" style={{ borderRadius: 24, padding: '30px 28px', border: '1px solid rgba(52,211,153,0.2)' }}>
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(52,211,153,0.1)', border: '1px solid rgba(52,211,153,0.2)', borderRadius: 999, padding: '5px 12px', marginBottom: 14 }}>
@@ -442,7 +495,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── How It Works ── */}
-      <section id="how-it-works" style={{ padding: '100px 24px', background: 'rgba(15,15,26,0.6)' }}>
+      <section id="how-it-works" className="fade-in-up" style={{ padding: '100px 24px', background: '#FBEAF0' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 72 }}>
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(139,92,246,0.1)', border: '1px solid rgba(139,92,246,0.2)', borderRadius: 999, padding: '5px 14px', marginBottom: 20 }}>
@@ -478,7 +531,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── Testimonials ── */}
-      <section id="testimonials" style={{ padding: '100px 24px' }}>
+      <section id="testimonials" className="fade-in-up" style={{ padding: '100px 24px' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 64 }}>
             <h2 style={{ fontSize: 'clamp(32px, 4vw, 52px)', fontWeight: 800, letterSpacing: '-0.03em', marginBottom: 16 }}>
@@ -489,16 +542,17 @@ export default function LandingPage() {
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 20 }} className="testimonials-grid">
             {TESTIMONIALS.map(t => (
-              <div key={t.name} className="glass card-lift" style={{ borderRadius: 20, padding: 28, display: 'flex', flexDirection: 'column', gap: 20 }}>
+              <div key={t.name} className="card-lift" style={{ borderRadius: 20, padding: 28, display: 'flex', flexDirection: 'column', gap: 20, background: '#FBEAF0', border: '1px solid #F4C0D1', position: 'relative' }}>
+                <span style={{ position: 'absolute', left: 16, top: 2, fontSize: 48, color: '#F4C0D1', lineHeight: 1 }}>&ldquo;</span>
                 {/* Stars */}
                 <div style={{ display: 'flex', gap: 3 }}>
                   {Array.from({ length: t.stars }).map((_, i) => (
                     <Star key={i} size={14} color="#fbbf24" fill="#fbbf24" />
                   ))}
                 </div>
-                <p style={{ fontSize: 15, lineHeight: 1.7, color: 'rgba(240,240,255,0.7)', flex: 1 }}>&ldquo;{t.text}&rdquo;</p>
+                <p style={{ fontSize: 15, lineHeight: 1.7, color: '#1A1A2E', flex: 1 }}>{t.text}</p>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <div style={{ width: 44, height: 44, borderRadius: '50%', flexShrink: 0, background: 'rgba(139,92,246,0.18)', border: '1px solid rgba(139,92,246,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color: '#c4b5fd' }}>
+                  <div className="avatar-gradient" style={{ width: 48, height: 48, borderRadius: '50%', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700 }}>
                     {t.initials}
                   </div>
                   <div>
@@ -516,7 +570,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── Pricing ── */}
-      <section id="pricing" style={{ padding: '100px 24px', background: 'rgba(15,15,26,0.5)' }}>
+      <section id="pricing" className="fade-in-up" style={{ padding: '100px 24px', background: '#FDF0F5' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 64 }}>
             <h2 style={{ fontSize: 'clamp(32px, 4vw, 52px)', fontWeight: 800, letterSpacing: '-0.03em', marginBottom: 16 }}>Simple, fair pricing.</h2>
@@ -557,37 +611,37 @@ export default function LandingPage() {
                 key={plan.name}
                 className={`pricing-item ${plan.highlight ? 'pricing-item-featured' : ''}`}
                 style={{
-                  borderRadius: 22,
+                  borderRadius: 24,
                   padding: plan.highlight ? '2px' : undefined,
-                  background: plan.highlight ? 'linear-gradient(135deg, rgba(139,92,246,0.6), rgba(244,63,94,0.5))' : undefined,
+                  background: plan.highlight ? '#EEEDFE' : undefined,
                 }}
               >
                 <div
-                  className={plan.highlight ? '' : 'glass'}
+                  className={plan.highlight ? '' : ''}
                   style={{
-                    background: plan.highlight ? '#0f0f1a' : undefined,
-                    borderRadius: plan.highlight ? 20 : 22,
+                    background: '#FFFFFF',
+                    border: plan.highlight ? '2px solid #7F77DD' : '0.5px solid #CECBF6',
+                    borderRadius: plan.highlight ? 24 : 24,
                     padding: 28,
                     height: '100%',
-                    border: plan.highlight ? 'none' : undefined,
                     position: 'relative',
                   }}
                 >
                   {plan.highlight && (
-                    <div style={{ position: 'absolute', top: -12, left: '50%', transform: 'translateX(-50%)', background: 'linear-gradient(135deg, #7c3aed, #db2777)', borderRadius: 999, padding: '4px 16px', fontSize: 11, fontWeight: 700, color: 'white', whiteSpace: 'nowrap' }}>
+                    <div style={{ position: 'absolute', top: -12, left: '50%', transform: 'translateX(-50%)', background: '#7F77DD', borderRadius: 999, padding: '4px 14px', fontSize: 12, fontWeight: 700, color: 'white', whiteSpace: 'nowrap' }}>
                       MOST POPULAR
                     </div>
                   )}
-                  <div style={{ marginBottom: 6, fontSize: 13, fontWeight: 600, color: 'rgba(240,240,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{plan.name}</div>
+                  <div style={{ marginBottom: 6, fontSize: 13, fontWeight: 600, color: '#534AB7', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{plan.name}</div>
                   <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 4 }}>
                     <span style={{ fontSize: 42, fontWeight: 800, letterSpacing: '-0.03em' }}>{plan.price}</span>
-                    <span style={{ fontSize: 13, color: 'rgba(240,240,255,0.4)' }}>/{plan.period}</span>
+                    <span style={{ fontSize: 13, color: '#534AB7' }}>/{plan.period}</span>
                   </div>
-                  <div style={{ height: 1, background: 'rgba(255,255,255,0.07)', margin: '20px 0' }} />
+                  <div style={{ height: 1, background: '#F4C0D1', margin: '20px 0' }} />
                   <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 28 }}>
                     {plan.features.map(f => (
-                      <li key={f} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, color: 'rgba(240,240,255,0.65)' }}>
-                        <CheckCircle size={15} color={plan.highlight ? '#a78bfa' : '#34d399'} />
+                      <li key={f} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, color: '#1A1A2E' }}>
+                        <CheckCircle size={15} color={plan.highlight ? '#7F77DD' : '#1D9E75'} />
                         {f}
                       </li>
                     ))}
@@ -602,7 +656,7 @@ export default function LandingPage() {
                       ...(plan.name === 'Free'
                         ? { opacity: 0.85 }
                         : plan.name === 'Intelligence'
-                          ? { borderColor: 'rgba(167,139,250,0.35)', color: '#c4b5fd' }
+                          ? { borderColor: '#7F77DD', color: '#7F77DD' }
                           : {}),
                     }}
                   >
@@ -616,7 +670,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── CTA Banner ── */}
-      <section style={{ padding: '100px 24px' }}>
+      <section className="fade-in-up" style={{ padding: '100px 24px' }}>
         <div style={{ maxWidth: 800, margin: '0 auto', textAlign: 'center' }}>
           <div className="cta-banner" style={{
             borderRadius: 28,
@@ -646,25 +700,25 @@ export default function LandingPage() {
       </section>
 
       {/* ── Footer ── */}
-      <footer style={{ borderTop: '1px solid rgba(255,255,255,0.07)', padding: '48px 24px' }}>
+      <footer style={{ borderTop: '1px solid #2E2A49', padding: '48px 24px', background: '#1A1A2E' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 24 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <div style={{ width: 30, height: 30, borderRadius: 8, background: 'linear-gradient(135deg, #7c3aed, #db2777)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Heart size={14} color="white" fill="white" />
             </div>
-            <span style={{ fontWeight: 700, fontSize: 18, letterSpacing: '-0.03em' }}>vinculo</span>
+            <span style={{ fontWeight: 500, fontSize: 21, letterSpacing: '-0.02em', color: '#CECBF6', fontFamily: "'Playfair Display', Georgia, serif" }}>vinculo</span>
           </div>
           <div style={{ display: 'flex', gap: 28, flexWrap: 'wrap' }}>
             {FOOTER_LINKS.map(l => (
-              <Link key={l.label} href={l.href} style={{ fontSize: 13, color: 'rgba(240,240,255,0.35)', textDecoration: 'none', transition: 'color 0.2s' }}
-                onMouseEnter={e => (e.currentTarget.style.color = 'rgba(240,240,255,0.7)')}
-                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(240,240,255,0.35)')}
+              <Link key={l.label} href={l.href} style={{ fontSize: 13, color: '#CECBF6', textDecoration: 'none', transition: 'color 0.2s' }}
+                onMouseEnter={e => (e.currentTarget.style.color = '#D4537E')}
+                onMouseLeave={e => (e.currentTarget.style.color = '#CECBF6')}
               >
                 {l.label}
               </Link>
             ))}
           </div>
-          <div style={{ fontSize: 12, color: 'rgba(240,240,255,0.25)' }}>© 2026 Vinculo. Made with ♥</div>
+          <div style={{ fontSize: 12, color: '#CECBF6' }}>© 2026 Vinculo. Made with ♥</div>
         </div>
       </footer>
 
@@ -695,6 +749,16 @@ export default function LandingPage() {
           .cta-banner { padding: 40px 24px !important; }
           /* Footer flex */
           footer > div { flex-direction: column; align-items: flex-start !important; }
+        }
+        @media (max-width: 480px) {
+          .btn-primary, .btn-ghost {
+            width: 100%;
+          }
+        }
+        @media (min-width: 768px) and (max-width: 1024px) {
+          .features-grid, .pricing-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+          }
         }
       `}</style>
     </div>
