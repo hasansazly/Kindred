@@ -202,9 +202,9 @@ export default function ConnectionTrackPanel({
     return (
       <div className="mt-3 grid gap-2 sm:grid-cols-2">
         {moduleState.responses.map(response => (
-          <div key={response.id} className="rounded-lg border border-[#E4E6EB] bg-white px-3 py-2">
-            <p className="text-[11px] uppercase tracking-[0.06em] text-[#888888]">{response.userId === state?.viewerUserId ? 'You' : 'Match'}</p>
-            <p className="mt-1 text-sm text-[#222222]">{responsePreview(response)}</p>
+          <div key={response.id} className="rounded-lg border border-[#36416D] bg-[#151C3C] px-3 py-2">
+            <p className="text-[11px] uppercase tracking-[0.06em] text-[#A6AED0]">{response.userId === state?.viewerUserId ? 'You' : 'Match'}</p>
+            <p className="mt-1 text-sm text-[#E8ECFF]">{responsePreview(response)}</p>
           </div>
         ))}
       </div>
@@ -213,16 +213,32 @@ export default function ConnectionTrackPanel({
 
   if (loading) {
     return (
-      <section className="rounded-xl border border-[#DADDE1] bg-white p-4">
-        <p className="text-sm text-[#65676B]">Loading Connection Track...</p>
+      <section className="rounded-xl border border-[#36416D] bg-[#101735] p-4">
+        <p className="text-sm text-[#A9B0D0]">Loading Connection Track...</p>
       </section>
     );
   }
 
   if (error) {
+    const softMessage =
+      error.toLowerCase().includes('no active match') ||
+      error.toLowerCase().includes('unavailable') ||
+      error.toLowerCase().includes('forbidden')
+        ? 'Connection Track is currently unavailable for this chat.'
+        : `Connection Track issue: ${error}`;
+
     return (
-      <section className="rounded-xl border border-[#E4E6EB] bg-white p-4">
-        <p className="text-sm text-[#CC3333]">{error}</p>
+      <section className="rounded-xl border border-[#5A4DB7] bg-[#171338] p-3">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <p className="text-xs text-[#D5CBFF]">{softMessage}</p>
+          <button
+            type="button"
+            onClick={() => void loadState()}
+            className="rounded-md border border-[#6B5CE7] bg-[#1F1A49] px-2.5 py-1 text-[11px] font-medium text-[#F1EEFF] hover:brightness-110"
+          >
+            Retry
+          </button>
+        </div>
       </section>
     );
   }
@@ -244,18 +260,18 @@ export default function ConnectionTrackPanel({
     }
   ) => {
     return (
-      <article className="rounded-xl border border-[#DADDE1] bg-white p-4">
+      <article className="rounded-xl border border-[#36416D] bg-[#101735] p-4">
         <div className="flex items-center justify-between gap-3">
           <div>
-            <p className="text-[11px] uppercase tracking-[0.06em] text-[#888888]">{options.subtitle}</p>
-            <h3 className="mt-1 text-base font-medium text-[#111111]">{options.title}</h3>
+            <p className="text-[11px] uppercase tracking-[0.06em] text-[#A6AED0]">{options.subtitle}</p>
+            <h3 className="mt-1 text-base font-medium text-[#F8F9FF]">{options.title}</h3>
           </div>
-          <span className="text-[#4f5bd5]">{options.icon}</span>
+          <span className="text-[#C9C0FF]">{options.icon}</span>
         </div>
 
-        <div className="mt-3 rounded-lg border border-[#E4E6EB] bg-[#F7F8FA] px-3 py-2.5">
-          <p className="text-sm text-[#202124]">{moduleState.question?.text ?? 'No prompt available right now.'}</p>
-          <p className="mt-2 text-[11px] uppercase tracking-[0.06em] text-[#888888]">{statusLabel(moduleState.status)}</p>
+        <div className="mt-3 rounded-lg border border-[#36416D] bg-[#151C3C] px-3 py-2.5">
+          <p className="text-sm text-[#E8ECFF]">{moduleState.question?.text ?? 'No prompt available right now.'}</p>
+          <p className="mt-2 text-[11px] uppercase tracking-[0.06em] text-[#A6AED0]">{statusLabel(moduleState.status)}</p>
         </div>
 
         {moduleState.status === 'complete' || moduleState.status === 'waiting_other'
@@ -275,7 +291,7 @@ export default function ConnectionTrackPanel({
               value={draftDaily}
               onChange={event => setDraftDaily(event.target.value)}
               placeholder="Share a short, honest response"
-              className="min-h-[82px] w-full rounded-lg border border-[#CCD0D5] bg-white px-3 py-2 text-sm text-[#111111] outline-none focus:border-[#4f5bd5]"
+              className="min-h-[82px] w-full rounded-lg border border-[#4E5A92] bg-[#121A3A] px-3 py-2 text-sm text-[#F6F8FF] outline-none focus:border-[#6B5CE7]"
             />
             <button
               type="submit"
@@ -299,7 +315,7 @@ export default function ConnectionTrackPanel({
                     className={`rounded-full border px-3 py-1 text-xs ${
                       draftWeeklyChoice === option
                         ? 'border-[#4B3FA0] bg-[#EDE9FA] text-[#4B3FA0]'
-                        : 'border-[#CCD0D5] bg-white text-[#555555]'
+                        : 'border-[#4E5A92] bg-[#121A3A] text-[#D6DDFB]'
                     }`}
                   >
                     {option}
@@ -319,7 +335,7 @@ export default function ConnectionTrackPanel({
                       className={`h-8 w-8 rounded-full border text-xs ${
                         draftWeeklyScore === score
                           ? 'border-[#4B3FA0] bg-[#EDE9FA] text-[#4B3FA0]'
-                          : 'border-[#CCD0D5] bg-white text-[#555555]'
+                          : 'border-[#4E5A92] bg-[#121A3A] text-[#D6DDFB]'
                       }`}
                     >
                       {score}
@@ -334,7 +350,7 @@ export default function ConnectionTrackPanel({
                 value={draftWeeklyText}
                 onChange={event => setDraftWeeklyText(event.target.value)}
                 placeholder="Share your pulse"
-                className="min-h-[82px] w-full rounded-lg border border-[#CCD0D5] bg-white px-3 py-2 text-sm text-[#111111] outline-none focus:border-[#4f5bd5]"
+                className="min-h-[82px] w-full rounded-lg border border-[#4E5A92] bg-[#121A3A] px-3 py-2 text-sm text-[#F6F8FF] outline-none focus:border-[#6B5CE7]"
               />
             ) : null}
 
@@ -361,7 +377,7 @@ export default function ConnectionTrackPanel({
         ) : null}
 
         {moduleKey === 'weekly' && moduleState.summary ? (
-          <p className="mt-3 text-sm text-[#555555]">{moduleState.summary}</p>
+          <p className="mt-3 text-sm text-[#A9B0D0]">{moduleState.summary}</p>
         ) : null}
 
         {moduleKey === 'preDate' && moduleState.status === 'not_started' ? (
@@ -388,7 +404,7 @@ export default function ConnectionTrackPanel({
               value={draftPreDate}
               onChange={event => setDraftPreDate(event.target.value)}
               placeholder="Share your pre-date intention"
-              className="min-h-[82px] w-full rounded-lg border border-[#CCD0D5] bg-white px-3 py-2 text-sm text-[#111111] outline-none focus:border-[#4f5bd5]"
+              className="min-h-[82px] w-full rounded-lg border border-[#4E5A92] bg-[#121A3A] px-3 py-2 text-sm text-[#F6F8FF] outline-none focus:border-[#6B5CE7]"
             />
             <button
               type="submit"
@@ -404,11 +420,11 @@ export default function ConnectionTrackPanel({
   };
 
   return (
-    <section className="space-y-3 rounded-2xl border border-[#DADDE1] bg-white p-4">
+    <section className="space-y-3 rounded-2xl border border-[#36416D] bg-[#0D1431] p-4">
       <div>
-        <p className="text-[11px] uppercase tracking-[0.06em] text-[#888888]">Connection Track</p>
-        <h2 className="mt-1 text-xl font-medium text-[#111111]">Keep momentum with clarity</h2>
-        <p className="mt-1 text-sm text-[#65676B]">
+        <p className="text-[11px] uppercase tracking-[0.06em] text-[#A6AED0]">Connection Track</p>
+        <h2 className="mt-1 text-xl font-medium text-[#F8F9FF]">Keep momentum with clarity</h2>
+        <p className="mt-1 text-sm text-[#A9B0D0]">
           One daily question, one weekly pulse, and an optional pre-date check.
         </p>
       </div>

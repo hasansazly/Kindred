@@ -83,7 +83,7 @@ export default function ConnectionSafetyActions({
           type="button"
           onClick={() => runAction('report')}
           disabled={Boolean(loading)}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-[#E4E6EB] bg-white px-3 py-1.5 text-xs font-medium text-[#CC3333] hover:bg-[#F7F8FA] disabled:opacity-60"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-[#5A3042] bg-[#2A1620] px-3 py-1.5 text-xs font-medium text-[#FF8A8A] hover:border-[#7B3B53] hover:bg-[#351C29] disabled:opacity-60"
         >
           <AlertTriangle size={14} />
           {loading === 'report' ? 'Reporting...' : 'Report user'}
@@ -93,7 +93,7 @@ export default function ConnectionSafetyActions({
           type="button"
           onClick={() => runAction('unmatch')}
           disabled={Boolean(loading)}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-[#E4E6EB] bg-white px-3 py-1.5 text-xs font-medium text-[#65676B] hover:bg-[#F7F8FA] disabled:opacity-60"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-[#36416D] bg-[#151C3C] px-3 py-1.5 text-xs font-medium text-[#D1D8F7] hover:border-[#5966A4] hover:text-white disabled:opacity-60"
         >
           <UserX size={14} />
           {loading === 'unmatch' ? 'Unmatching...' : 'Unmatch'}
@@ -103,13 +103,13 @@ export default function ConnectionSafetyActions({
           type="button"
           onClick={() => runAction('block')}
           disabled={Boolean(loading)}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-[#E4E6EB] bg-white px-3 py-1.5 text-xs font-medium text-[#65676B] hover:bg-[#F7F8FA] disabled:opacity-60"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-[#36416D] bg-[#151C3C] px-3 py-1.5 text-xs font-medium text-[#D1D8F7] hover:border-[#5966A4] hover:text-white disabled:opacity-60"
         >
           <Ban size={14} />
           {loading === 'block' ? 'Blocking...' : 'Block user'}
         </button>
       </div>
-      {error ? <p className="text-xs text-[#CC3333]">{error}</p> : null}
+      {error ? <p className="text-xs text-[#FF8A8A]">{error}</p> : null}
     </div>
   );
 }
