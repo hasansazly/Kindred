@@ -12,6 +12,7 @@ import {
   Brain,
   CheckCircle,
   Plus,
+  X,
 } from 'lucide-react';
 import { getSupabaseBrowserClient } from '../../../../utils/supabase/client';
 import { getCompatibilityColor } from '@/lib/utils';
@@ -74,6 +75,7 @@ export default function ProfilePage() {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
+  const [deletingPhotoUrl, setDeletingPhotoUrl] = useState('');
   const [feedback, setFeedback] = useState('');
   const [bucketPhotoCount, setBucketPhotoCount] = useState(0);
   const [editForm, setEditForm] = useState<EditFormState>({
@@ -360,6 +362,55 @@ export default function ProfilePage() {
     });
   };
 
+  const getStoragePathFromPublicUrl = (publicUrl: string) => {
+    const marker = '/profile-photos/';
+    const idx = publicUrl.indexOf(marker);
+    if (idx < 0) return null;
+    return decodeURIComponent(publicUrl.slice(idx + marker.length));
+  };
+
+  const deletePhoto = async (photoUrl: string) => {
+    if (!user || photoUrl === DEFAULT_PROFILE_PHOTO) return;
+    setFeedback('');
+    setDeletingPhotoUrl(photoUrl);
+
+    try {
+      const supabase = getSupabaseBrowserClient();
+      const {
+        data: { user: authUser },
+        error: authError,
+      } = await supabase.auth.getUser();
+      if (authError || !authUser) {
+        throw new Error('Please sign in again before deleting a photo.');
+      }
+
+      const filePath = getStoragePathFromPublicUrl(photoUrl);
+      if (!filePath || !filePath.startsWith(`${authUser.id}/`)) {
+        throw new Error('Could not identify this photo path.');
+      }
+
+      const { error: deleteError } = await supabase.storage.from('profile-photos').remove([filePath]);
+      if (deleteError) {
+        throw new Error(deleteError.message);
+      }
+
+      const remainingPhotos = user.photos.filter(photo => photo !== photoUrl && photo !== DEFAULT_PROFILE_PHOTO);
+      const nextMeta: ProfileMeta = {
+        ...user.meta,
+        photos: remainingPhotos,
+      };
+
+      await saveMetaOnly(nextMeta, remainingPhotos.length > 0 ? remainingPhotos : [DEFAULT_PROFILE_PHOTO]);
+      setBucketPhotoCount(prev => Math.max(0, prev - 1));
+      setFeedback('Photo deleted.');
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Photo deletion failed.';
+      setFeedback(message);
+    } finally {
+      setDeletingPhotoUrl('');
+    }
+  };
+
   const uploadPhoto = async (file: File) => {
     if (!user) return;
     setIsUploadingPhoto(true);
@@ -470,6 +521,7 @@ export default function ProfilePage() {
     { label: 'Smokes', value: user.meta.smoking ?? '' },
     { label: 'Kids', value: user.meta.kids ?? '' },
   ].filter(item => item.value.trim().length > 0);
+  const galleryPhotos = user.photos.filter(photo => photo !== DEFAULT_PROFILE_PHOTO);
 
   return (
     <div className="profile-page" style={{ padding: '32px', maxWidth: 800, width: '100%', margin: '0 auto' }}>
@@ -617,9 +669,32 @@ export default function ProfilePage() {
           <div className="glass" style={{ borderRadius: 20, padding: '20px 24px' }}>
             <div style={{ fontSize: 13, fontWeight: 600, color: 'rgba(240,240,255,0.4)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Photos</div>
             <div className="profile-photos-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
-              {user.photos.map((src, i) => (
-                <div key={i} style={{ aspectRatio: '1', borderRadius: 12, overflow: 'hidden' }}>
+              {galleryPhotos.map((src, i) => (
+                <div key={i} style={{ aspectRatio: '1', borderRadius: 12, overflow: 'hidden', position: 'relative' }}>
                   <img src={src} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <button
+                    type="button"
+                    onClick={() => deletingPhotoUrl !== src && void deletePhoto(src)}
+                    disabled={deletingPhotoUrl === src}
+                    title="Delete photo"
+                    style={{
+                      position: 'absolute',
+                      top: 6,
+                      right: 6,
+                      width: 24,
+                      height: 24,
+                      borderRadius: 999,
+                      border: '1px solid rgba(244,63,94,0.45)',
+                      background: 'rgba(7,7,15,0.72)',
+                      color: '#fda4af',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: deletingPhotoUrl === src ? 'wait' : 'pointer',
+                    }}
+                  >
+                    <X size={12} />
+                  </button>
                 </div>
               ))}
               <button
