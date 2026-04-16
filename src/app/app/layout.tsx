@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { Heart, Compass, Users, MessageCircle, User, Settings, Bell, Sparkles, LogOut, Flame, Brain, BookOpen } from 'lucide-react';
 import { CURRENT_USER } from '@/lib/mockData';
 import AssistantShell from '@/components/ai/AssistantShell';
+import LogoutButton from '@/components/auth/LogoutButton';
 
 const NAV = [
   { href: '/app/discover', icon: Compass,       label: 'Discover',  notif: 0 },
@@ -80,10 +81,10 @@ function Sidebar() {
         <div style={{ fontSize: 12, color: 'rgba(240,240,255,0.4)' }}>3 of 5 viewed · Resets in 6h</div>
       </div>
 
-      <Link href="/" className="nav-item" style={{ color: 'rgba(244,63,94,0.6)' }}>
+      <LogoutButton className="nav-item" style={{ color: 'rgba(244,63,94,0.6)' }}>
         <LogOut size={16} />
         Sign out
-      </Link>
+      </LogoutButton>
     </div>
   );
 }
