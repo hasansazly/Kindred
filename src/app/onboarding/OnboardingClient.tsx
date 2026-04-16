@@ -18,6 +18,19 @@ type OnboardingClientProps = {
     values: string[];
     lifestyle: string[];
   };
+  initialAnswers?: {
+    relationshipIntent?: string;
+    communicationStyle?: string;
+    pace?: string;
+    dealbreakers?: string[];
+    interestedIn?: string[];
+    minAge?: number;
+    maxAge?: number;
+    distanceKm?: number;
+  };
+  mode?: 'onboarding' | 'edit';
+  onFinishPath?: string;
+  onBackPath?: string;
 };
 
 type FormState = {
@@ -128,7 +141,14 @@ function TogglePills({
   );
 }
 
-export default function OnboardingClient({ userEmail, initialProfile }: OnboardingClientProps) {
+export default function OnboardingClient({
+  userEmail,
+  initialProfile,
+  initialAnswers,
+  mode = 'onboarding',
+  onFinishPath = '/dashboard',
+  onBackPath = '/',
+}: OnboardingClientProps) {
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -141,17 +161,17 @@ export default function OnboardingClient({ userEmail, initialProfile }: Onboardi
     occupation: initialProfile.occupation,
     bio: initialProfile.bio,
     interests: initialProfile.interests,
-    relationshipIntent: '',
-    communicationStyle: '',
+    relationshipIntent: initialAnswers?.relationshipIntent ?? '',
+    communicationStyle: initialAnswers?.communicationStyle ?? '',
     values: initialProfile.values,
     lifestyle: initialProfile.lifestyle,
-    pace: '',
-    dealbreakers: [],
+    pace: initialAnswers?.pace ?? '',
+    dealbreakers: initialAnswers?.dealbreakers ?? [],
     dealbreakerInput: '',
-    interestedIn: [],
-    minAge: 24,
-    maxAge: 38,
-    distanceKm: 50,
+    interestedIn: initialAnswers?.interestedIn ?? [],
+    minAge: initialAnswers?.minAge ?? 24,
+    maxAge: initialAnswers?.maxAge ?? 38,
+    distanceKm: initialAnswers?.distanceKm ?? 50,
   });
 
   const header = useMemo(() => {
@@ -241,7 +261,7 @@ export default function OnboardingClient({ userEmail, initialProfile }: Onboardi
 
   const previousStep = () => {
     if (step === 1) {
-      router.push('/');
+      router.push(onBackPath);
       return;
     }
     setStep(prev => prev - 1);
@@ -332,7 +352,7 @@ export default function OnboardingClient({ userEmail, initialProfile }: Onboardi
       return;
     }
 
-    router.push('/dashboard');
+    router.push(onFinishPath);
   };
 
   return (
@@ -506,7 +526,7 @@ export default function OnboardingClient({ userEmail, initialProfile }: Onboardi
               </button>
             ) : (
               <button type="button" className="btn-primary" onClick={saveOnboarding} disabled={loading}>
-                {loading ? 'Saving...' : 'Finish onboarding'}
+                {loading ? 'Saving...' : mode === 'edit' ? 'Save all changes' : 'Finish onboarding'}
               </button>
             )}
           </div>

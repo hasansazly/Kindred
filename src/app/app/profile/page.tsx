@@ -440,14 +440,24 @@ export default function ProfilePage() {
 
       <div className="profile-header-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
         <h1 style={{ fontSize: 26, fontWeight: 800, letterSpacing: '-0.03em' }}>Your Profile</h1>
-        <button
-          onClick={openEditModal}
-          className="btn-ghost profile-edit-btn"
-          style={{ padding: '9px 18px', fontSize: 13, display: 'flex', alignItems: 'center', gap: 6 }}
-        >
-          <Edit3 size={14} />
-          Edit Profile
-        </button>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          <button
+            type="button"
+            onClick={() => router.push('/app/profile/edit')}
+            className="btn-primary profile-edit-btn"
+            style={{ padding: '9px 18px', fontSize: 13, display: 'flex', alignItems: 'center', gap: 6 }}
+          >
+            <Edit3 size={14} />
+            Edit 7-step profile
+          </button>
+          <button
+            onClick={openEditModal}
+            className="btn-ghost profile-edit-btn"
+            style={{ padding: '9px 18px', fontSize: 13, display: 'flex', alignItems: 'center', gap: 6 }}
+          >
+            Quick edit
+          </button>
+        </div>
       </div>
 
       {feedback && (

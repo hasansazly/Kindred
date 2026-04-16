@@ -1,8 +1,12 @@
 import { redirect } from 'next/navigation';
-import OnboardingClient from './OnboardingClient';
-import { createSupabaseServerClient } from '../../../utils/supabase/server';
+import OnboardingClient from '../../../onboarding/OnboardingClient';
+import { createSupabaseServerClient } from '../../../../../utils/supabase/server';
 
-export default async function OnboardingPage() {
+function toStringArray(value: unknown) {
+  return Array.isArray(value) ? value.filter(item => typeof item === 'string') : [];
+}
+
+export default async function ProfileFullEditPage() {
   try {
     const supabase = await createSupabaseServerClient();
     const {
@@ -11,16 +15,6 @@ export default async function OnboardingPage() {
 
     if (!user) {
       redirect('/auth/login');
-    }
-
-    const { data: preferenceRow } = await supabase
-      .from('match_preferences')
-      .select('user_id')
-      .eq('user_id', user.id)
-      .maybeSingle();
-
-    if (preferenceRow) {
-      redirect('/dashboard');
     }
 
     const [{ data: profile }, { data: onboardingRows }, { data: preferences }] = await Promise.all([
@@ -43,9 +37,6 @@ export default async function OnboardingPage() {
     const communicationStyleResponse = responsesByCategory.get('communication_style') ?? {};
     const paceResponse = responsesByCategory.get('pace') ?? {};
     const dealbreakersResponse = responsesByCategory.get('dealbreakers') ?? {};
-
-    const toStringArray = (value: unknown) =>
-      Array.isArray(value) ? value.filter(item => typeof item === 'string') : [];
 
     return (
       <OnboardingClient
@@ -93,10 +84,13 @@ export default async function OnboardingPage() {
           maxAge: (preferences as { max_age?: number } | null)?.max_age,
           distanceKm: (preferences as { distance_km?: number } | null)?.distance_km,
         }}
+        mode="edit"
+        onBackPath="/app/profile"
+        onFinishPath="/app/profile"
       />
     );
   } catch (error) {
-    console.error('onboarding page failed:', error);
-    redirect('/auth/login');
+    console.error('profile full edit page failed:', error);
+    redirect('/app/profile');
   }
 }
