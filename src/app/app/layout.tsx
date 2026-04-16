@@ -26,11 +26,14 @@ const SIDEBAR_NAV = [
 type SidebarIdentity = {
   name: string;
   auraScore: number;
+  photoUrl: string;
 };
+
+const DEFAULT_SIDEBAR_PHOTO = 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&q=80';
 
 function Sidebar() {
   const pathname = usePathname();
-  const [identity, setIdentity] = useState<SidebarIdentity>({ name: 'You', auraScore: 65 });
+  const [identity, setIdentity] = useState<SidebarIdentity>({ name: 'You', auraScore: 65, photoUrl: DEFAULT_SIDEBAR_PHOTO });
 
   useEffect(() => {
     let active = true;
@@ -44,16 +47,31 @@ function Sidebar() {
 
         if (!user) return;
 
-        const [{ data: profile }, { count: responsesCount }] = await Promise.all([
+        const [{ data: profile }, { count: responsesCount }, { data: profileMetaRow }] = await Promise.all([
           supabase.from('profiles').select('full_name,email').eq('id', user.id).maybeSingle(),
           supabase.from('onboarding_responses').select('*', { count: 'exact', head: true }).eq('user_id', user.id),
+          supabase
+            .from('onboarding_responses')
+            .select('response')
+            .eq('user_id', user.id)
+            .eq('category', 'profile_meta')
+            .maybeSingle(),
         ]);
 
         const name = profile?.full_name || profile?.email?.split('@')[0] || user.email?.split('@')[0] || 'You';
         const auraScore = Math.min(99, 65 + ((responsesCount ?? 0) * 4));
+        const maybePhotos =
+          profileMetaRow &&
+          typeof profileMetaRow.response === 'object' &&
+          profileMetaRow.response !== null &&
+          Array.isArray((profileMetaRow.response as { photos?: unknown }).photos)
+            ? ((profileMetaRow.response as { photos?: unknown }).photos as unknown[])
+            : [];
+        const firstPhoto = maybePhotos.find(photo => typeof photo === 'string');
+        const photoUrl = typeof firstPhoto === 'string' && firstPhoto.trim().length > 0 ? firstPhoto : DEFAULT_SIDEBAR_PHOTO;
 
         if (active) {
-          setIdentity({ name, auraScore });
+          setIdentity({ name, auraScore, photoUrl });
         }
       } catch {
         // Keep a stable fallback identity if profile lookup fails.
@@ -77,7 +95,7 @@ function Sidebar() {
 
       <div style={{ background: 'rgba(139,92,246,0.1)', border: '1px solid rgba(139,92,246,0.2)', borderRadius: 14, padding: '12px 14px', marginBottom: 24, display: 'flex', alignItems: 'center', gap: 10 }}>
         <div style={{ width: 38, height: 38, borderRadius: '50%', overflow: 'hidden', flexShrink: 0 }}>
-          <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&q=80" style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
+          <img src={identity.photoUrl} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ fontSize: 13, fontWeight: 600, color: '#f0f0ff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{identity.name}</div>

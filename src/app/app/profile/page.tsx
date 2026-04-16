@@ -1,30 +1,60 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Camera, Edit3, MapPin, Briefcase, GraduationCap, Sparkles, Brain, CheckCircle, Plus } from 'lucide-react';
+import {
+  Camera,
+  Edit3,
+  MapPin,
+  Briefcase,
+  GraduationCap,
+  Sparkles,
+  Brain,
+  CheckCircle,
+  Plus,
+} from 'lucide-react';
 import { getSupabaseBrowserClient } from '../../../../utils/supabase/client';
 import { getCompatibilityColor } from '@/lib/utils';
 
+type ProfileMeta = {
+  education?: string;
+  height?: string;
+  drinking?: string;
+  smoking?: string;
+  kids?: string;
+  photos?: string[];
+  attachmentStyle?: string;
+  loveLanguage?: string;
+  personalityTraits?: string[];
+};
+
 type ProfileViewUser = {
+  userId: string;
   name: string;
   age: number;
   occupation: string;
   location: string;
-  education: string;
   auraScore: number;
   bio: string;
   photos: string[];
   interests: string[];
   values: string[];
-  height: string;
   relationshipGoal: string;
-  attachmentStyle: string;
+  personalityTraits: string[];
   loveLanguage: string;
+  meta: ProfileMeta;
+};
+
+type EditFormState = {
+  fullName: string;
+  bio: string;
+  location: string;
+  occupation: string;
+  education: string;
+  height: string;
   drinking: string;
   smoking: string;
   kids: string;
-  personalityTraits: string[];
 };
 
 const DEFAULT_PROFILE_PHOTO = 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&q=80';
@@ -35,9 +65,26 @@ function toStringArray(value: unknown): string[] {
 
 export default function ProfilePage() {
   const router = useRouter();
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
   const [activeTab, setActiveTab] = useState<'profile' | 'aura' | 'stats'>('profile');
   const [user, setUser] = useState<ProfileViewUser | null>(null);
   const [loadError, setLoadError] = useState('');
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
+  const [feedback, setFeedback] = useState('');
+  const [editForm, setEditForm] = useState<EditFormState>({
+    fullName: '',
+    bio: '',
+    location: '',
+    occupation: '',
+    education: '',
+    height: '',
+    drinking: '',
+    smoking: '',
+    kids: '',
+  });
 
   useEffect(() => {
     let active = true;
@@ -74,6 +121,7 @@ export default function ProfilePage() {
         const lifestyleResponse = responsesByCategory.get('lifestyle') ?? {};
         const intentResponse = responsesByCategory.get('relationship_intent') ?? {};
         const communicationResponse = responsesByCategory.get('communication_style') ?? {};
+        const profileMeta = responsesByCategory.get('profile_meta') ?? {};
 
         const name =
           profile?.full_name ||
@@ -83,59 +131,85 @@ export default function ProfilePage() {
 
         const ageRaw = profile?.age ?? (typeof demographics.age === 'number' ? demographics.age : null);
         const age = typeof ageRaw === 'number' && Number.isFinite(ageRaw) ? ageRaw : 0;
+
         const interests = toStringArray(profile?.interests).length
           ? toStringArray(profile?.interests)
           : toStringArray(demographics.interests);
+
         const values = toStringArray(profile?.core_values).length
           ? toStringArray(profile?.core_values)
           : toStringArray(valuesResponse.values).length
             ? toStringArray(valuesResponse.values)
             : toStringArray(preferences?.values);
+
         const lifestyle = toStringArray(profile?.lifestyle_tags).length
           ? toStringArray(profile?.lifestyle_tags)
           : toStringArray(lifestyleResponse.lifestyle).length
             ? toStringArray(lifestyleResponse.lifestyle)
             : toStringArray(preferences?.lifestyle);
+
         const relationshipGoal =
           preferences?.relationship_intent ||
           (typeof intentResponse.relationshipIntent === 'string' ? intentResponse.relationshipIntent : '') ||
-          'Not set yet';
+          '';
+
         const communicationStyle =
           preferences?.communication_style ||
-          (typeof communicationResponse.communicationStyle === 'string' ? communicationResponse.communicationStyle : '');
+          (typeof communicationResponse.communicationStyle === 'string' ? communicationResponse.communicationStyle : '') ||
+          '';
+
+        const meta: ProfileMeta = {
+          education: typeof profileMeta.education === 'string' ? profileMeta.education : '',
+          height: typeof profileMeta.height === 'string' ? profileMeta.height : '',
+          drinking: typeof profileMeta.drinking === 'string' ? profileMeta.drinking : '',
+          smoking: typeof profileMeta.smoking === 'string' ? profileMeta.smoking : '',
+          kids: typeof profileMeta.kids === 'string' ? profileMeta.kids : '',
+          photos: toStringArray(profileMeta.photos),
+          attachmentStyle: typeof profileMeta.attachmentStyle === 'string' ? profileMeta.attachmentStyle : '',
+          loveLanguage: typeof profileMeta.loveLanguage === 'string' ? profileMeta.loveLanguage : communicationStyle,
+          personalityTraits: toStringArray(profileMeta.personalityTraits),
+        };
 
         const completionSignals = [
           Boolean(profile?.bio || demographics.bio),
           interests.length >= 3,
           values.length >= 3,
           lifestyle.length >= 2,
-          relationshipGoal !== 'Not set yet',
+          Boolean(relationshipGoal),
+          Boolean(meta.photos?.length),
         ].filter(Boolean).length;
-        const auraScore = Math.min(99, 65 + completionSignals * 6);
+        const auraScore = Math.min(99, 62 + completionSignals * 6);
 
         const nextUser: ProfileViewUser = {
+          userId: authUser.id,
           name,
           age,
-          occupation: profile?.occupation || (typeof demographics.occupation === 'string' ? demographics.occupation : '') || 'Not set yet',
-          location: profile?.location || (typeof demographics.location === 'string' ? demographics.location : '') || 'Not set yet',
-          education: 'Not set yet',
+          occupation: profile?.occupation || (typeof demographics.occupation === 'string' ? demographics.occupation : '') || '',
+          location: profile?.location || (typeof demographics.location === 'string' ? demographics.location : '') || '',
           auraScore,
-          bio: profile?.bio || (typeof demographics.bio === 'string' ? demographics.bio : '') || 'Add your bio in onboarding.',
-          photos: [DEFAULT_PROFILE_PHOTO],
+          bio: profile?.bio || (typeof demographics.bio === 'string' ? demographics.bio : '') || '',
+          photos: (meta.photos?.length ? meta.photos : [DEFAULT_PROFILE_PHOTO]),
           interests,
           values,
-          height: 'Not set yet',
           relationshipGoal,
-          attachmentStyle: 'Not set yet',
-          loveLanguage: communicationStyle || 'Not set yet',
-          drinking: 'Not set yet',
-          smoking: 'Not set yet',
-          kids: 'Not set yet',
-          personalityTraits: lifestyle.length ? lifestyle : ['Intentional', 'Authentic'],
+          personalityTraits: meta.personalityTraits?.length ? meta.personalityTraits : lifestyle,
+          loveLanguage: meta.loveLanguage || communicationStyle,
+          meta,
         };
 
         if (active) {
           setUser(nextUser);
+          setEditForm({
+            fullName: nextUser.name,
+            bio: nextUser.bio,
+            location: nextUser.location,
+            occupation: nextUser.occupation,
+            education: nextUser.meta.education ?? '',
+            height: nextUser.meta.height ?? '',
+            drinking: nextUser.meta.drinking ?? '',
+            smoking: nextUser.meta.smoking ?? '',
+            kids: nextUser.meta.kids ?? '',
+          });
         }
       } catch (error) {
         if (active) {
@@ -151,6 +225,180 @@ export default function ProfilePage() {
     };
   }, [router]);
 
+  const profileStrengthItems = useMemo(() => {
+    if (!user) return [];
+    return [
+      { label: 'Photo added', done: user.photos.length > 0 && user.photos[0] !== DEFAULT_PROFILE_PHOTO },
+      { label: 'Bio written', done: user.bio.trim().length >= 40 },
+      { label: 'Interests added', done: user.interests.length >= 3 },
+      { label: 'Values set', done: user.values.length >= 3 },
+      { label: 'Relationship goal set', done: Boolean(user.relationshipGoal) },
+      { label: 'Location set', done: Boolean(user.location) },
+      { label: 'Occupation set', done: Boolean(user.occupation) },
+    ];
+  }, [user]);
+
+  const openEditModal = () => {
+    if (!user) return;
+    setFeedback('');
+    setEditForm({
+      fullName: user.name,
+      bio: user.bio,
+      location: user.location,
+      occupation: user.occupation,
+      education: user.meta.education ?? '',
+      height: user.meta.height ?? '',
+      drinking: user.meta.drinking ?? '',
+      smoking: user.meta.smoking ?? '',
+      kids: user.meta.kids ?? '',
+    });
+    setIsEditOpen(true);
+  };
+
+  const setEditField = <K extends keyof EditFormState>(key: K, value: EditFormState[K]) => {
+    setEditForm(prev => ({ ...prev, [key]: value }));
+  };
+
+  const saveProfile = async () => {
+    if (!user) return;
+    setIsSaving(true);
+    setFeedback('');
+
+    try {
+      const supabase = getSupabaseBrowserClient();
+
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .upsert(
+          {
+            id: user.userId,
+            full_name: editForm.fullName.trim(),
+            bio: editForm.bio.trim(),
+            location: editForm.location.trim(),
+            occupation: editForm.occupation.trim(),
+          },
+          { onConflict: 'id' }
+        );
+
+      if (profileError) {
+        throw new Error(profileError.message);
+      }
+
+      const nextMeta: ProfileMeta = {
+        ...user.meta,
+        education: editForm.education.trim(),
+        height: editForm.height.trim(),
+        drinking: editForm.drinking.trim(),
+        smoking: editForm.smoking.trim(),
+        kids: editForm.kids.trim(),
+        photos: user.photos,
+      };
+
+      const { error: metaError } = await supabase
+        .from('onboarding_responses')
+        .upsert(
+          [{ user_id: user.userId, category: 'profile_meta', response: nextMeta }],
+          { onConflict: 'user_id,category' }
+        );
+
+      if (metaError) {
+        throw new Error(metaError.message);
+      }
+
+      setUser(prev => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          name: editForm.fullName.trim() || prev.name,
+          bio: editForm.bio.trim(),
+          location: editForm.location.trim(),
+          occupation: editForm.occupation.trim(),
+          meta: nextMeta,
+        };
+      });
+
+      setIsEditOpen(false);
+      setFeedback('Profile updated.');
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Could not save profile.';
+      setFeedback(message);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const saveMetaOnly = async (nextMeta: ProfileMeta, nextPhotos: string[]) => {
+    if (!user) return;
+    const supabase = getSupabaseBrowserClient();
+    const { error: metaError } = await supabase
+      .from('onboarding_responses')
+      .upsert(
+        [{ user_id: user.userId, category: 'profile_meta', response: nextMeta }],
+        { onConflict: 'user_id,category' }
+      );
+
+    if (metaError) {
+      throw new Error(metaError.message);
+    }
+
+    setUser(prev => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        photos: nextPhotos,
+        meta: nextMeta,
+      };
+    });
+  };
+
+  const uploadPhoto = async (file: File) => {
+    if (!user) return;
+    setIsUploadingPhoto(true);
+    setFeedback('');
+
+    try {
+      const supabase = getSupabaseBrowserClient();
+      const ext = file.name.includes('.') ? file.name.split('.').pop() : 'jpg';
+      const safeExt = (ext || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '');
+      const filePath = `${user.userId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${safeExt || 'jpg'}`;
+
+      const { error: uploadError } = await supabase.storage.from('profile-photos').upload(filePath, file, {
+        cacheControl: '3600',
+        upsert: false,
+      });
+
+      if (uploadError) {
+        if (uploadError.message.toLowerCase().includes('bucket')) {
+          throw new Error('Photo upload is not ready yet. Create a Supabase Storage bucket named "profile-photos" first.');
+        }
+        throw new Error(uploadError.message);
+      }
+
+      const { data: publicData } = supabase.storage.from('profile-photos').getPublicUrl(filePath);
+      const publicUrl = publicData.publicUrl;
+      const nextPhotos = [publicUrl, ...user.photos.filter(photo => photo !== DEFAULT_PROFILE_PHOTO)].slice(0, 6);
+      const nextMeta: ProfileMeta = {
+        ...user.meta,
+        photos: nextPhotos,
+      };
+
+      await saveMetaOnly(nextMeta, nextPhotos);
+      setFeedback('Photo uploaded.');
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Photo upload failed.';
+      setFeedback(message);
+    } finally {
+      setIsUploadingPhoto(false);
+    }
+  };
+
+  const onPhotoFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.currentTarget.value = '';
+    if (!file) return;
+    await uploadPhoto(file);
+  };
+
   if (!user) {
     return (
       <div className="profile-page" style={{ padding: '32px', maxWidth: 800, width: '100%', margin: '0 auto' }}>
@@ -163,21 +411,37 @@ export default function ProfilePage() {
   }
 
   const AURA_DIMENSIONS = [
-    { label: 'Emotional Intelligence', score: 88, desc: 'High empathy, strong emotional awareness' },
-    { label: 'Communication Style', score: 84, desc: 'Thoughtful, articulate, and warm' },
-    { label: 'Adventurousness', score: 79, desc: 'Open to new experiences, moderately spontaneous' },
-    { label: 'Ambition', score: 92, desc: 'Goal-oriented with healthy work-life balance' },
-    { label: 'Humor', score: 86, desc: 'Playful wit, not at others\' expense' },
-    { label: 'Depth', score: 91, desc: 'Prefers meaningful conversation over small talk' },
+    { label: 'Emotional Intelligence', score: Math.min(98, user.auraScore + 1), desc: 'Shows empathy and thoughtful responses' },
+    { label: 'Communication Style', score: Math.min(97, user.auraScore - 2), desc: 'Clear intent and message consistency' },
+    { label: 'Lifestyle Fit', score: Math.min(95, user.auraScore - 4), desc: 'Aligned pace and routine preferences' },
+    { label: 'Values Alignment', score: Math.min(98, user.auraScore + 2), desc: 'Strong overlap in priorities and values' },
+    { label: 'Depth', score: Math.min(96, user.auraScore), desc: 'Signals meaningful connection potential' },
   ];
+
+  const detailItems = [
+    { label: 'Height', value: user.meta.height ?? '' },
+    { label: 'Relationship Goal', value: user.relationshipGoal },
+    { label: 'Attachment Style', value: user.meta.attachmentStyle ?? '' },
+    { label: 'Love Language', value: user.loveLanguage },
+    { label: 'Drinks', value: user.meta.drinking ?? '' },
+    { label: 'Smokes', value: user.meta.smoking ?? '' },
+    { label: 'Kids', value: user.meta.kids ?? '' },
+  ].filter(item => item.value.trim().length > 0);
 
   return (
     <div className="profile-page" style={{ padding: '32px', maxWidth: 800, width: '100%', margin: '0 auto' }}>
-      {/* Header */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/png,image/jpeg,image/webp"
+        style={{ display: 'none' }}
+        onChange={onPhotoFileChange}
+      />
+
       <div className="profile-header-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
         <h1 style={{ fontSize: 26, fontWeight: 800, letterSpacing: '-0.03em' }}>Your Profile</h1>
         <button
-          onClick={() => router.push('/app/settings')}
+          onClick={openEditModal}
           className="btn-ghost profile-edit-btn"
           style={{ padding: '9px 18px', fontSize: 13, display: 'flex', alignItems: 'center', gap: 6 }}
         >
@@ -186,20 +450,28 @@ export default function ProfilePage() {
         </button>
       </div>
 
-      {/* Profile hero */}
+      {feedback && (
+        <div style={{ marginBottom: 16, borderRadius: 12, border: '1px solid rgba(139,92,246,0.3)', background: 'rgba(139,92,246,0.12)', color: '#ddd6fe', padding: '10px 12px', fontSize: 13 }}>
+          {feedback}
+        </div>
+      )}
+
       <div className="glass" style={{ borderRadius: 24, overflow: 'hidden', marginBottom: 20 }}>
-        {/* Banner */}
         <div style={{ height: 140, background: 'linear-gradient(135deg, rgba(124,58,237,0.4) 0%, rgba(219,39,119,0.3) 50%, rgba(251,191,36,0.2) 100%)', position: 'relative' }}>
           <div style={{ position: 'absolute', inset: 0, opacity: 0.1, backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(255,255,255,0.6) 0%, transparent 40%), radial-gradient(circle at 80% 50%, rgba(255,255,255,0.3) 0%, transparent 40%)' }} />
         </div>
 
         <div style={{ padding: '0 28px 28px' }}>
-          {/* Avatar */}
           <div style={{ position: 'relative', display: 'inline-block', marginTop: -48 }}>
             <div style={{ width: 96, height: 96, borderRadius: '50%', overflow: 'hidden', border: '4px solid #0f0f1a', boxShadow: '0 0 0 2px rgba(139,92,246,0.3)' }}>
               <img src={user.photos[0] ?? DEFAULT_PROFILE_PHOTO} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             </div>
-            <button style={{ position: 'absolute', bottom: 4, right: 4, width: 28, height: 28, borderRadius: '50%', background: 'linear-gradient(135deg, #7c3aed, #db2777)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <button
+              type="button"
+              onClick={() => !isUploadingPhoto && fileInputRef.current?.click()}
+              disabled={isUploadingPhoto}
+              style={{ position: 'absolute', bottom: 4, right: 4, width: 28, height: 28, borderRadius: '50%', background: 'linear-gradient(135deg, #7c3aed, #db2777)', border: 'none', cursor: isUploadingPhoto ? 'wait' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            >
               <Camera size={12} color="white" />
             </button>
           </div>
@@ -207,7 +479,9 @@ export default function ProfilePage() {
           <div className="profile-hero-meta" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginTop: 12, flexWrap: 'wrap', gap: 12 }}>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                <h2 style={{ fontSize: 22, fontWeight: 800, letterSpacing: '-0.02em' }}>{user.name}, {user.age}</h2>
+                <h2 style={{ fontSize: 22, fontWeight: 800, letterSpacing: '-0.02em' }}>
+                  {user.name}{user.age > 0 ? `, ${user.age}` : ''}
+                </h2>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 4, background: 'rgba(52,211,153,0.12)', border: '1px solid rgba(52,211,153,0.25)', borderRadius: 999, padding: '2px 8px' }}>
                   <CheckCircle size={11} color="#34d399" />
                   <span style={{ fontSize: 11, fontWeight: 600, color: '#34d399' }}>Verified</span>
@@ -215,30 +489,39 @@ export default function ProfilePage() {
               </div>
               <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
                 {user.occupation && (
-                  <span style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 13, color: 'rgba(240,240,255,0.5)' }}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 13, color: 'rgba(240,240,255,0.6)' }}>
                     <Briefcase size={13} /> {user.occupation}
                   </span>
                 )}
-                <span style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 13, color: 'rgba(240,240,255,0.5)' }}>
-                  <MapPin size={13} /> {user.location}
-                </span>
-                <span style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 13, color: 'rgba(240,240,255,0.5)' }}>
-                  <GraduationCap size={13} /> {user.education}
-                </span>
+                {user.location && (
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 13, color: 'rgba(240,240,255,0.6)' }}>
+                    <MapPin size={13} /> {user.location}
+                  </span>
+                )}
+                {user.meta.education && (
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 13, color: 'rgba(240,240,255,0.6)' }}>
+                    <GraduationCap size={13} /> {user.meta.education}
+                  </span>
+                )}
               </div>
             </div>
 
-            {/* Aura score */}
             <div style={{ textAlign: 'center' }}>
               <div style={{ position: 'relative', width: 68, height: 68 }}>
                 <svg width="68" height="68" viewBox="0 0 68 68" style={{ transform: 'rotate(-90deg)' }}>
                   <circle cx="34" cy="34" r="28" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="6" />
-                  <circle cx="34" cy="34" r="28" fill="none" stroke="#8b5cf6" strokeWidth="6"
-                    strokeDasharray={`${2 * Math.PI * 28 * user.auraScore / 100} ${2 * Math.PI * 28}`}
+                  <circle
+                    cx="34"
+                    cy="34"
+                    r="28"
+                    fill="none"
+                    stroke="#8b5cf6"
+                    strokeWidth="6"
+                    strokeDasharray={`${(2 * Math.PI * 28 * user.auraScore) / 100} ${2 * Math.PI * 28}`}
                     strokeLinecap="round"
                   />
                 </svg>
-                <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 0 }}>
+                <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                   <span style={{ fontSize: 18, fontWeight: 800, color: '#a78bfa' }}>{user.auraScore}</span>
                 </div>
               </div>
@@ -251,9 +534,12 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      {/* Tabs */}
       <div className="profile-tabs" style={{ display: 'flex', gap: 0, marginBottom: 20, background: 'rgba(255,255,255,0.04)', borderRadius: 14, padding: 4 }}>
-        {([['profile', 'Profile'], ['aura', '✨ Aura Analysis'], ['stats', '📊 Stats']] as [string, string][]).map(([tab, label]) => (
+        {([
+          ['profile', 'Profile'],
+          ['aura', '✨ Aura Analysis'],
+          ['stats', '📊 Stats'],
+        ] as [string, string][]).map(([tab, label]) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab as typeof activeTab)}
@@ -264,16 +550,17 @@ export default function ProfilePage() {
         ))}
       </div>
 
-      {/* Tab content */}
       {activeTab === 'profile' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          {/* Bio */}
           <div className="glass" style={{ borderRadius: 20, padding: '20px 24px' }}>
             <div style={{ fontSize: 13, fontWeight: 600, color: 'rgba(240,240,255,0.4)', marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.06em' }}>About</div>
-            <p style={{ fontSize: 14, color: 'rgba(240,240,255,0.7)', lineHeight: 1.75 }}>{user.bio}</p>
+            {user.bio ? (
+              <p style={{ fontSize: 14, color: 'rgba(240,240,255,0.7)', lineHeight: 1.75 }}>{user.bio}</p>
+            ) : (
+              <p style={{ fontSize: 14, color: 'rgba(240,240,255,0.45)', lineHeight: 1.75 }}>Add a short bio so your matches understand your vibe quickly.</p>
+            )}
           </div>
 
-          {/* Photos */}
           <div className="glass" style={{ borderRadius: 20, padding: '20px 24px' }}>
             <div style={{ fontSize: 13, fontWeight: 600, color: 'rgba(240,240,255,0.4)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Photos</div>
             <div className="profile-photos-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
@@ -282,52 +569,58 @@ export default function ProfilePage() {
                   <img src={src} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </div>
               ))}
-              {/* Add photo */}
-              <div style={{ aspectRatio: '1', borderRadius: 12, border: '2px dashed rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s' }}>
+              <button
+                type="button"
+                onClick={() => !isUploadingPhoto && fileInputRef.current?.click()}
+                style={{ aspectRatio: '1', borderRadius: 12, border: '2px dashed rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: isUploadingPhoto ? 'wait' : 'pointer', transition: 'all 0.2s', background: 'transparent' }}
+              >
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
-                  <Plus size={20} color="rgba(255,255,255,0.3)" />
-                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>Add</span>
+                  <Plus size={20} color="rgba(255,255,255,0.35)" />
+                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>{isUploadingPhoto ? 'Uploading...' : 'Add'}</span>
                 </div>
-              </div>
+              </button>
             </div>
           </div>
 
-          {/* Interests */}
           <div className="glass" style={{ borderRadius: 20, padding: '20px 24px' }}>
             <div style={{ fontSize: 13, fontWeight: 600, color: 'rgba(240,240,255,0.4)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Interests</div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-              {user.interests.map(i => <span key={i} className="tag tag-violet" style={{ fontSize: 13 }}>{i}</span>)}
-            </div>
+            {user.interests.length > 0 ? (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                {user.interests.map(interest => (
+                  <span key={interest} className="tag tag-violet" style={{ fontSize: 13 }}>{interest}</span>
+                ))}
+              </div>
+            ) : (
+              <p style={{ fontSize: 13, color: 'rgba(240,240,255,0.45)' }}>No interests saved yet.</p>
+            )}
           </div>
 
-          {/* Values */}
           <div className="glass" style={{ borderRadius: 20, padding: '20px 24px' }}>
             <div style={{ fontSize: 13, fontWeight: 600, color: 'rgba(240,240,255,0.4)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Core values</div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-              {user.values.map(v => <span key={v} className="tag tag-rose" style={{ fontSize: 13 }}>{v}</span>)}
-            </div>
+            {user.values.length > 0 ? (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                {user.values.map(value => (
+                  <span key={value} className="tag tag-rose" style={{ fontSize: 13 }}>{value}</span>
+                ))}
+              </div>
+            ) : (
+              <p style={{ fontSize: 13, color: 'rgba(240,240,255,0.45)' }}>No values saved yet.</p>
+            )}
           </div>
 
-          {/* Details */}
-          <div className="glass" style={{ borderRadius: 20, padding: '20px 24px' }}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: 'rgba(240,240,255,0.4)', marginBottom: 14, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Life details</div>
-            <div className="profile-details-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-              {[
-                { label: 'Height', value: user.height },
-                { label: 'Relationship Goal', value: user.relationshipGoal },
-                { label: 'Attachment Style', value: user.attachmentStyle },
-                { label: 'Love Language', value: user.loveLanguage },
-                { label: 'Drinks', value: user.drinking },
-                { label: 'Smokes', value: user.smoking },
-                { label: 'Kids', value: user.kids },
-              ].filter(d => d.value).map(d => (
-                <div key={d.label}>
-                  <div style={{ fontSize: 11, color: 'rgba(240,240,255,0.3)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{d.label}</div>
-                  <div style={{ fontSize: 14, fontWeight: 500, textTransform: 'capitalize', color: 'rgba(240,240,255,0.75)' }}>{d.value}</div>
-                </div>
-              ))}
+          {detailItems.length > 0 && (
+            <div className="glass" style={{ borderRadius: 20, padding: '20px 24px' }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: 'rgba(240,240,255,0.4)', marginBottom: 14, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Life details</div>
+              <div className="profile-details-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+                {detailItems.map(item => (
+                  <div key={item.label}>
+                    <div style={{ fontSize: 11, color: 'rgba(240,240,255,0.3)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{item.label}</div>
+                    <div style={{ fontSize: 14, fontWeight: 500, textTransform: 'capitalize', color: 'rgba(240,240,255,0.75)' }}>{item.value}</div>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       )}
 
@@ -339,7 +632,7 @@ export default function ProfilePage() {
               <span style={{ fontSize: 15, fontWeight: 700, color: '#a78bfa' }}>Your Aura Profile</span>
             </div>
             <p style={{ fontSize: 14, color: 'rgba(240,240,255,0.55)', lineHeight: 1.7, marginBottom: 20 }}>
-              Your Aura Score is computed from your personality responses, communication patterns, and stated values. It powers how we find your most compatible matches.
+              Aura reflects how complete and aligned your profile is across intent, values, and communication preferences.
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               {AURA_DIMENSIONS.map(dim => {
@@ -362,47 +655,25 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          <div className="glass" style={{ borderRadius: 20, padding: '20px 24px' }}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: 'rgba(240,240,255,0.4)', marginBottom: 12 }}>Personality snapshot</div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-              {user.personalityTraits.map(t => (
-                <span key={t} className="tag" style={{ fontSize: 13, background: 'rgba(255,255,255,0.06)' }}>{t}</span>
-              ))}
+          {user.personalityTraits.length > 0 && (
+            <div className="glass" style={{ borderRadius: 20, padding: '20px 24px' }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: 'rgba(240,240,255,0.4)', marginBottom: 12 }}>Personality snapshot</div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                {user.personalityTraits.map(trait => (
+                  <span key={trait} className="tag" style={{ fontSize: 13, background: 'rgba(255,255,255,0.06)' }}>{trait}</span>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       )}
 
       {activeTab === 'stats' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <div className="profile-stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 14 }}>
-            {[
-              { label: 'Profile Views', value: '243', icon: '👁️', change: '+12% this week' },
-              { label: 'Matches', value: '12', icon: '💫', change: '+3 this week' },
-              { label: 'Liked You', value: '38', icon: '❤️', change: 'Upgrade to see who' },
-              { label: 'Conversations', value: '6', icon: '💬', change: '3 active' },
-            ].map(s => (
-              <div key={s.label} className="glass card-lift" style={{ borderRadius: 18, padding: '18px 20px' }}>
-                <div style={{ fontSize: 28, marginBottom: 8 }}>{s.icon}</div>
-                <div style={{ fontSize: 30, fontWeight: 800, letterSpacing: '-0.03em', marginBottom: 4 }} className="gradient-text-violet">{s.value}</div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: 'rgba(240,240,255,0.6)', marginBottom: 4 }}>{s.label}</div>
-                <div style={{ fontSize: 11, color: 'rgba(240,240,255,0.3)' }}>{s.change}</div>
-              </div>
-            ))}
-          </div>
-
           <div className="glass" style={{ borderRadius: 20, padding: '20px 24px' }}>
             <div style={{ fontSize: 13, fontWeight: 600, color: 'rgba(240,240,255,0.4)', marginBottom: 14 }}>Profile strength</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {[
-                { label: 'Photos', done: true },
-                { label: 'Bio written', done: true },
-                { label: 'Interests added', done: true },
-                { label: 'Values set', done: true },
-                { label: 'Personality quiz', done: true },
-                { label: 'Phone verified', done: false },
-                { label: 'Instagram linked', done: false },
-              ].map(item => (
+              {profileStrengthItems.map(item => (
                 <div key={item.label} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                   <div style={{ width: 20, height: 20, borderRadius: '50%', background: item.done ? 'rgba(52,211,153,0.15)' : 'rgba(255,255,255,0.06)', border: `1px solid ${item.done ? 'rgba(52,211,153,0.3)' : 'rgba(255,255,255,0.1)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                     {item.done && <CheckCircle size={12} color="#34d399" />}
@@ -414,13 +685,53 @@ export default function ProfilePage() {
           </div>
         </div>
       )}
+
+      {isEditOpen && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 1200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
+          <button
+            type="button"
+            onClick={() => setIsEditOpen(false)}
+            style={{ position: 'absolute', inset: 0, border: 'none', background: 'rgba(7,7,15,0.82)' }}
+            aria-label="Close"
+          />
+          <div className="glass" style={{ position: 'relative', width: '100%', maxWidth: 620, borderRadius: 18, padding: 20 }}>
+            <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 14 }}>Edit Profile</h3>
+            <div style={{ display: 'grid', gap: 10 }}>
+              <input className="input-field" placeholder="Full name" value={editForm.fullName} onChange={e => setEditField('fullName', e.target.value)} />
+              <textarea className="input-field" rows={3} placeholder="Bio" value={editForm.bio} onChange={e => setEditField('bio', e.target.value)} style={{ resize: 'vertical' }} />
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                <input className="input-field" placeholder="Location" value={editForm.location} onChange={e => setEditField('location', e.target.value)} />
+                <input className="input-field" placeholder="Occupation" value={editForm.occupation} onChange={e => setEditField('occupation', e.target.value)} />
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                <input className="input-field" placeholder="Education" value={editForm.education} onChange={e => setEditField('education', e.target.value)} />
+                <input className="input-field" placeholder="Height" value={editForm.height} onChange={e => setEditField('height', e.target.value)} />
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
+                <input className="input-field" placeholder="Drinking" value={editForm.drinking} onChange={e => setEditField('drinking', e.target.value)} />
+                <input className="input-field" placeholder="Smoking" value={editForm.smoking} onChange={e => setEditField('smoking', e.target.value)} />
+                <input className="input-field" placeholder="Kids" value={editForm.kids} onChange={e => setEditField('kids', e.target.value)} />
+              </div>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 16 }}>
+              <button type="button" className="btn-ghost" onClick={() => setIsEditOpen(false)} disabled={isSaving}>
+                Cancel
+              </button>
+              <button type="button" className="btn-primary" onClick={saveProfile} disabled={isSaving}>
+                {isSaving ? 'Saving...' : 'Save changes'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <style>{`
         @media (max-width: 767px) {
           .profile-page { padding: 24px 16px 32px !important; }
           .profile-header-row { flex-wrap: wrap; gap: 12px; }
           .profile-edit-btn { width: 100%; justify-content: center; }
           .profile-photos-grid { grid-template-columns: repeat(2, 1fr) !important; }
-          .profile-stats-grid { grid-template-columns: 1fr !important; }
+          .profile-details-grid { grid-template-columns: 1fr !important; }
           .aura-desc { display: block !important; margin-left: 0 !important; margin-top: 2px; }
         }
       `}</style>
