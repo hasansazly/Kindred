@@ -24,6 +24,15 @@ function toStringArray(value: unknown): string[] {
   return Array.isArray(value) ? value.filter(item => typeof item === 'string') : [];
 }
 
+function firstNonEmptyString(values: unknown[]): string {
+  for (const value of values) {
+    if (typeof value !== 'string') continue;
+    const trimmed = value.trim();
+    if (trimmed) return trimmed;
+  }
+  return '';
+}
+
 function parseFirstName(fullName: string) {
   const trimmed = fullName.trim();
   if (!trimmed) return 'Member';
@@ -109,17 +118,28 @@ export async function getMatchesForUser(
     const profile = profilesById.get(row.matched_user_id);
     const demographics = snapshot?.demographics ?? {};
     const profileMeta = snapshot?.profileMeta ?? {};
-    const emailPrefix =
-      typeof profile?.email === 'string' && profile.email.includes('@')
-        ? profile.email.split('@')[0]?.trim()
-        : '';
+    const profileEmail =
+      typeof profile?.email === 'string'
+        ? profile.email
+        : typeof profile?.user_email === 'string'
+          ? profile.user_email
+          : '';
+    const emailPrefix = profileEmail.includes('@') ? profileEmail.split('@')[0]?.trim() ?? '' : '';
 
     const fullName =
-      (typeof demographics.fullName === 'string' ? demographics.fullName : '') ||
-      (typeof profile?.full_name === 'string' ? profile.full_name : '') ||
-      (typeof profile?.first_name === 'string' ? profile.first_name : '') ||
-      emailPrefix ||
-      'Member';
+      firstNonEmptyString([
+        (demographics as { fullName?: unknown }).fullName,
+        (demographics as { full_name?: unknown }).full_name,
+        (demographics as { firstName?: unknown }).firstName,
+        (demographics as { first_name?: unknown }).first_name,
+        (demographics as { name?: unknown }).name,
+        (profileMeta as { fullName?: unknown }).fullName,
+        (profileMeta as { full_name?: unknown }).full_name,
+        profile?.full_name,
+        profile?.first_name,
+        profile?.name,
+        emailPrefix,
+      ]) || 'Member';
     const age =
       typeof demographics.age === 'number'
         ? demographics.age
