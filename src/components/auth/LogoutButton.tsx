@@ -2,7 +2,7 @@
 
 import type { CSSProperties, ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
-import { supabase } from '../../../utils/supabase/client';
+import { getSupabaseBrowserClient } from '../../../utils/supabase/client';
 
 export default function LogoutButton({
   className,
@@ -16,6 +16,7 @@ export default function LogoutButton({
   const router = useRouter();
 
   const handleLogout = async () => {
+    const supabase = getSupabaseBrowserClient();
     await supabase.auth.signOut();
     router.push('/auth/login');
     router.refresh();

@@ -1,7 +1,7 @@
 'use client';
 
 import { FormEvent, useState } from 'react';
-import { supabase } from '../../../utils/supabase/client';
+import { getSupabaseBrowserClient } from '../../../utils/supabase/client';
 
 export default function SignupPage() {
   const [email, setEmail] = useState('');
@@ -16,13 +16,23 @@ export default function SignupPage() {
     setSuccess(null);
     setLoading(true);
 
-    const { error: signUpError } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
-      },
-    });
+    let signUpError: { message: string } | null = null;
+    try {
+      const supabase = getSupabaseBrowserClient();
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
+      signUpError = error;
+    } catch (clientError) {
+      const message = clientError instanceof Error ? clientError.message : 'Supabase client setup failed.';
+      setError(message);
+      setLoading(false);
+      return;
+    }
 
     if (signUpError) {
       setError(signUpError.message);

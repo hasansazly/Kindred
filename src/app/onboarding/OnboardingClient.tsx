@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, ArrowRight, CheckCircle, Heart } from 'lucide-react';
-import { supabase } from '../../../utils/supabase/client';
+import { getSupabaseBrowserClient } from '../../../utils/supabase/client';
 
 type OnboardingClientProps = {
   userEmail: string;
@@ -253,10 +253,20 @@ export default function OnboardingClient({ userEmail, initialProfile }: Onboardi
     setLoading(true);
     setError('');
 
-    const {
-      data: { user },
-      error: userError,
-    } = await supabase.auth.getUser();
+    let user: { id: string; email?: string | null } | null = null;
+    let userError: { message: string } | null = null;
+    let supabase: ReturnType<typeof getSupabaseBrowserClient>;
+    try {
+      supabase = getSupabaseBrowserClient();
+      const result = await supabase.auth.getUser();
+      user = result.data.user;
+      userError = result.error;
+    } catch (clientError) {
+      const message = clientError instanceof Error ? clientError.message : 'Supabase client setup failed.';
+      setLoading(false);
+      setError(message);
+      return;
+    }
 
     if (userError || !user) {
       setLoading(false);
