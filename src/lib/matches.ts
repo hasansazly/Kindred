@@ -106,12 +106,17 @@ export async function getMatchesForUser(
     const profile = profilesById.get(row.matched_user_id);
     const demographics = snapshot?.demographics ?? {};
     const profileMeta = snapshot?.profileMeta ?? {};
+    const emailPrefix =
+      typeof profile?.email === 'string' && profile.email.includes('@')
+        ? profile.email.split('@')[0]?.trim()
+        : '';
 
     const fullName =
       (typeof demographics.fullName === 'string' ? demographics.fullName : '') ||
       (typeof profile?.full_name === 'string' ? profile.full_name : '') ||
       (typeof profile?.first_name === 'string' ? profile.first_name : '') ||
-      'Vinculo Match';
+      emailPrefix ||
+      'Member';
     const age =
       typeof demographics.age === 'number'
         ? demographics.age
