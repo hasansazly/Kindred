@@ -38,20 +38,25 @@ export default function LoginPage() {
     }
 
     setLoading(true);
-    const response = await fetch('/api/auth/send-code', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email,
-        shouldCreateUser: false,
-      }),
-    });
-    setLoading(false);
-
-    const result = await response.json();
-    if (!response.ok) {
-      setError(result?.error || 'Unable to send verification code.');
+    try {
+      const response = await fetch('/api/otp/send-code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email,
+          shouldCreateUser: false,
+        }),
+      });
+      const result = await response.json();
+      if (!response.ok) {
+        setError(result?.error || 'Unable to send verification code.');
+        return;
+      }
+    } catch {
+      setError('Network request failed. Turn off VPN/ad blocker and try again.');
       return;
+    } finally {
+      setLoading(false);
     }
 
     setCodeMode(true);
@@ -69,22 +74,26 @@ export default function LoginPage() {
     }
 
     setLoading(true);
-    const response = await fetch('/api/auth/verify-code', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email,
-        token: otpCode,
-      }),
-    });
-    setLoading(false);
-
-    const result = await response.json();
-    if (!response.ok) {
-      setError(result?.error || 'Unable to verify code.');
+    try {
+      const response = await fetch('/api/otp/verify-code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email,
+          token: otpCode,
+        }),
+      });
+      const result = await response.json();
+      if (!response.ok) {
+        setError(result?.error || 'Unable to verify code.');
+        return;
+      }
+    } catch {
+      setError('Network request failed. Turn off VPN/ad blocker and try again.');
       return;
+    } finally {
+      setLoading(false);
     }
-
     router.push('/onboarding');
   }
 
