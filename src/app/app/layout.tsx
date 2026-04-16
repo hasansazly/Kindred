@@ -3,17 +3,16 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Heart, Compass, Users, MessageCircle, User, Settings, Bell, Sparkles, LogOut, Flame, Brain, BookOpen } from 'lucide-react';
+import { Heart, Compass, Users, MessageCircle, User, Settings, Bell, Sparkles, LogOut, Brain, BookOpen } from 'lucide-react';
 import AssistantShell from '@/components/ai/AssistantShell';
 import LogoutButton from '@/components/auth/LogoutButton';
 import { getSupabaseBrowserClient } from '../../../utils/supabase/client';
 
 const NAV = [
-  { href: '/app/discover', icon: Compass,       label: 'Discover',  notif: 0 },
-  { href: '/app/spark',    icon: Flame,          label: 'Spark',     notif: 2, isSpark: true },
-  { href: '/app/matches',  icon: Users,          label: 'Matches',   notif: 3 },
-  { href: '/app/messages', icon: MessageCircle,  label: 'Messages',  notif: 2 },
-  { href: '/app/profile',  icon: User,           label: 'Profile',   notif: 0 },
+  { href: '/app/discover', icon: Compass,       label: 'Discover',  notif: 0, isSpark: false },
+  { href: '/app/matches',  icon: Users,          label: 'Matches',   notif: 3, isSpark: false },
+  { href: '/app/messages', icon: MessageCircle,  label: 'Messages',  notif: 2, isSpark: false },
+  { href: '/app/profile',  icon: User,           label: 'Profile',   notif: 0, isSpark: false },
 ];
 
 const SIDEBAR_NAV = [

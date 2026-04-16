@@ -1,6 +1,6 @@
 'use client';
 
-import { Lightbulb } from 'lucide-react';
+import { Flame } from 'lucide-react';
 import { CONVERSATION_BUTTON_COPY, CONVERSATION_PROMPTS } from '@/lib/conversationSupportCopy';
 
 type GuidanceKind = 'startEasy' | 'goDeeper' | 'suggestPlan';
@@ -45,9 +45,10 @@ export default function ConversationGuidance({
   return (
     <section className="rounded-xl border border-[#36416D] bg-[#101735] p-3">
       <div className="mb-2 flex items-center gap-2 text-xs font-medium uppercase tracking-[0.06em] text-[#A6AED0]">
-        <Lightbulb size={14} />
-        Conversation guidance
+        <Flame size={14} />
+        Spark prompts
       </div>
+      <p className="mb-2 text-xs text-[#8F99C4]">Spark now lives in chat as lightweight prompt support.</p>
       <div className="space-y-2">
         {(Object.keys(groups) as GuidanceKind[]).map(kind => (
           <div key={kind} className="rounded-xl border border-[#36416D] bg-[#151C3C] p-2.5">
