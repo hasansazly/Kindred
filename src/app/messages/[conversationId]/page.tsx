@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { ArrowLeft, Send, Smile } from 'lucide-react';
+import EmojiPicker from 'emoji-picker-react';
 import { getSupabaseBrowserClient } from '../../../../utils/supabase/client';
 
 type MessageRow = {
@@ -29,76 +30,6 @@ type OnboardingRow = {
   category: string;
   response: unknown;
 };
-
-const EMOJI_CATEGORIES: Array<{ key: string; label: string; emojis: string[] }> = [
-  {
-    key: 'smileys',
-    label: 'Smileys',
-    emojis: [
-      '😀', '😃', '😄', '😁', '😆', '😅', '😂', '🤣', '😊', '🙂', '😉', '😍', '🥰', '😘', '😗', '😙', '😚',
-      '😋', '😛', '😜', '🤪', '😝', '🤗', '🤭', '🫢', '🤫', '🤔', '🤨', '😐', '😑', '😶', '🫠', '🙄', '😬',
-      '😌', '😔', '😪', '🤤', '😴', '😷', '🤒', '🤕', '🤢', '🤮', '🥵', '🥶', '😵', '🤯', '🥳', '😎', '🤩',
-      '😏', '😒', '😞', '😟', '😕', '☹️', '🙁', '😣', '😖', '😫', '😩', '🥹', '😭', '😤', '😮', '😱',
-    ],
-  },
-  {
-    key: 'people',
-    label: 'People',
-    emojis: [
-      '👋', '🤚', '🖐️', '✋', '🫱', '🫲', '🫳', '🫴', '👌', '🤌', '🤏', '✌️', '🤞', '🫰', '🤟', '🤘', '🤙',
-      '👈', '👉', '👆', '🖕', '👇', '☝️', '👍', '👎', '✊', '👊', '🤛', '🤜', '👏', '🙌', '👐', '🤲', '🙏',
-      '🫶', '💪', '🦾', '🧠', '🫀', '👀', '🫂', '👤', '👥',
-    ],
-  },
-  {
-    key: 'hearts',
-    label: 'Hearts',
-    emojis: [
-      '❤️', '🩷', '🧡', '💛', '💚', '🩵', '💙', '💜', '🤎', '🖤', '🩶', '🤍', '💔', '❣️', '💕', '💞',
-      '💓', '💗', '💖', '💘', '💝', '💟', '♥️',
-    ],
-  },
-  {
-    key: 'activities',
-    label: 'Activities',
-    emojis: [
-      '🔥', '✨', '⭐', '🌟', '💫', '🎉', '🎊', '🎈', '🎵', '🎶', '🎧', '🎤', '🎬', '🎮', '🏋️', '🏃',
-      '⚽', '🏀', '🎾', '🏓', '🏊', '🚴', '🧘', '🎯', '🎲', '🧩',
-    ],
-  },
-  {
-    key: 'food',
-    label: 'Food',
-    emojis: [
-      '☕', '🍵', '🧋', '🍷', '🍸', '🍺', '🥂', '🍕', '🍔', '🌮', '🍣', '🍱', '🥗', '🍜', '🍝', '🍩',
-      '🍪', '🍫', '🍦', '🍓', '🍉', '🍍',
-    ],
-  },
-  {
-    key: 'travel',
-    label: 'Travel',
-    emojis: [
-      '✈️', '🚗', '🚕', '🚆', '🚄', '🚉', '🛳️', '⛵', '🚤', '🏝️', '🏖️', '🏔️', '🌆', '🌃', '🌉', '🎡',
-      '🎢', '🗺️', '📍',
-    ],
-  },
-  {
-    key: 'animals',
-    label: 'Animals',
-    emojis: [
-      '🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐨', '🐯', '🦁', '🐮', '🐷', '🐸', '🐵', '🦄',
-      '🐙', '🐬', '🐳', '🦋', '🐝', '🐢',
-    ],
-  },
-  {
-    key: 'symbols',
-    label: 'Symbols',
-    emojis: [
-      '✅', '✔️', '❌', '⚠️', '❗', '❓', '💯', '🔒', '🔓', '📌', '📎', '📝', '📷', '📞', '💬', '🗣️',
-      '🕒', '📅', '🎁', '🏆', '🥇', '🔔',
-    ],
-  },
-];
 
 function firstNonEmpty(values: unknown[]): string {
   for (const value of values) {
@@ -131,7 +62,6 @@ export default function ConversationPage() {
   const [messages, setMessages] = useState<MessageRow[]>([]);
   const [input, setInput] = useState('');
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const [emojiCategory, setEmojiCategory] = useState<string>('smileys');
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -245,10 +175,6 @@ export default function ConversationPage() {
   }, [conversationId, router]);
 
   const groupedMessages = useMemo(() => messages, [messages]);
-  const activeEmojiCategory = useMemo(
-    () => EMOJI_CATEGORIES.find(category => category.key === emojiCategory) ?? EMOJI_CATEGORIES[0],
-    [emojiCategory]
-  );
 
   const appendEmoji = (emoji: string) => {
     setInput(prev => `${prev}${emoji}`);
@@ -347,36 +273,13 @@ export default function ConversationPage() {
           <form onSubmit={onSend} className="border-t border-slate-700/80 p-3">
             {showEmojiPicker ? (
               <div className="mb-3 rounded-xl border border-slate-700/80 bg-slate-900/85 p-2">
-                <div className="mb-2 flex flex-wrap gap-1.5">
-                  {EMOJI_CATEGORIES.map(category => (
-                    <button
-                      key={category.key}
-                      type="button"
-                      onClick={() => setEmojiCategory(category.key)}
-                      className={`rounded-md px-2 py-1 text-[11px] ${
-                        emojiCategory === category.key
-                          ? 'bg-violet-500/30 text-violet-100'
-                          : 'bg-slate-800/70 text-slate-300 hover:bg-slate-700/80'
-                      }`}
-                    >
-                      {category.label}
-                    </button>
-                  ))}
-                </div>
-                <div className="max-h-44 overflow-y-auto pr-1">
-                  <div className="grid grid-cols-10 gap-1 sm:grid-cols-12">
-                    {activeEmojiCategory.emojis.map(emoji => (
-                      <button
-                        key={`${activeEmojiCategory.key}-${emoji}`}
-                        type="button"
-                        onClick={() => appendEmoji(emoji)}
-                        className="rounded-md p-1 text-xl leading-none hover:bg-slate-700/80"
-                      >
-                        {emoji}
-                      </button>
-                    ))}
-                  </div>
-                </div>
+                <EmojiPicker
+                  width="100%"
+                  height={340}
+                  lazyLoadEmojis
+                  searchPlaceHolder="Search emoji"
+                  onEmojiClick={emojiData => appendEmoji(emojiData.emoji)}
+                />
               </div>
             ) : null}
             <div className="flex items-center gap-2">
