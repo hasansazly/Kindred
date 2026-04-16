@@ -1,5 +1,3 @@
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { getSupabasePublishableKey, getSupabaseUrl } from '../../../../../utils/supabase/env';
 
@@ -13,33 +11,27 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Email is required.' }, { status: 400 });
     }
 
-    const cookieStore = await cookies();
-    const supabase = createServerClient(
-      getSupabaseUrl(),
-      getSupabasePublishableKey(),
-      {
-        cookies: {
-          getAll() {
-            return cookieStore.getAll();
-          },
-          setAll(cookiesToSet) {
-            cookiesToSet.forEach(({ name, value, options }) => {
-              cookieStore.set(name, value, options);
-            });
-          },
-        },
-      }
-    );
-
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: {
-        shouldCreateUser,
+    const supabaseUrl = getSupabaseUrl();
+    const publishableKey = getSupabasePublishableKey();
+    const response = await fetch(`${supabaseUrl}/auth/v1/otp`, {
+      method: 'POST',
+      headers: {
+        apikey: publishableKey,
+        Authorization: `Bearer ${publishableKey}`,
+        'Content-Type': 'application/json',
       },
+      body: JSON.stringify({
+        email,
+        create_user: shouldCreateUser,
+      }),
     });
 
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 400 });
+    if (!response.ok) {
+      const message = await response.text();
+      return NextResponse.json(
+        { error: message || `Supabase OTP request failed with status ${response.status}` },
+        { status: 400 }
+      );
     }
 
     return NextResponse.json({ ok: true });
