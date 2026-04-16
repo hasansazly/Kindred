@@ -1,11 +1,12 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Heart, Compass, Users, MessageCircle, User, Settings, Bell, Sparkles, LogOut, Flame, Brain, BookOpen } from 'lucide-react';
-import { CURRENT_USER } from '@/lib/mockData';
 import AssistantShell from '@/components/ai/AssistantShell';
 import LogoutButton from '@/components/auth/LogoutButton';
+import { getSupabaseBrowserClient } from '../../../utils/supabase/client';
 
 const NAV = [
   { href: '/app/discover', icon: Compass,       label: 'Discover',  notif: 0 },
@@ -22,8 +23,49 @@ const SIDEBAR_NAV = [
   { href: '/app/settings', icon: Settings, label: 'Settings',  notif: 0, isSpark: false },
 ];
 
+type SidebarIdentity = {
+  name: string;
+  auraScore: number;
+};
+
 function Sidebar() {
   const pathname = usePathname();
+  const [identity, setIdentity] = useState<SidebarIdentity>({ name: 'You', auraScore: 65 });
+
+  useEffect(() => {
+    let active = true;
+
+    const loadIdentity = async () => {
+      try {
+        const supabase = getSupabaseBrowserClient();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+
+        if (!user) return;
+
+        const [{ data: profile }, { count: responsesCount }] = await Promise.all([
+          supabase.from('profiles').select('full_name,email').eq('id', user.id).maybeSingle(),
+          supabase.from('onboarding_responses').select('*', { count: 'exact', head: true }).eq('user_id', user.id),
+        ]);
+
+        const name = profile?.full_name || profile?.email?.split('@')[0] || user.email?.split('@')[0] || 'You';
+        const auraScore = Math.min(99, 65 + ((responsesCount ?? 0) * 4));
+
+        if (active) {
+          setIdentity({ name, auraScore });
+        }
+      } catch {
+        // Keep a stable fallback identity if profile lookup fails.
+      }
+    };
+
+    void loadIdentity();
+    return () => {
+      active = false;
+    };
+  }, []);
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', padding: '24px 16px' }}>
       <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none', marginBottom: 32, paddingLeft: 4 }}>
@@ -38,10 +80,10 @@ function Sidebar() {
           <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&q=80" style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: '#f0f0ff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{CURRENT_USER.name}</div>
+          <div style={{ fontSize: 13, fontWeight: 600, color: '#f0f0ff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{identity.name}</div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 2 }}>
             <Sparkles size={10} color="#a78bfa" />
-            <span style={{ fontSize: 11, color: '#a78bfa', fontWeight: 500 }}>Aura {CURRENT_USER.auraScore}</span>
+            <span style={{ fontSize: 11, color: '#a78bfa', fontWeight: 500 }}>Aura {identity.auraScore}</span>
           </div>
         </div>
         <Bell size={16} color="rgba(240,240,255,0.35)" />

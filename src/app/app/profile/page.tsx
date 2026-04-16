@@ -1,15 +1,166 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Camera, Edit3, MapPin, Briefcase, GraduationCap, Heart, Star, Sparkles, Brain, CheckCircle, Plus, BarChart2 } from 'lucide-react';
-import { CURRENT_USER } from '@/lib/mockData';
+import { Camera, Edit3, MapPin, Briefcase, GraduationCap, Sparkles, Brain, CheckCircle, Plus } from 'lucide-react';
+import { getSupabaseBrowserClient } from '../../../../utils/supabase/client';
 import { getCompatibilityColor } from '@/lib/utils';
+
+type ProfileViewUser = {
+  name: string;
+  age: number;
+  occupation: string;
+  location: string;
+  education: string;
+  auraScore: number;
+  bio: string;
+  photos: string[];
+  interests: string[];
+  values: string[];
+  height: string;
+  relationshipGoal: string;
+  attachmentStyle: string;
+  loveLanguage: string;
+  drinking: string;
+  smoking: string;
+  kids: string;
+  personalityTraits: string[];
+};
+
+const DEFAULT_PROFILE_PHOTO = 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&q=80';
+
+function toStringArray(value: unknown): string[] {
+  return Array.isArray(value) ? value.filter(item => typeof item === 'string') : [];
+}
 
 export default function ProfilePage() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'profile' | 'aura' | 'stats'>('profile');
-  const user = CURRENT_USER;
+  const [user, setUser] = useState<ProfileViewUser | null>(null);
+  const [loadError, setLoadError] = useState('');
+
+  useEffect(() => {
+    let active = true;
+
+    const loadProfile = async () => {
+      setLoadError('');
+      try {
+        const supabase = getSupabaseBrowserClient();
+        const {
+          data: { user: authUser },
+          error: authError,
+        } = await supabase.auth.getUser();
+
+        if (authError || !authUser) {
+          router.push('/auth/login');
+          return;
+        }
+
+        const [{ data: profile }, { data: onboardingRows }, { data: preferences }] = await Promise.all([
+          supabase.from('profiles').select('*').eq('id', authUser.id).maybeSingle(),
+          supabase.from('onboarding_responses').select('category,response').eq('user_id', authUser.id),
+          supabase.from('match_preferences').select('*').eq('user_id', authUser.id).maybeSingle(),
+        ]);
+
+        const responsesByCategory = new Map<string, Record<string, unknown>>();
+        (onboardingRows ?? []).forEach((row: { category: string; response: unknown }) => {
+          if (row && typeof row.response === 'object' && row.response !== null) {
+            responsesByCategory.set(row.category, row.response as Record<string, unknown>);
+          }
+        });
+
+        const demographics = responsesByCategory.get('demographics') ?? {};
+        const valuesResponse = responsesByCategory.get('values') ?? {};
+        const lifestyleResponse = responsesByCategory.get('lifestyle') ?? {};
+        const intentResponse = responsesByCategory.get('relationship_intent') ?? {};
+        const communicationResponse = responsesByCategory.get('communication_style') ?? {};
+
+        const name =
+          profile?.full_name ||
+          (typeof demographics.fullName === 'string' ? demographics.fullName : '') ||
+          authUser.email?.split('@')[0] ||
+          'You';
+
+        const ageRaw = profile?.age ?? (typeof demographics.age === 'number' ? demographics.age : null);
+        const age = typeof ageRaw === 'number' && Number.isFinite(ageRaw) ? ageRaw : 0;
+        const interests = toStringArray(profile?.interests).length
+          ? toStringArray(profile?.interests)
+          : toStringArray(demographics.interests);
+        const values = toStringArray(profile?.core_values).length
+          ? toStringArray(profile?.core_values)
+          : toStringArray(valuesResponse.values).length
+            ? toStringArray(valuesResponse.values)
+            : toStringArray(preferences?.values);
+        const lifestyle = toStringArray(profile?.lifestyle_tags).length
+          ? toStringArray(profile?.lifestyle_tags)
+          : toStringArray(lifestyleResponse.lifestyle).length
+            ? toStringArray(lifestyleResponse.lifestyle)
+            : toStringArray(preferences?.lifestyle);
+        const relationshipGoal =
+          preferences?.relationship_intent ||
+          (typeof intentResponse.relationshipIntent === 'string' ? intentResponse.relationshipIntent : '') ||
+          'Not set yet';
+        const communicationStyle =
+          preferences?.communication_style ||
+          (typeof communicationResponse.communicationStyle === 'string' ? communicationResponse.communicationStyle : '');
+
+        const completionSignals = [
+          Boolean(profile?.bio || demographics.bio),
+          interests.length >= 3,
+          values.length >= 3,
+          lifestyle.length >= 2,
+          relationshipGoal !== 'Not set yet',
+        ].filter(Boolean).length;
+        const auraScore = Math.min(99, 65 + completionSignals * 6);
+
+        const nextUser: ProfileViewUser = {
+          name,
+          age,
+          occupation: profile?.occupation || (typeof demographics.occupation === 'string' ? demographics.occupation : '') || 'Not set yet',
+          location: profile?.location || (typeof demographics.location === 'string' ? demographics.location : '') || 'Not set yet',
+          education: 'Not set yet',
+          auraScore,
+          bio: profile?.bio || (typeof demographics.bio === 'string' ? demographics.bio : '') || 'Add your bio in onboarding.',
+          photos: [DEFAULT_PROFILE_PHOTO],
+          interests,
+          values,
+          height: 'Not set yet',
+          relationshipGoal,
+          attachmentStyle: 'Not set yet',
+          loveLanguage: communicationStyle || 'Not set yet',
+          drinking: 'Not set yet',
+          smoking: 'Not set yet',
+          kids: 'Not set yet',
+          personalityTraits: lifestyle.length ? lifestyle : ['Intentional', 'Authentic'],
+        };
+
+        if (active) {
+          setUser(nextUser);
+        }
+      } catch (error) {
+        if (active) {
+          const message = error instanceof Error ? error.message : 'Failed to load profile.';
+          setLoadError(message);
+        }
+      }
+    };
+
+    void loadProfile();
+    return () => {
+      active = false;
+    };
+  }, [router]);
+
+  if (!user) {
+    return (
+      <div className="profile-page" style={{ padding: '32px', maxWidth: 800, width: '100%', margin: '0 auto' }}>
+        <h1 style={{ fontSize: 26, fontWeight: 800, letterSpacing: '-0.03em', marginBottom: 10 }}>Your Profile</h1>
+        <p style={{ color: 'rgba(240,240,255,0.65)', fontSize: 14 }}>
+          {loadError ? `Could not load profile: ${loadError}` : 'Loading your profile...'}
+        </p>
+      </div>
+    );
+  }
 
   const AURA_DIMENSIONS = [
     { label: 'Emotional Intelligence', score: 88, desc: 'High empathy, strong emotional awareness' },
@@ -46,7 +197,7 @@ export default function ProfilePage() {
           {/* Avatar */}
           <div style={{ position: 'relative', display: 'inline-block', marginTop: -48 }}>
             <div style={{ width: 96, height: 96, borderRadius: '50%', overflow: 'hidden', border: '4px solid #0f0f1a', boxShadow: '0 0 0 2px rgba(139,92,246,0.3)' }}>
-              <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&q=80" alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <img src={user.photos[0] ?? DEFAULT_PROFILE_PHOTO} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             </div>
             <button style={{ position: 'absolute', bottom: 4, right: 4, width: 28, height: 28, borderRadius: '50%', background: 'linear-gradient(135deg, #7c3aed, #db2777)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Camera size={12} color="white" />
