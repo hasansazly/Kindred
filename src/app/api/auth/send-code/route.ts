@@ -49,7 +49,9 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ ok: true });
-  } catch {
-    return NextResponse.json({ error: 'Unable to send verification code.' }, { status: 500 });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown server error';
+    console.error('send-code route failed:', error);
+    return NextResponse.json({ error: `Unable to send verification code. ${message}` }, { status: 500 });
   }
 }

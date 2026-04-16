@@ -27,6 +27,16 @@ export default function SignupPage() {
   const [otpCode, setOtpCode] = useState('');
   const [otpSent, setOtpSent] = useState(false);
 
+  const readResponseError = async (response: Response) => {
+    const raw = await response.text();
+    try {
+      const parsed = JSON.parse(raw) as { error?: string };
+      return parsed.error || raw || `Request failed with status ${response.status}`;
+    } catch {
+      return raw || `Request failed with status ${response.status}`;
+    }
+  };
+
   async function handleStep1(e: React.FormEvent) {
     e.preventDefault();
     setError('');
@@ -71,13 +81,14 @@ export default function SignupPage() {
           shouldCreateUser: true,
         }),
       });
-      const result = await response.json();
       if (!response.ok) {
-        setError(result?.error || 'Unable to send verification code.');
+        const message = await readResponseError(response);
+        setError(`Send code failed (${response.status}): ${message}`);
         return;
       }
-    } catch {
-      setError('Network request failed. Turn off VPN/ad blocker and try again.');
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unknown network error';
+      setError(`Network request failed: ${message}`);
       return;
     } finally {
       setLoading(false);
@@ -108,13 +119,14 @@ export default function SignupPage() {
           token: otpCode,
         }),
       });
-      const result = await response.json();
       if (!response.ok) {
-        setError(result?.error || 'Unable to verify code.');
+        const message = await readResponseError(response);
+        setError(`Verify code failed (${response.status}): ${message}`);
         return;
       }
-    } catch {
-      setError('Network request failed. Turn off VPN/ad blocker and try again.');
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unknown network error';
+      setError(`Network request failed: ${message}`);
       return;
     } finally {
       setLoading(false);

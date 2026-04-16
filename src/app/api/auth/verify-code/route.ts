@@ -48,7 +48,9 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ ok: true });
-  } catch {
-    return NextResponse.json({ error: 'Unable to verify code.' }, { status: 500 });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown server error';
+    console.error('verify-code route failed:', error);
+    return NextResponse.json({ error: `Unable to verify code. ${message}` }, { status: 500 });
   }
 }
