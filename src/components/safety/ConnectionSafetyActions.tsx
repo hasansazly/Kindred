@@ -83,7 +83,7 @@ export default function ConnectionSafetyActions({
           type="button"
           onClick={() => runAction('report')}
           disabled={Boolean(loading)}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-amber-400/35 bg-amber-500/10 px-3 py-2 text-xs font-medium text-amber-200 hover:bg-amber-500/20 disabled:opacity-60"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-[#E8D7D7] bg-transparent px-3 py-1.5 text-xs font-medium text-[#CC3333] hover:bg-[#FDF4F4] disabled:opacity-60"
         >
           <AlertTriangle size={14} />
           {loading === 'report' ? 'Reporting...' : 'Report user'}
@@ -93,7 +93,7 @@ export default function ConnectionSafetyActions({
           type="button"
           onClick={() => runAction('unmatch')}
           disabled={Boolean(loading)}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-slate-600 bg-slate-800/70 px-3 py-2 text-xs font-medium text-slate-200 hover:border-slate-500 disabled:opacity-60"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-[#E5E3DF] bg-transparent px-3 py-1.5 text-xs font-medium text-[#888888] hover:bg-[#F7F6F4] disabled:opacity-60"
         >
           <UserX size={14} />
           {loading === 'unmatch' ? 'Unmatching...' : 'Unmatch'}
@@ -103,13 +103,13 @@ export default function ConnectionSafetyActions({
           type="button"
           onClick={() => runAction('block')}
           disabled={Boolean(loading)}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-rose-400/35 bg-rose-500/10 px-3 py-2 text-xs font-medium text-rose-200 hover:bg-rose-500/20 disabled:opacity-60"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-[#E5E3DF] bg-transparent px-3 py-1.5 text-xs font-medium text-[#888888] hover:bg-[#F7F6F4] disabled:opacity-60"
         >
           <Ban size={14} />
           {loading === 'block' ? 'Blocking...' : 'Block user'}
         </button>
       </div>
-      {error ? <p className="text-xs text-rose-300">{error}</p> : null}
+      {error ? <p className="text-xs text-[#CC3333]">{error}</p> : null}
     </div>
   );
 }

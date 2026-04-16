@@ -43,15 +43,15 @@ export default function ConversationGuidance({
   };
 
   return (
-    <section className="rounded-2xl border border-slate-700/80 bg-slate-900/70 p-3">
-      <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-violet-200/90">
+    <section className="border-t border-[#E5E3DF] bg-white p-3">
+      <div className="mb-2 flex items-center gap-2 text-xs font-medium uppercase tracking-[0.06em] text-[#888888]">
         <Lightbulb size={14} />
         Conversation guidance
       </div>
       <div className="space-y-2">
         {(Object.keys(groups) as GuidanceKind[]).map(kind => (
-          <div key={kind} className="rounded-xl border border-slate-700/70 bg-slate-800/55 p-2.5">
-            <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-slate-300">{categoryTitles[kind]}</p>
+          <div key={kind} className="rounded-xl border border-[#E5E3DF] bg-white p-2.5">
+            <p className="mb-2 text-[11px] font-medium uppercase tracking-[0.06em] text-[#888888]">{categoryTitles[kind]}</p>
             <div className="flex flex-wrap gap-2">
               {groups[kind].map(prompt => {
                 const text = withContext(prompt, {
@@ -63,7 +63,7 @@ export default function ConversationGuidance({
                     key={`${kind}-${prompt}`}
                     type="button"
                     onClick={() => onPick(text)}
-                    className="rounded-full border border-violet-400/30 bg-violet-500/10 px-3 py-1.5 text-xs text-violet-100 hover:bg-violet-500/20"
+                    className="rounded-[20px] border border-[#DDD8FA] bg-[#F4F3FF] px-3 py-1.5 text-xs text-[#4B3FA0] hover:bg-[#EDE9FA]"
                     title="Insert into message"
                   >
                     {text.length > 56 ? `${text.slice(0, 56)}...` : text}

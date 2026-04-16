@@ -296,50 +296,49 @@ export default function ConversationPage() {
   };
 
   return (
-    <main className="min-h-screen bg-slate-950 px-4 py-6 text-slate-100">
+    <main className="min-h-screen bg-white px-4 py-6 text-[#111111]">
       <div
         aria-hidden
-        className="pointer-events-none fixed inset-0 opacity-70"
+        className="pointer-events-none fixed inset-0 opacity-100"
         style={{
-          background:
-            'radial-gradient(1200px 700px at -10% -10%, rgba(168,85,247,0.18), transparent 55%), radial-gradient(1100px 700px at 110% 0%, rgba(236,72,153,0.14), transparent 55%), radial-gradient(900px 500px at 50% 120%, rgba(59,130,246,0.14), transparent 60%)',
+          background: 'transparent',
         }}
       />
 
       <div className="relative mx-auto flex w-full max-w-4xl flex-col gap-4">
-        <header className="rounded-2xl border border-slate-700/80 bg-slate-900/70 p-4 backdrop-blur">
+        <header className="border-b border-[#E5E3DF] bg-white p-4">
           <div className="flex items-center justify-between gap-3">
             <Link
               href="/matches"
-              className="inline-flex items-center gap-1.5 rounded-full border border-slate-700/80 bg-slate-900/70 px-3 py-1.5 text-sm text-slate-300 hover:border-violet-400/40 hover:text-violet-200"
+              className="inline-flex items-center gap-1.5 rounded-full border border-[#DDD9D1] bg-white px-3 py-1.5 text-sm text-[#4B3FA0] hover:bg-[#F4F3FF]"
             >
               <ArrowLeft size={14} />
               Back to matches
             </Link>
-            <h1 className="text-sm font-medium text-slate-200 sm:text-base">Chat with {otherUserName}</h1>
+            <h1 className="text-sm font-medium text-[#111111] sm:text-base">Chat with {otherUserName}</h1>
           </div>
           <div className="mt-3 flex flex-wrap items-center gap-2">
             {trustSignals.map(signal => (
               <span
                 key={signal}
-                className="rounded-full border border-slate-700/80 bg-slate-800/70 px-2.5 py-1 text-[11px] text-slate-300"
+                className="rounded-[4px] border border-[#E2D8B8] bg-[#FFF8EC] px-2.5 py-1 text-[11px] text-[#A05A00]"
               >
                 {signal}
               </span>
             ))}
             {potentialFit ? (
-              <span className="rounded-full border border-amber-400/35 bg-amber-500/10 px-2.5 py-1 text-[11px] font-medium text-amber-200">
+              <span className="rounded-[4px] border border-[#DDD8FA] bg-[#EDE9FA] px-2.5 py-1 text-[11px] font-medium text-[#4B3FA0]">
                 Potential Fit
               </span>
             ) : null}
           </div>
         </header>
 
-        <section className="flex min-h-[60vh] flex-col rounded-2xl border border-slate-700/80 bg-slate-900/65 backdrop-blur">
+        <section className="flex min-h-[60vh] flex-col rounded-2xl border border-[#E5E3DF] bg-white">
           <div className="flex-1 space-y-3 overflow-y-auto p-4">
-            {loading ? <p className="text-sm text-slate-400">Loading conversation...</p> : null}
+            {loading ? <p className="text-sm text-[#777777]">Loading conversation...</p> : null}
             {!loading && groupedMessages.length === 0 ? (
-              <p className="text-sm text-slate-400">No messages yet. Say hi and start the conversation.</p>
+              <p className="text-sm text-[#777777]">No messages yet. Say hi and start the conversation.</p>
             ) : null}
             {!loading
               ? groupedMessages.map(message => {
@@ -349,12 +348,12 @@ export default function ConversationPage() {
                       <div
                         className={`max-w-[85%] rounded-2xl border px-3 py-2 text-sm leading-6 sm:max-w-[70%] ${
                           mine
-                            ? 'border-violet-400/30 bg-gradient-to-r from-violet-500/25 to-fuchsia-500/20 text-violet-100'
-                            : 'border-slate-700/70 bg-slate-800/70 text-slate-200'
+                            ? 'rounded-br-[4px] border-[#4B3FA0] bg-[#4B3FA0] text-white'
+                            : 'rounded-bl-[4px] border-[#E5E3DF] bg-[#F0EEE8] text-[#111111]'
                         }`}
                       >
                         <p>{message.body}</p>
-                        <p className={`mt-1 text-[11px] ${mine ? 'text-violet-200/85' : 'text-slate-400'}`}>
+                        <p className="mt-1 text-[11px] text-[#AAAAAA]">
                           {formatTimestamp(message.created_at)}
                         </p>
                       </div>
@@ -364,7 +363,7 @@ export default function ConversationPage() {
               : null}
           </div>
 
-          <form onSubmit={onSend} className="border-t border-slate-700/80 p-3">
+          <form onSubmit={onSend} className="border-t border-[#E5E3DF] p-3">
             {otherUserId ? (
               <div className="mb-3">
                 <ConnectionSafetyActions targetUserId={otherUserId} compact />
@@ -380,7 +379,7 @@ export default function ConversationPage() {
             </div>
 
             {showEmojiPicker ? (
-              <div className="mb-3 rounded-xl border border-slate-700/80 bg-slate-900/85 p-2">
+              <div className="mb-3 rounded-xl border border-[#E5E3DF] bg-white p-2">
                 <EmojiPicker
                   width="100%"
                   height={340}
@@ -396,8 +395,8 @@ export default function ConversationPage() {
                 onClick={() => setShowEmojiPicker(prev => !prev)}
                 className={`inline-flex h-11 w-11 items-center justify-center rounded-xl border ${
                   showEmojiPicker
-                    ? 'border-violet-400/45 bg-violet-500/20 text-violet-100'
-                    : 'border-slate-700 bg-slate-900 text-slate-300 hover:border-violet-400/35 hover:text-violet-100'
+                    ? 'border-[#4B3FA0] bg-[#F4F3FF] text-[#4B3FA0]'
+                    : 'border-[#E5E3DF] bg-[#F7F6F4] text-[#777777] hover:border-[#4B3FA0] hover:text-[#4B3FA0]'
                 }`}
                 aria-label="Toggle emoji picker"
               >
@@ -408,24 +407,24 @@ export default function ConversationPage() {
                 onChange={event => setInput(event.target.value)}
                 placeholder="Type your message..."
                 disabled={Boolean(messagingDisabledReason)}
-                className="h-11 flex-1 rounded-xl border border-slate-700 bg-slate-900 px-3 text-sm text-slate-100 outline-none transition focus:border-violet-400/50 disabled:cursor-not-allowed disabled:opacity-60"
+                className="h-11 flex-1 rounded-[24px] border border-[#E5E3DF] bg-[#F7F6F4] px-3 text-sm text-[#111111] outline-none transition focus:border-[#4B3FA0] disabled:cursor-not-allowed disabled:opacity-60"
               />
               <button
                 type="submit"
                 disabled={!input.trim() || sending || loading || Boolean(messagingDisabledReason)}
-                className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-violet-400/35 bg-gradient-to-r from-violet-500/30 to-fuchsia-500/25 px-4 text-sm font-semibold text-violet-100 hover:from-violet-500/45 hover:to-fuchsia-500/40 disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-[#DDD8FA] bg-white px-4 text-sm font-medium text-[#4B3FA0] hover:bg-[#F4F3FF] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <Send size={15} />
                 {sending ? 'Sending...' : 'Send'}
               </button>
             </div>
             {messagingDisabledReason ? (
-              <p className="mt-2 flex items-center gap-1.5 text-xs text-amber-200">
+              <p className="mt-2 flex items-center gap-1.5 text-xs text-[#A05A00]">
                 <ShieldCheck size={12} />
                 {messagingDisabledReason}
               </p>
             ) : null}
-            {error ? <p className="mt-2 text-xs text-rose-300">{error}</p> : null}
+            {error ? <p className="mt-2 text-xs text-[#CC3333]">{error}</p> : null}
           </form>
         </section>
       </div>
