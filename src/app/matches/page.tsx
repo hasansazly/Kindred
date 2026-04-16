@@ -27,13 +27,22 @@ export default async function MatchesPage() {
   const matches = await getMatchesForUser(supabase, user.id);
 
   return (
-    <main className="min-h-screen bg-[#F0F2F5] px-4 py-10 text-[#111111]">
-      <div className="mx-auto w-full max-w-5xl">
-        <header className="mb-6 flex items-center justify-between rounded-2xl border border-[#DADDE1] bg-white p-6 shadow-[0_6px_18px_rgba(15,20,25,0.08)]">
+    <main className="min-h-screen bg-[#060814] px-4 py-8 text-[#F3F5FF]">
+      <div
+        aria-hidden
+        className="pointer-events-none fixed inset-0 opacity-90"
+        style={{
+          background:
+            'radial-gradient(1100px 540px at 14% -8%, rgba(124,58,237,0.25), transparent 58%), radial-gradient(980px 520px at 92% -2%, rgba(236,72,153,0.2), transparent 55%), radial-gradient(820px 460px at 50% 110%, rgba(59,130,246,0.17), transparent 60%)',
+        }}
+      />
+
+      <div className="relative mx-auto w-full max-w-6xl">
+        <header className="mb-6 flex items-center justify-between rounded-[26px] border border-[#2A3158] bg-[#0B1024]/90 p-6 shadow-[0_24px_80px_rgba(5,10,30,0.6)] backdrop-blur">
           <div>
-            <p className="text-[11px] uppercase tracking-[0.06em] text-[#65676B]">Matches</p>
-            <h1 className="mt-1 text-[28px] font-medium tracking-tight text-[#111111]">Your Real Matches</h1>
-            <p className="mt-1 text-sm text-[#777777]">
+            <p className="text-[11px] uppercase tracking-[0.08em] text-[#A18BFF]">Matches</p>
+            <h1 className="mt-1 text-[40px] font-semibold tracking-tight text-[#F8F9FF]">Your Real Matches</h1>
+            <p className="mt-1 text-[18px] text-[#A9B0D0]">
               {matches.length > 0
                 ? `${matches.length} active matches ready to explore`
                 : 'No active matches yet. Add manually from Supabase for now.'}
@@ -41,21 +50,21 @@ export default async function MatchesPage() {
           </div>
           <Link
             href="/dashboard"
-            className="rounded-md border border-[#CCD0D5] px-4 py-2 text-sm text-[#4E5966] hover:bg-[#F2F3F5]"
+            className="rounded-xl border border-[#3A4270] bg-[#101735] px-4 py-2 text-sm font-medium text-[#D4D9F4] transition hover:border-[#6B5CE7] hover:text-[#FFFFFF]"
           >
             Back to dashboard
           </Link>
         </header>
 
         {matches.length > 0 ? (
-          <section className="grid gap-4 md:grid-cols-2">
+          <section className="grid gap-5 md:grid-cols-2">
             {matches.map(match => (
               <MatchCard key={match.id} match={match} />
             ))}
           </section>
         ) : (
-          <section className="rounded-2xl border border-dashed border-[#CCD0D5] bg-[#F7F8FA] p-8 text-center">
-            <p className="text-[#777777]">When you add rows to `matches`, they will appear here with reasons.</p>
+          <section className="rounded-2xl border border-dashed border-[#3A4270] bg-[#0B1024]/70 p-8 text-center">
+            <p className="text-[#A9B0D0]">When you add rows to `matches`, they will appear here with reasons.</p>
           </section>
         )}
       </div>
