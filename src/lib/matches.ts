@@ -48,11 +48,7 @@ type OnboardingRow = {
 
 type ProfileRow = {
   id: string;
-  full_name: string | null;
-  age: number | null;
-  location: string | null;
-  bio: string | null;
-  interests: string[] | null;
+  [key: string]: unknown;
 };
 
 export async function getMatchesForUser(
@@ -66,11 +62,8 @@ export async function getMatchesForUser(
     .eq('status', 'active')
     .order('created_at', { ascending: false });
 
-  const matchesTableMissing =
-    matchError?.code === 'PGRST205' ||
-    matchError?.message?.includes('public.matches');
-  if (matchError && !matchesTableMissing) {
-    throw new Error(matchError.message);
+  if (matchError) {
+    return [];
   }
   if (!matchRows || matchRows.length === 0) {
     return [];
@@ -81,12 +74,8 @@ export async function getMatchesForUser(
 
   const { data: profileRows, error: profileError } = await supabase
     .from('profiles')
-    .select('id,full_name,age,location,bio,interests')
+    .select('*')
     .in('id', matchedUserIds);
-
-  if (profileError) {
-    throw new Error(profileError.message);
-  }
 
   const { data: onboardingRows, error: onboardingError } = await supabase
     .from('onboarding_responses')
@@ -94,12 +83,8 @@ export async function getMatchesForUser(
     .in('user_id', matchedUserIds)
     .in('category', ['demographics', 'profile_meta']);
 
-  if (onboardingError) {
-    throw new Error(onboardingError.message);
-  }
-
   const byUser = new Map<string, { demographics?: Record<string, unknown>; profileMeta?: Record<string, unknown> }>();
-  (onboardingRows as OnboardingRow[] | null)?.forEach(row => {
+  (onboardingError ? [] : (onboardingRows as OnboardingRow[] | null))?.forEach(row => {
     if (!row || typeof row.response !== 'object' || row.response === null) return;
     const existing = byUser.get(row.user_id) ?? {};
     if (row.category === 'demographics') {
@@ -112,7 +97,7 @@ export async function getMatchesForUser(
   });
 
   const profilesById = new Map<string, ProfileRow>();
-  (profileRows as ProfileRow[] | null)?.forEach(profile => {
+  (profileError ? [] : (profileRows as ProfileRow[] | null))?.forEach(profile => {
     profilesById.set(profile.id, profile);
   });
 
@@ -124,7 +109,8 @@ export async function getMatchesForUser(
 
     const fullName =
       (typeof demographics.fullName === 'string' ? demographics.fullName : '') ||
-      profile?.full_name ||
+      (typeof profile?.full_name === 'string' ? profile.full_name : '') ||
+      (typeof profile?.first_name === 'string' ? profile.first_name : '') ||
       'Vinculo Match';
     const age =
       typeof demographics.age === 'number'
@@ -134,11 +120,11 @@ export async function getMatchesForUser(
           : null;
     const location =
       (typeof demographics.location === 'string' ? demographics.location : '') ||
-      profile?.location ||
+      (typeof profile?.location === 'string' ? profile.location : '') ||
       '';
     const bio =
       (typeof demographics.bio === 'string' ? demographics.bio : '') ||
-      profile?.bio ||
+      (typeof profile?.bio === 'string' ? profile.bio : '') ||
       'Intentional dater on Vinculo.';
     const photos = toStringArray(profileMeta.photos);
     const interests = toStringArray(demographics.interests).length
