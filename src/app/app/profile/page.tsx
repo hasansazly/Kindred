@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { getSupabaseBrowserClient } from '../../../../utils/supabase/client';
 import { getCompatibilityColor } from '@/lib/utils';
+import imageCompression from 'browser-image-compression';
 
 type ProfileMeta = {
   education?: string;
@@ -74,6 +75,7 @@ export default function ProfilePage() {
   const [isSaving, setIsSaving] = useState(false);
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
   const [feedback, setFeedback] = useState('');
+  const [bucketPhotoCount, setBucketPhotoCount] = useState(0);
   const [editForm, setEditForm] = useState<EditFormState>({
     fullName: '',
     bio: '',
@@ -108,6 +110,13 @@ export default function ProfilePage() {
           supabase.from('onboarding_responses').select('category,response').eq('user_id', authUser.id),
           supabase.from('match_preferences').select('*').eq('user_id', authUser.id).maybeSingle(),
         ]);
+
+        const { data: bucketFiles } = await supabase.storage.from('profile-photos').list(authUser.id, {
+          limit: 100,
+          offset: 0,
+          sortBy: { column: 'name', order: 'desc' },
+        });
+        setBucketPhotoCount((bucketFiles ?? []).length);
 
         const responsesByCategory = new Map<string, Record<string, unknown>>();
         (onboardingRows ?? []).forEach((row: { category: string; response: unknown }) => {
@@ -358,11 +367,40 @@ export default function ProfilePage() {
 
     try {
       const supabase = getSupabaseBrowserClient();
-      const ext = file.name.includes('.') ? file.name.split('.').pop() : 'jpg';
-      const safeExt = (ext || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '');
-      const filePath = `${user.userId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${safeExt || 'jpg'}`;
+      const {
+        data: { user: authUser },
+        error: authError,
+      } = await supabase.auth.getUser();
+      if (authError || !authUser) {
+        throw new Error('Please sign in again before uploading a photo.');
+      }
 
-      const { error: uploadError } = await supabase.storage.from('profile-photos').upload(filePath, file, {
+      const { data: existingFiles, error: listError } = await supabase.storage.from('profile-photos').list(authUser.id, {
+        limit: 100,
+        offset: 0,
+        sortBy: { column: 'name', order: 'desc' },
+      });
+
+      if (listError) {
+        throw new Error(listError.message);
+      }
+
+      const photoCount = (existingFiles ?? []).length;
+      setBucketPhotoCount(photoCount);
+      if (photoCount >= 10) {
+        setFeedback('You can upload up to 10 photos.');
+        return;
+      }
+
+      const compressedBlob = await imageCompression(file, {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 1200,
+        useWebWorker: true,
+      });
+      const compressedFile = new File([compressedBlob], file.name, { type: compressedBlob.type || file.type });
+      const filePath = `${authUser.id}/${Date.now()}-${file.name}`;
+
+      const { error: uploadError } = await supabase.storage.from('profile-photos').upload(filePath, compressedFile, {
         cacheControl: '3600',
         upsert: false,
       });
@@ -383,6 +421,7 @@ export default function ProfilePage() {
       };
 
       await saveMetaOnly(nextMeta, nextPhotos);
+      setBucketPhotoCount(photoCount + 1);
       setFeedback('Photo uploaded.');
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Photo upload failed.';
@@ -396,6 +435,10 @@ export default function ProfilePage() {
     const file = event.target.files?.[0];
     event.currentTarget.value = '';
     if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      window.alert('Please upload an image file. Video uploads are not supported.');
+      return;
+    }
     await uploadPhoto(file);
   };
 
@@ -476,14 +519,14 @@ export default function ProfilePage() {
             <div style={{ width: 96, height: 96, borderRadius: '50%', overflow: 'hidden', border: '4px solid #0f0f1a', boxShadow: '0 0 0 2px rgba(139,92,246,0.3)' }}>
               <img src={user.photos[0] ?? DEFAULT_PROFILE_PHOTO} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             </div>
-            <button
-              type="button"
-              onClick={() => !isUploadingPhoto && fileInputRef.current?.click()}
-              disabled={isUploadingPhoto}
-              style={{ position: 'absolute', bottom: 4, right: 4, width: 28, height: 28, borderRadius: '50%', background: 'linear-gradient(135deg, #7c3aed, #db2777)', border: 'none', cursor: isUploadingPhoto ? 'wait' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-            >
-              <Camera size={12} color="white" />
-            </button>
+              <button
+                type="button"
+                onClick={() => !isUploadingPhoto && fileInputRef.current?.click()}
+                disabled={isUploadingPhoto || bucketPhotoCount >= 10}
+                style={{ position: 'absolute', bottom: 4, right: 4, width: 28, height: 28, borderRadius: '50%', background: 'linear-gradient(135deg, #7c3aed, #db2777)', border: 'none', cursor: isUploadingPhoto ? 'wait' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              >
+                <Camera size={12} color="white" />
+              </button>
           </div>
 
           <div className="profile-hero-meta" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginTop: 12, flexWrap: 'wrap', gap: 12 }}>
@@ -582,11 +625,14 @@ export default function ProfilePage() {
               <button
                 type="button"
                 onClick={() => !isUploadingPhoto && fileInputRef.current?.click()}
-                style={{ aspectRatio: '1', borderRadius: 12, border: '2px dashed rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: isUploadingPhoto ? 'wait' : 'pointer', transition: 'all 0.2s', background: 'transparent' }}
+                disabled={isUploadingPhoto || bucketPhotoCount >= 10}
+                style={{ aspectRatio: '1', borderRadius: 12, border: '2px dashed rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: isUploadingPhoto ? 'wait' : bucketPhotoCount >= 10 ? 'not-allowed' : 'pointer', transition: 'all 0.2s', background: 'transparent' }}
               >
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
                   <Plus size={20} color="rgba(255,255,255,0.35)" />
-                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>{isUploadingPhoto ? 'Uploading...' : 'Add'}</span>
+                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>
+                    {isUploadingPhoto ? 'Uploading...' : bucketPhotoCount >= 10 ? 'Limit reached' : 'Add'}
+                  </span>
                 </div>
               </button>
             </div>
