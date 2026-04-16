@@ -367,11 +367,10 @@ export class InMemoryMatchmakingStore implements MatchmakingStore {
       .gte('photos_count', 1)
       .gte('age', minAge)
       .lte('age', maxAge)
-      .neq('id', userId)
-      .returns<ProfileRow[]>();
+      .neq('id', userId);
 
     if (interestedIn.length > 0) {
-      profileQuery = profileQuery.in('gender', interestedIn);
+      profileQuery = profileQuery.filter('gender', 'in', toInClause(interestedIn));
     }
 
     if (maxDistanceKm <= 30 && selfProfile?.location) {
@@ -386,7 +385,7 @@ export class InMemoryMatchmakingStore implements MatchmakingStore {
       profileQuery = profileQuery.not('id', 'in', toInClause(excluded));
     }
 
-    const { data: candidateRows, error: candidateError } = await profileQuery;
+    const { data: candidateRows, error: candidateError } = await profileQuery.returns<ProfileRow[]>();
     if (candidateError) {
       throw candidateError;
     }
