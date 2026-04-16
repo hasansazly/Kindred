@@ -49,73 +49,73 @@ export default async function DashboardPage() {
       'Member';
 
     return (
-      <main className="min-h-screen bg-[#F0F2F5] px-4 py-8 text-[#111111] sm:py-10">
+      <main className="min-h-screen bg-[#060814] px-4 py-8 text-[#F3F5FF] sm:py-10">
         <div
           aria-hidden
-          className="pointer-events-none fixed inset-0 opacity-100"
+          className="pointer-events-none fixed inset-0 opacity-90"
           style={{
             background:
-              'radial-gradient(900px 520px at -10% -10%, rgba(79,91,213,0.06), transparent 55%), radial-gradient(760px 420px at 110% 0%, rgba(214,41,118,0.05), transparent 55%)',
+              'radial-gradient(1100px 540px at 14% -8%, rgba(124,58,237,0.25), transparent 58%), radial-gradient(980px 520px at 92% -2%, rgba(236,72,153,0.2), transparent 55%), radial-gradient(820px 460px at 50% 110%, rgba(59,130,246,0.17), transparent 60%)',
           }}
         />
 
         <div className="relative mx-auto w-full max-w-6xl space-y-6">
-          <header className="rounded-2xl border border-[#DADDE1] bg-white p-6 shadow-[0_6px_18px_rgba(15,20,25,0.08)]">
+          <header className="rounded-[26px] border border-[#2A3158] bg-[#0B1024]/90 p-6 shadow-[0_24px_80px_rgba(5,10,30,0.6)] backdrop-blur">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-xs uppercase tracking-[0.14em] text-[#65676B]">Dashboard</p>
-                <h1 className="mt-2 text-3xl font-medium tracking-tight text-[#111111] sm:text-4xl">Welcome back, {displayName}</h1>
-                <p className="mt-2 text-sm text-[#777777]">
+                <p className="text-xs uppercase tracking-[0.14em] text-[#A18BFF]">Dashboard</p>
+                <h1 className="mt-2 text-3xl font-semibold tracking-tight text-[#F8F9FF] sm:text-5xl">Welcome back, {displayName}</h1>
+                <p className="mt-2 text-sm text-[#A9B0D0] sm:text-base">
                   {matches.length > 0
                     ? `${matches.length} active match${matches.length > 1 ? 'es' : ''} ready with compatibility insights.`
                     : 'Your dashboard is ready. New matches will appear here as soon as they are available.'}
                 </p>
               </div>
-              <LogoutButton className="rounded-lg border border-[#CCD0D5] bg-white px-4 py-2.5 text-sm text-[#4E5966] hover:bg-[#F2F3F5]" />
+              <LogoutButton className="rounded-xl border border-[#3A4270] bg-[#101735] px-4 py-2.5 text-sm font-medium text-[#D4D9F4] transition hover:border-[#6B5CE7] hover:text-[#FFFFFF]" />
             </div>
           </header>
 
           <section className="grid gap-4 xl:grid-cols-[1fr,1.1fr]">
             <div className="space-y-4">
-              <article className="rounded-2xl border border-[#DADDE1] bg-white p-6 shadow-[0_6px_18px_rgba(15,20,25,0.08)]">
-                <h2 className="text-[22px] font-medium text-[#111111]">Profile Completion</h2>
+              <article className="rounded-2xl border border-[#2A3158] bg-[#0B1024]/88 p-6 shadow-[0_20px_64px_rgba(5,10,30,0.55)] backdrop-blur">
+                <h2 className="text-[34px] font-semibold leading-none text-[#F7F8FF]">Profile Completion</h2>
                 <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                  <div className="rounded-xl border border-[#E4E6EB] bg-[#F7F8FA] p-3.5">
-                    <p className="text-[11px] uppercase tracking-[0.06em] text-[#888888]">Onboarding status</p>
-                    <p className="mt-1 text-base font-medium text-[#111111]">Complete</p>
+                  <div className="rounded-xl border border-[#343E69] bg-[#151C3C] p-3.5">
+                    <p className="text-[11px] uppercase tracking-[0.07em] text-[#99A4D4]">Onboarding status</p>
+                    <p className="mt-1 text-base font-medium text-[#F8F9FF]">Complete</p>
                   </div>
-                  <div className="rounded-xl border border-[#E4E6EB] bg-[#F7F8FA] p-3.5">
-                    <p className="text-[11px] uppercase tracking-[0.06em] text-[#888888]">Saved categories</p>
-                    <p className="mt-1 text-base font-medium text-[#111111]">{responsesCount ?? 0}</p>
+                  <div className="rounded-xl border border-[#343E69] bg-[#151C3C] p-3.5">
+                    <p className="text-[11px] uppercase tracking-[0.07em] text-[#99A4D4]">Saved categories</p>
+                    <p className="mt-1 text-base font-medium text-[#F8F9FF]">{responsesCount ?? 0}</p>
                   </div>
                 </div>
                 <Link
                   href="/app/profile"
-                  className="mt-5 inline-flex items-center justify-center rounded-lg border border-transparent bg-gradient-to-r from-[#4f5bd5] via-[#962fbf] to-[#d62976] px-4 py-2.5 text-sm font-medium text-white hover:opacity-95"
+                  className="mt-5 inline-flex items-center justify-center rounded-xl border border-[#7E62F2]/60 bg-gradient-to-r from-[#4D5FE6] via-[#7E46DB] to-[#D02E8B] px-4 py-2.5 text-sm font-semibold text-white transition hover:brightness-110"
                 >
                   Go to profile →
                 </Link>
               </article>
 
-              <article className="rounded-2xl border border-[#DADDE1] bg-white p-6 shadow-[0_6px_18px_rgba(15,20,25,0.08)]">
-                <h3 className="text-sm font-medium uppercase tracking-[0.14em] text-[#888888]">Today at a glance</h3>
+              <article className="rounded-2xl border border-[#2A3158] bg-[#0B1024]/88 p-6 shadow-[0_20px_64px_rgba(5,10,30,0.55)] backdrop-blur">
+                <h3 className="text-sm font-medium uppercase tracking-[0.14em] text-[#A18BFF]">Today at a glance</h3>
                 <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                  <div className="rounded-xl border border-[#E4E6EB] bg-[#F7F8FA] p-3.5">
-                    <p className="text-[11px] uppercase tracking-[0.06em] text-[#888888]">Best matches</p>
-                    <p className="mt-1 text-2xl font-medium text-[#111111]">{matches.length}</p>
+                  <div className="rounded-xl border border-[#343E69] bg-[#151C3C] p-3.5">
+                    <p className="text-[11px] uppercase tracking-[0.07em] text-[#99A4D4]">Best matches</p>
+                    <p className="mt-1 text-2xl font-medium text-[#F8F9FF]">{matches.length}</p>
                   </div>
-                  <div className="rounded-xl border border-[#E4E6EB] bg-[#F7F8FA] p-3.5">
-                    <p className="text-[11px] uppercase tracking-[0.06em] text-[#888888]">Profile quality</p>
-                    <p className="mt-1 text-2xl font-medium text-[#111111]">Strong</p>
+                  <div className="rounded-xl border border-[#343E69] bg-[#151C3C] p-3.5">
+                    <p className="text-[11px] uppercase tracking-[0.07em] text-[#99A4D4]">Profile quality</p>
+                    <p className="mt-1 text-2xl font-medium text-[#F8F9FF]">Strong</p>
                   </div>
                 </div>
               </article>
             </div>
 
-            <article className="rounded-2xl border border-[#DADDE1] bg-white p-5 shadow-[0_6px_18px_rgba(15,20,25,0.08)]">
+            <article className="rounded-2xl border border-[#2A3158] bg-[#0B1024]/90 p-5 shadow-[0_24px_80px_rgba(5,10,30,0.6)] backdrop-blur">
               <div className="mb-4">
-                <h2 className="text-[28px] font-medium tracking-tight text-[#111111]">Your Best Matches</h2>
-                <p className="mt-1 text-sm text-[#777777]">
+                <h2 className="text-[34px] font-semibold tracking-tight text-[#F8F9FF]">Your Best Matches</h2>
+                <p className="mt-1 text-sm text-[#A9B0D0]">
                   {matches.length > 0
                     ? `${matches.length} active match${matches.length > 1 ? 'es' : ''} with compatibility insight`
                     : 'No active matches yet.'}
@@ -129,13 +129,13 @@ export default async function DashboardPage() {
                   ))}
                   <Link
                     href="/matches"
-                    className="inline-flex w-full items-center justify-center rounded-lg border border-[#CCD0D5] bg-white px-4 py-2.5 text-sm font-medium text-[#4E5966] hover:bg-[#F2F3F5]"
+                    className="inline-flex w-full items-center justify-center rounded-xl border border-[#4B57A0] bg-[#151C3C] px-4 py-2.5 text-sm font-medium text-[#D5DBF6] transition hover:border-[#6E60EB] hover:text-[#FFFFFF]"
                   >
                     View all matches →
                   </Link>
                 </div>
               ) : (
-                <div className="rounded-2xl border border-dashed border-[#CCD0D5] bg-[#F7F8FA] px-4 py-8 text-center text-sm text-[#777777]">
+                <div className="rounded-2xl border border-dashed border-[#3A4270] bg-[#0E1430] px-4 py-8 text-center text-sm text-[#A9B0D0]">
                   No real matches yet. Add manual rows in `matches`.
                 </div>
               )}
