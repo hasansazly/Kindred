@@ -14,15 +14,21 @@ export default async function DashboardPage() {
       redirect('/auth/login');
     }
 
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('first_name, onboarding_complete')
-      .eq('id', user.id)
+    const { data: preferenceRow } = await supabase
+      .from('match_preferences')
+      .select('user_id')
+      .eq('user_id', user.id)
       .maybeSingle();
 
-    if (!profile?.onboarding_complete) {
+    if (!preferenceRow) {
       redirect('/onboarding');
     }
+
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', user.id)
+      .maybeSingle();
 
     const { count: responsesCount } = await supabase
       .from('onboarding_responses')
@@ -36,7 +42,7 @@ export default async function DashboardPage() {
             <div>
               <p className="text-xs uppercase tracking-wider text-violet-300">Dashboard</p>
               <h1 className="mt-1 text-2xl font-semibold tracking-tight">
-                Welcome back, {profile?.first_name || user.email}
+                Welcome back, {profile?.first_name || profile?.full_name || user.email}
               </h1>
             </div>
             <LogoutButton className="rounded-lg border border-slate-700 px-4 py-2 text-sm hover:bg-slate-800" />

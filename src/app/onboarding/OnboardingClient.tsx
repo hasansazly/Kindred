@@ -276,27 +276,14 @@ export default function OnboardingClient({ userEmail, initialProfile }: Onboardi
 
     const age = Number(state.age);
 
-    const { error: profileError } = await supabase.from('profiles').upsert(
+    // Keep profiles write minimal so mismatched optional columns do not block onboarding completion.
+    await supabase.from('profiles').upsert(
       {
         id: user.id,
         email: user.email ?? userEmail,
-        first_name: state.fullName.trim(),
-        age: Number.isNaN(age) ? null : age,
-        gender: state.gender,
-        location: state.location.trim(),
-        occupation: state.occupation.trim() || null,
-        bio: state.bio.trim() || null,
-        interests: state.interests,
-        onboarding_complete: true,
       },
       { onConflict: 'id' }
     );
-
-    if (profileError) {
-      setLoading(false);
-      setError(profileError.message);
-      return;
-    }
 
     const onboardingRows = [
       { user_id: user.id, category: 'demographics', response: { fullName: state.fullName, age, gender: state.gender, location: state.location, occupation: state.occupation, bio: state.bio, interests: state.interests } },

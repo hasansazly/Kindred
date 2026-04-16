@@ -13,29 +13,35 @@ export default async function OnboardingPage() {
       redirect('/auth/login');
     }
 
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select(
-        'first_name, age, gender, location, occupation, bio, interests, onboarding_complete'
-      )
-      .eq('id', user.id)
+    const { data: preferenceRow } = await supabase
+      .from('match_preferences')
+      .select('user_id')
+      .eq('user_id', user.id)
       .maybeSingle();
 
-    if (profile?.onboarding_complete) {
+    if (preferenceRow) {
       redirect('/dashboard');
     }
+
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', user.id)
+      .maybeSingle();
 
     return (
       <OnboardingClient
         userEmail={user.email ?? ''}
         initialProfile={{
-          fullName: profile?.first_name ?? '',
+          fullName: profile?.first_name ?? profile?.full_name ?? '',
           age: profile?.age ? String(profile.age) : '',
           gender: profile?.gender ?? '',
           location: profile?.location ?? '',
           occupation: profile?.occupation ?? '',
           bio: profile?.bio ?? '',
-          interests: Array.isArray(profile?.interests) ? profile.interests : [],
+          interests: Array.isArray((profile as { interests?: unknown } | null)?.interests)
+            ? ((profile as { interests?: string[] }).interests ?? [])
+            : [],
           values: [],
           lifestyle: [],
         }}

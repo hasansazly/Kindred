@@ -41,13 +41,13 @@ export async function proxy(request: NextRequest) {
       return response;
     }
 
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('onboarding_complete')
-      .eq('id', user.id)
+    const { data: preferenceRow } = await supabase
+      .from('match_preferences')
+      .select('user_id')
+      .eq('user_id', user.id)
       .maybeSingle();
 
-    const onboardingComplete = profile?.onboarding_complete === true;
+    const onboardingComplete = !!preferenceRow;
 
     if (!onboardingComplete && (isDashboardRoute || isAppRoute)) {
       return NextResponse.redirect(new URL('/onboarding', request.url));
