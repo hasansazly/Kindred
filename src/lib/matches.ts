@@ -69,7 +69,10 @@ export async function getMatchesForUser(
     return [];
   }
 
-  const rows = matchRows as MatchRow[];
+  const rows = (matchRows as MatchRow[]).filter((row, index, all) => {
+    // Keep only the first row per matched user (query is already ordered by created_at desc).
+    return all.findIndex(item => item.matched_user_id === row.matched_user_id) === index;
+  });
   const matchedUserIds = rows.map(row => row.matched_user_id);
 
   const { data: profileRows, error: profileError } = await supabase
