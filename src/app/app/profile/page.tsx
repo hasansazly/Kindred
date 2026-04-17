@@ -762,7 +762,7 @@ export default function ProfilePage() {
 
       {activeTab === 'aura' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <div className="glass" style={{ borderRadius: 20, padding: '20px 24px' }}>
+          <div className="glass aura-card" style={{ borderRadius: 20, padding: '20px 24px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
               <Brain size={16} color="#a78bfa" />
               <span style={{ fontSize: 15, fontWeight: 700, color: '#a78bfa' }}>Your Aura Profile</span>
@@ -792,7 +792,7 @@ export default function ProfilePage() {
           </div>
 
           {user.personalityTraits.length > 0 && (
-            <div className="glass" style={{ borderRadius: 20, padding: '20px 24px' }}>
+            <div className="glass personality-card" style={{ borderRadius: 20, padding: '20px 24px' }}>
               <div style={{ fontSize: 13, fontWeight: 600, color: '#6B5EA8', marginBottom: 12 }}>Personality snapshot</div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                 {user.personalityTraits.map(trait => (
@@ -901,6 +901,27 @@ export default function ProfilePage() {
         .profile-page .glass button,
         .profile-page .glass button * {
           color: inherit;
+        }
+        .profile-page .aura-card,
+        .profile-page .personality-card {
+          color: #1E1B2E !important;
+        }
+        .profile-page .aura-card p,
+        .profile-page .aura-card span,
+        .profile-page .aura-card div,
+        .profile-page .personality-card p,
+        .profile-page .personality-card span,
+        .profile-page .personality-card div {
+          color: #2F2A46 !important;
+        }
+        .profile-page .aura-card .aura-desc {
+          color: #6E688C !important;
+        }
+        .profile-page .aura-card span[style*="font-weight: 700"] {
+          color: #1E1B2E !important;
+        }
+        .profile-page .personality-card .tag {
+          color: #3C3489 !important;
         }
         @media (max-width: 767px) {
           .profile-page { padding: 24px 16px 32px !important; }
