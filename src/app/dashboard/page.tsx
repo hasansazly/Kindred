@@ -203,7 +203,7 @@ export default async function DashboardPage() {
       profile?.location ||
       (typeof demographics.location === 'string' ? demographics.location : '') ||
       'Location not shared yet';
-    const isVerified = profile?.is_verified === true;
+    const isVerified = profile?.is_verified !== false;
     const auraScore = Math.min(99, 60 + responsesCount * 4);
     const displayName =
       profile?.first_name ||
@@ -267,17 +267,17 @@ export default async function DashboardPage() {
             {/* Today's Activity */}
             <p className="mb-2 mt-[14px] text-[10px] font-medium tracking-[0.09em] text-white/35">TODAY&apos;S ACTIVITY</p>
             <div className="grid grid-cols-3 gap-[6px]">
-              <div className="rounded-[14px] border border-white/[0.08] bg-white/[0.06] px-2 py-2.5">
+              <div className="rounded-[14px] border border-white/[0.08] bg-white/[0.06] px-3 py-4">
                 <p className="text-[9px] tracking-[0.05em] text-white/40">MATCHES</p>
                 <p className="mt-1 text-[22px] font-bold leading-none text-white">{todayPreview.length}</p>
                 <p className="mt-[3px] text-[9px] text-white/35">Up to {previewLimit} today</p>
               </div>
-              <div className="rounded-[14px] border border-white/[0.08] bg-white/[0.06] px-2 py-2.5">
+              <div className="rounded-[14px] border border-white/[0.08] bg-white/[0.06] px-3 py-4">
                 <p className="text-[9px] tracking-[0.05em] text-white/40">CHATS</p>
                 <p className="mt-1 text-[22px] font-bold leading-none text-white">{activeConversationCount}</p>
                 <p className="mt-[3px] text-[9px] text-white/35">Active threads</p>
               </div>
-              <div className="rounded-[14px] border border-white/[0.08] bg-white/[0.06] px-2 py-2.5">
+              <div className="rounded-[14px] border border-white/[0.08] bg-white/[0.06] px-3 py-4">
                 <p className="text-[9px] tracking-[0.05em] text-white/40">TRACKS</p>
                 <p className="mt-1 text-[22px] font-bold leading-none text-white">{connectionTrackSummary.recentUpdates}</p>
                 <p className="mt-[3px] text-[9px] text-white/35">Connection</p>
