@@ -189,10 +189,10 @@ export default function LoginPage() {
             <div style={{ width: 34, height: 34, borderRadius: 9, background: 'linear-gradient(135deg, #7c3aed, #db2777)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Heart size={16} color="white" fill="white" />
             </div>
-            <span style={{ fontWeight: 700, fontSize: 20, letterSpacing: '-0.03em' }}>vinculo</span>
+            <span style={{ fontWeight: 700, fontSize: 20, letterSpacing: '-0.03em', color: '#F8F7FF' }}>vinculo</span>
           </div>
 
-          <h1 style={{ fontSize: 28, fontWeight: 800, letterSpacing: '-0.03em', marginBottom: 8 }}>Sign in</h1>
+          <h1 style={{ fontSize: 28, fontWeight: 800, letterSpacing: '-0.03em', marginBottom: 8, color: '#F8F7FF' }}>Sign in</h1>
           <p style={{ fontSize: 15, color: 'rgba(240,240,255,0.45)', marginBottom: 36 }}>
             New here?{' '}
             <Link href="/auth/signup" style={{ color: '#a78bfa', textDecoration: 'none', fontWeight: 500 }}>Create an account</Link>
