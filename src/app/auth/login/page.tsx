@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { Heart, Eye, EyeOff, ArrowRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { getSupabaseBrowserClient } from '../../../../utils/supabase/client';
 
 const isTempleEmail = (email: string) => email.trim().toLowerCase().endsWith('@temple.edu');
 
@@ -36,10 +37,25 @@ export default function LoginPage() {
     if (!email || !password) { setError('Please fill in all fields.'); return; }
     if (!isTempleEmail(email)) { setError('Only Temple University emails (@temple.edu) are allowed.'); return; }
     setLoading(true);
-    // Simulate auth
-    await new Promise(r => setTimeout(r, 1200));
-    setLoading(false);
-    router.push('/app/discover');
+    try {
+      const supabase = getSupabaseBrowserClient();
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: email.trim().toLowerCase(),
+        password,
+      });
+
+      if (signInError) {
+        setError(signInError.message);
+        return;
+      }
+
+      router.push('/dashboard');
+    } catch (signinFailure) {
+      const message = signinFailure instanceof Error ? signinFailure.message : 'Sign in failed.';
+      setError(message);
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function handleSendCode() {
