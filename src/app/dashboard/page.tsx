@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Camera, CheckCircle2, MapPin, User } from 'lucide-react';
+import { CheckCircle2, User } from 'lucide-react';
 import { redirect } from 'next/navigation';
 import LogoutButton from '@/components/auth/LogoutButton';
 import { getDashboardPreviewLimit, getDashboardTodayPreview, resolveViewerTier } from '@/lib/curatedMatches';
@@ -214,110 +214,95 @@ export default async function DashboardPage() {
       'Member';
 
     return (
-      <main className="app-interior-page min-h-screen bg-[#060814] px-3 py-8 text-[#F3F5FF] sm:px-4 sm:py-10">
+      <main className="min-h-screen bg-[#0D0D1A] text-[#F3F5FF]">
         <div
           aria-hidden
           className="pointer-events-none fixed inset-0 opacity-90"
           style={{
             background:
-              'radial-gradient(1100px 540px at 14% -8%, rgba(124,58,237,0.25), transparent 58%), radial-gradient(980px 520px at 92% -2%, rgba(236,72,153,0.2), transparent 55%), radial-gradient(820px 460px at 50% 110%, rgba(59,130,246,0.17), transparent 60%)',
+              'radial-gradient(1100px 540px at 14% -8%, rgba(124,58,237,0.2), transparent 58%), radial-gradient(980px 520px at 92% -2%, rgba(236,72,153,0.15), transparent 55%)',
           }}
         />
 
-        <div className="relative mx-auto w-full max-w-6xl space-y-6">
-          <header className="space-y-3">
-            <div className="flex items-center justify-between gap-3 rounded-[20px] border border-[#2A3158] bg-[#0B1024]/90 px-4 py-3 shadow-[0_24px_80px_rgba(5,10,30,0.6)] backdrop-blur">
-              <p className="section-label text-[10px] tracking-[0.09em]">Dashboard</p>
-              <LogoutButton className="rounded-xl border border-[#3A4270] bg-[#101735] px-3 py-2 text-sm font-medium text-[#D4D9F4] transition hover:border-[#6B5CE7] hover:text-[#FFFFFF]" />
+        <div className="relative mx-auto w-full max-w-[360px] pb-6">
+          {/* Status bar */}
+          <div className="flex items-center justify-between px-5 pt-3 text-[11px] text-white/50">
+            <span>9:41</span>
+            <span>78%</span>
+          </div>
+
+          {/* Topbar */}
+          <div className="flex items-center justify-between px-4 py-2.5">
+            <span className="text-[10px] font-medium tracking-[0.1em] text-white/35">DASHBOARD</span>
+            <LogoutButton className="rounded-full border border-white/[0.12] px-2.5 py-1 text-[11px] text-white/40" />
+          </div>
+
+          {/* Profile hero */}
+          <article
+            className="mx-3 flex items-end gap-3 overflow-hidden rounded-[20px] p-4"
+            style={{
+              background: 'linear-gradient(135deg,#C4A8E8,#F0B8C8,#F5D5A8)',
+              minHeight: '110px',
+            }}
+          >
+            <div className="flex h-[52px] w-[52px] shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-white/50 bg-[#1A1A2E]">
+              {profilePhoto ? (
+                <img src={profilePhoto} alt={displayName} className="h-full w-full object-cover" />
+              ) : (
+                <User size={20} className="text-[#AEB6D1]" />
+              )}
+            </div>
+            <div className="min-w-0 flex-1">
+              <span className="mb-1 inline-flex items-center gap-1 rounded-full bg-white/85 px-2 py-0.5 text-[10px] font-semibold text-[#15803D]">
+                <CheckCircle2 size={10} />
+                {isVerified ? 'Verified' : 'Unverified'}
+              </span>
+              <h1 className="truncate text-[15px] font-semibold leading-tight text-[#1A1A2E]">
+                {displayName}{typeof profileAge === 'number' ? `, ${profileAge}` : ''}
+              </h1>
+              <p className="mt-0.5 text-[12px] text-[#1A1A2E]/65">{profileLocation}</p>
+            </div>
+            <div className="flex h-[52px] w-[52px] shrink-0 flex-col items-center justify-center rounded-full border-[2.5px] border-[#7F77DD] bg-white/90">
+              <span className="text-[16px] font-bold leading-none text-[#3C3489]">{auraScore}</span>
+              <span className="text-[7px] tracking-wide text-[#534AB7]">AURA</span>
+            </div>
+          </article>
+
+          {/* Inner padded content */}
+          <div className="px-3">
+            {/* Today's Activity */}
+            <p className="mb-2 mt-[14px] text-[10px] font-medium tracking-[0.09em] text-white/35">TODAY&apos;S ACTIVITY</p>
+            <div className="grid grid-cols-3 gap-1.5">
+              <div className="rounded-[14px] border border-white/[0.08] bg-white/[0.06] px-2 py-2.5">
+                <p className="text-[9px] tracking-[0.05em] text-white/40">MATCHES</p>
+                <p className="mt-1 text-[22px] font-bold leading-none text-white">{todayPreview.length}</p>
+                <p className="mt-[3px] text-[9px] text-white/35">Up to {previewLimit} today</p>
+              </div>
+              <div className="rounded-[14px] border border-white/[0.08] bg-white/[0.06] px-2 py-2.5">
+                <p className="text-[9px] tracking-[0.05em] text-white/40">CHATS</p>
+                <p className="mt-1 text-[22px] font-bold leading-none text-white">{activeConversationCount}</p>
+                <p className="mt-[3px] text-[9px] text-white/35">Active threads</p>
+              </div>
+              <div className="rounded-[14px] border border-white/[0.08] bg-white/[0.06] px-2 py-2.5">
+                <p className="text-[9px] tracking-[0.05em] text-white/40">TRACKS</p>
+                <p className="mt-1 text-[22px] font-bold leading-none text-white">{connectionTrackSummary.recentUpdates}</p>
+                <p className="mt-[3px] text-[9px] text-white/35">Connection</p>
+              </div>
             </div>
 
-            <article className="overflow-hidden rounded-[20px] border border-[#2A3158] bg-[#EEF0F6] text-[#1A1A2E] shadow-[0_24px_80px_rgba(5,10,30,0.6)] backdrop-blur">
-              <div className="h-28 bg-gradient-to-r from-[#C8B2EC] via-[#E6BED4] to-[#F0E0CE] sm:h-36" />
-              <div className="relative flex items-end gap-3 p-3 pt-0 sm:p-5 sm:pt-0">
-                <div className="relative -mt-12 h-20 w-20 shrink-0 overflow-hidden rounded-full border-[4px] border-[#2F245C] bg-[#20243B] sm:-mt-16 sm:h-24 sm:w-24">
-                  {profilePhoto ? (
-                    <img src={profilePhoto} alt={displayName} className="h-full w-full object-cover" />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center">
-                      <User size={36} className="text-[#AEB6D1]" />
-                    </div>
-                  )}
-                  <button type="button" className="pointer-events-none absolute bottom-1 right-1 inline-flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-[#7E46DB] to-[#D02E8B] text-white" aria-label="Profile photo">
-                    <Camera size={16} />
-                  </button>
-                </div>
-
-                <div className="min-w-0 flex-1 pb-1">
-                  <div className="mb-1">
-                    <span className="inline-flex items-center gap-1.5 rounded-full border border-[#8CDCB9] bg-[#DBF5E9] px-3 py-1 text-xs font-medium text-[#1E7D5A] sm:text-sm">
-                      <CheckCircle2 size={15} />
-                      {isVerified ? 'Verified' : 'Unverified'}
-                    </span>
-                  </div>
-                  <h1 className="truncate text-[24px] font-semibold leading-tight tracking-tight text-[#1F1A3A] sm:text-[36px]">
-                    {displayName}
-                    {typeof profileAge === 'number' ? `, ${profileAge}` : ''}
-                  </h1>
-                  <p className="mt-1 flex items-center gap-1.5 text-[15px] text-[#464262] sm:text-[17px]">
-                    <MapPin size={17} />
-                    {profileLocation}
-                  </p>
-                </div>
-
-                <div className="shrink-0 pb-1 text-center">
-                  <div
-                    className="grid h-16 w-16 place-items-center rounded-full text-4xl font-semibold text-[#7B5BE9] sm:h-20 sm:w-20"
-                    style={{
-                      background:
-                        `conic-gradient(#7B5BE9 ${Math.round((auraScore / 100) * 360)}deg, rgba(123,91,233,0.2) 0deg)`,
-                    }}
-                  >
-                    <div className="grid h-[58px] w-[58px] place-items-center rounded-full bg-[#EEF0F6] text-[32px] font-semibold text-[#4A4666] sm:h-[74px] sm:w-[74px] sm:text-[40px]">
-                      {auraScore}
-                    </div>
-                  </div>
-                  <p className="mt-1 text-xs font-semibold text-[#6F5BDC] sm:mt-2 sm:text-base">Aura Score</p>
-                </div>
-              </div>
-            </article>
-          </header>
-
-          <section className="grid grid-cols-3 gap-2 md:gap-4">
-            <article className="stat-card rounded-[14px] border border-white/10 bg-[#1E1E35] px-[8px] py-[10px] shadow-[0_20px_64px_rgba(5,10,30,0.55)] backdrop-blur md:rounded-2xl md:p-5">
-              <p className="section-label stat-label text-[9px] tracking-[0.08em]">MATCHES</p>
-              <p className="stat-value mt-1 text-[28px] font-semibold leading-none text-[#F8F9FF]">{todayPreview.length}</p>
-              <p className="stat-desc mt-1 text-[10px] text-white/75">Up to {previewLimit} today</p>
-            </article>
-
-            <article className="stat-card rounded-[14px] border border-white/10 bg-[#1E1E35] px-[8px] py-[10px] shadow-[0_20px_64px_rgba(5,10,30,0.55)] backdrop-blur md:rounded-2xl md:p-5">
-              <p className="section-label stat-label text-[9px] tracking-[0.08em]">CHATS</p>
-              <p className="stat-value mt-1 text-[28px] font-semibold leading-none text-[#F8F9FF]">{activeConversationCount}</p>
-              <p className="stat-desc mt-1 text-[10px] text-white/75">Active threads</p>
-            </article>
-
-            <article className="stat-card rounded-[14px] border border-white/10 bg-[#1E1E35] px-[8px] py-[10px] shadow-[0_20px_64px_rgba(5,10,30,0.55)] backdrop-blur md:rounded-2xl md:p-5">
-              <p className="section-label stat-label text-[9px] tracking-[0.08em]">TRACKS</p>
-              <p className="stat-value mt-1 text-[28px] font-semibold leading-none text-[#F8F9FF]">{connectionTrackSummary.recentUpdates}</p>
-              <p className="stat-desc mt-1 text-[10px] text-white/75">Connection</p>
-            </article>
-          </section>
-
-          <section className="rounded-2xl border border-[#2A3158] bg-[#0B1024]/90 p-3 shadow-[0_24px_80px_rgba(5,10,30,0.6)] backdrop-blur sm:p-5">
-            <div className="mb-3 flex items-center justify-between gap-2 sm:mb-4 sm:gap-3">
-              <div className="min-w-0">
-                <h2 className="text-3xl font-semibold tracking-tight text-[#F8F9FF] sm:text-[40px]">Today&apos;s matches</h2>
-                <p className="body-on-dark mt-1 text-xs text-[#A9B0D0] sm:text-sm">Showing {todayPreview.length} of up to {previewLimit} curated matches.</p>
-              </div>
+            {/* Today's matches row */}
+            <div className="mb-2 mt-[14px] flex items-center justify-between">
+              <span className="text-[16px] font-semibold text-white">Today&apos;s matches</span>
               <Link
                 href="/app/discover"
-                className="inline-flex shrink-0 items-center justify-center rounded-full border border-[#7E62F2]/60 bg-gradient-to-r from-[#4D5FE6] via-[#7E46DB] to-[#D02E8B] px-3 py-2 text-xs font-semibold text-white transition hover:brightness-110 sm:rounded-xl sm:px-4 sm:py-2.5 sm:text-sm"
+                className="rounded-full bg-gradient-to-r from-[#D4537E] to-[#7F77DD] px-3 py-[5px] text-[11px] font-semibold text-white"
               >
-                View all matches
+                View all
               </Link>
             </div>
 
             {todayPreview.length > 0 ? (
-              <div className="grid gap-3 md:grid-cols-2">
+              <div className="space-y-2">
                 {todayPreview.map(match => {
                   const potential =
                     typeof match.compatibilityScore === 'number' &&
@@ -327,27 +312,24 @@ export default async function DashboardPage() {
                     <Link
                       key={match.id}
                       href={`/matches/${match.id}`}
-                      className="rounded-xl border border-[#343E69] bg-[#151C3C] p-4 transition hover:border-[#6B5CE7]"
+                      className="block rounded-[14px] border border-white/[0.08] bg-white/[0.06] p-3"
                     >
-                      <p className="text-lg font-semibold text-[#F8F9FF]">
+                      <p className="text-[14px] font-semibold text-white">
                         {match.matchedProfile.firstName}
                         {typeof match.matchedProfile.age === 'number' ? `, ${match.matchedProfile.age}` : ''}
                       </p>
-                      <p className="mt-1 text-sm text-[#A9B0D0]">
+                      <p className="mt-0.5 text-[11px] text-white/60">
                         {match.matchedProfile.location || 'Location not shared yet'}
                       </p>
-                      <p className="mt-2 line-clamp-2 text-sm text-[#CBD3F5]">{match.explanation || 'Compatibility summary available in Discover.'}</p>
-                      <div className="mt-3 flex flex-wrap gap-2">
+                      <p className="mt-1.5 line-clamp-2 text-[11px] text-white/75">{match.explanation || 'Compatibility summary available in Discover.'}</p>
+                      <div className="mt-2 flex flex-wrap gap-1.5">
                         {potential ? (
-                          <span className="rounded-full border border-[#8B6A2E]/55 bg-[#2A2112] px-2.5 py-1 text-[11px] font-medium text-[#F4C977]">
+                          <span className="rounded-full border border-[#8B6A2E]/55 bg-[#2A2112] px-2 py-0.5 text-[10px] font-medium text-[#F4C977]">
                             Potential Fit
                           </span>
                         ) : null}
                         {match.compatibilityReasons.slice(0, 2).map(reason => (
-                          <span
-                            key={reason}
-                            className="rounded-full border border-[#4E5A92] bg-[#1B2550] px-2.5 py-1 text-[11px] text-[#D8E1FF]"
-                          >
+                          <span key={reason} className="rounded-full border border-[#4E5A92] bg-[#1B2550] px-2 py-0.5 text-[10px] text-[#D8E1FF]">
                             {reason}
                           </span>
                         ))}
@@ -357,40 +339,41 @@ export default async function DashboardPage() {
                 })}
               </div>
             ) : (
-              <div className="rounded-[14px] border border-dashed border-white/12 bg-[#0E1430] p-4 text-center text-sm text-[#A9B0D0]">
-                <p>No fresh curated matches for today yet.</p>
-                <p className="mt-1 text-[11px] text-white/35">Check back soon.</p>
+              <div className="rounded-[14px] border border-dashed border-white/[0.12] bg-white/[0.04] p-4 text-center">
+                <p className="text-[12px] text-white/35">No fresh matches yet today</p>
+                <p className="mt-[3px] text-[10px] text-white/20">Check back soon</p>
               </div>
             )}
-          </section>
 
-          <section className="grid grid-cols-2 gap-2 md:gap-4">
-            <article className="rounded-2xl border border-[#2A3158] bg-[#0B1024]/88 p-5 shadow-[0_20px_64px_rgba(5,10,30,0.55)] backdrop-blur">
-              <p className="mt-[14px] text-[10px] uppercase tracking-[0.09em] text-[#99A4D4]">Onboarding status</p>
-              <p className="mt-2 text-base font-medium text-[#F8F9FF]">Complete</p>
-              <p className="mt-1 text-sm text-[#A9B0D0]">{responsesCount} saved categories</p>
-            </article>
+            {/* Bottom 2-col grid */}
+            <div className="mt-1.5 grid grid-cols-2 gap-1.5">
+              <div className="rounded-[14px] border border-white/[0.08] bg-white/[0.06] p-3">
+                <p className="text-[9px] tracking-[0.07em] text-white/35">ONBOARDING</p>
+                <p className="mt-1 text-[14px] font-semibold text-white">Complete</p>
+                <p className="mt-0.5 text-[10px] text-white/40">{responsesCount} categories saved</p>
+              </div>
+              <div className="rounded-[14px] border border-white/[0.08] bg-white/[0.06] p-3">
+                <p className="text-[9px] tracking-[0.07em] text-white/35">YOUR AURA</p>
+                <p className="mt-1 text-[14px] font-semibold text-[#A78BFA]">Score {auraScore}</p>
+                <p className="mt-0.5 text-[10px] text-white/40">Top 5%</p>
+              </div>
+            </div>
 
-            <article className="rounded-2xl border border-[#2A3158] bg-[#0B1024]/88 p-5 shadow-[0_20px_64px_rgba(5,10,30,0.55)] backdrop-blur">
-              <p className="mt-[14px] text-[10px] uppercase tracking-[0.09em] text-[#99A4D4]">Your aura</p>
-              <p className="mt-2 text-base font-medium text-[#A78BFA]">Score {auraScore}</p>
-              <p className="mt-1 text-sm text-[#A9B0D0]">Profile readiness</p>
-            </article>
-          </section>
-
-          <section className="rounded-2xl border border-[rgba(127,119,221,0.25)] bg-[rgba(127,119,221,0.12)] p-4 shadow-[0_20px_64px_rgba(5,10,30,0.55)] backdrop-blur sm:p-5">
-            <p className="mt-[14px] text-[10px] uppercase tracking-[0.09em] text-[#99A4D4]">Momentum tip</p>
-            <ul className="mt-2 space-y-2">
-              <li className="flex items-start gap-2 text-base font-medium text-[#F8F9FF]">
-                <span className="mt-[9px] h-[5px] w-[5px] shrink-0 rounded-full bg-[#C9C0FF]" />
-                <span>Open Discover to act on today&apos;s best fits.</span>
-              </li>
-              <li className="flex items-start gap-2 text-sm text-[#A9B0D0]">
-                <span className="mt-[7px] h-[5px] w-[5px] shrink-0 rounded-full bg-[#C9C0FF]" />
-                <span>Move one active conversation forward today.</span>
-              </li>
-            </ul>
-          </section>
+            {/* Tip card */}
+            <div className="mt-1.5 rounded-[14px] border border-[rgba(127,119,221,0.25)] bg-[rgba(127,119,221,0.12)] p-3">
+              <p className="text-[9px] tracking-[0.07em] text-[rgba(167,139,250,0.8)]">MOMENTUM TIP</p>
+              <div className="mt-1.5 space-y-1">
+                <div className="flex items-start gap-[5px] text-[11px] leading-[1.4] text-white/75">
+                  <span className="mt-1 h-[5px] w-[5px] shrink-0 rounded-full bg-[#7F77DD]" />
+                  <span>Open Discover to act on today&apos;s best fits</span>
+                </div>
+                <div className="flex items-start gap-[5px] text-[11px] leading-[1.4] text-white/75">
+                  <span className="mt-1 h-[5px] w-[5px] shrink-0 rounded-full bg-[#7F77DD]" />
+                  <span>Move one active conversation forward today</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </main>
     );
