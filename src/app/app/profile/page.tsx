@@ -806,15 +806,15 @@ export default function ProfilePage() {
 
       {activeTab === 'stats' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <div className="glass" style={{ borderRadius: 20, padding: '20px 24px' }}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: 'rgba(240,240,255,0.4)', marginBottom: 14 }}>Profile strength</div>
+          <div className="profile-section glass" style={{ borderRadius: 20, padding: '20px 24px' }}>
+            <div className="section-label" style={{ fontSize: 13, fontWeight: 600, color: '#6B5EA8', marginBottom: 14 }}>Profile strength</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {profileStrengthItems.map(item => (
                 <div key={item.label} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <div style={{ width: 20, height: 20, borderRadius: '50%', background: item.done ? 'rgba(52,211,153,0.15)' : 'rgba(255,255,255,0.06)', border: `1px solid ${item.done ? 'rgba(52,211,153,0.3)' : 'rgba(255,255,255,0.1)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <div style={{ width: 20, height: 20, borderRadius: '50%', background: item.done ? 'rgba(52,211,153,0.15)' : 'rgba(91,79,207,0.08)', border: `1px solid ${item.done ? 'rgba(52,211,153,0.3)' : 'rgba(91,79,207,0.22)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                     {item.done && <CheckCircle size={12} color="#34d399" />}
                   </div>
-                  <span style={{ fontSize: 13, color: item.done ? 'rgba(240,240,255,0.7)' : 'rgba(240,240,255,0.35)' }}>{item.label}</span>
+                  <span style={{ fontSize: 13, color: item.done ? '#2D2848' : '#7A7692' }}>{item.label}</span>
                 </div>
               ))}
             </div>
