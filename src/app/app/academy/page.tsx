@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { BookOpen, Lock, Clock, Zap, ArrowRight, Trophy } from 'lucide-react';
+import { BookOpen, Clock, Zap, ArrowRight, Trophy } from 'lucide-react';
 
 const COURSES = [
   {
@@ -11,7 +11,7 @@ const COURSES = [
     desc: 'Understand your attachment style and how it shapes every relationship you have.',
     lessons: 8, done: 3, time: '45 min',
     color: '#a78bfa', colorBg: 'rgba(167,139,250,0.1)', colorBorder: 'rgba(167,139,250,0.2)',
-    premium: false, tags: ['Psychology', 'Self-awareness'],
+    tags: ['Psychology', 'Self-awareness'],
   },
   {
     id: 'communication',
@@ -20,7 +20,7 @@ const COURSES = [
     desc: 'Say what you mean, hear what they mean. The skill that makes or breaks relationships.',
     lessons: 10, done: 1, time: '60 min',
     color: '#34d399', colorBg: 'rgba(52,211,153,0.1)', colorBorder: 'rgba(52,211,153,0.2)',
-    premium: false, tags: ['Communication', 'Conflict'],
+    tags: ['Communication', 'Conflict'],
   },
   {
     id: 'redflags',
@@ -29,7 +29,7 @@ const COURSES = [
     desc: 'Learn to spot patterns early. Real examples, real situations, research-backed.',
     lessons: 6, done: 6, time: '35 min',
     color: '#fb7185', colorBg: 'rgba(251,113,133,0.1)', colorBorder: 'rgba(251,113,133,0.2)',
-    premium: false, tags: ['Safety', 'Awareness'],
+    tags: ['Safety', 'Awareness'],
   },
   {
     id: 'lovelanguages',
@@ -38,7 +38,7 @@ const COURSES = [
     desc: "Chapman's 5 languages — learn how to apply them in real modern relationships.",
     lessons: 5, done: 0, time: '30 min',
     color: '#fbbf24', colorBg: 'rgba(251,191,36,0.1)', colorBorder: 'rgba(251,191,36,0.2)',
-    premium: false, tags: ['Intimacy', 'Connection'],
+    tags: ['Intimacy', 'Connection'],
   },
   {
     id: 'confidence',
@@ -47,7 +47,7 @@ const COURSES = [
     desc: "Real confidence that attracts the right people — not fake it till you make it.",
     lessons: 7, done: 0, time: '40 min',
     color: '#60a5fa', colorBg: 'rgba(96,165,250,0.1)', colorBorder: 'rgba(96,165,250,0.2)',
-    premium: true, tags: ['Mindset', 'Dating'],
+    tags: ['Mindset', 'Dating'],
   },
   {
     id: 'couples',
@@ -56,7 +56,7 @@ const COURSES = [
     desc: 'Research-backed habits for couples who stay deeply connected long-term.',
     lessons: 12, done: 0, time: '75 min',
     color: '#f472b6', colorBg: 'rgba(244,114,182,0.1)', colorBorder: 'rgba(244,114,182,0.2)',
-    premium: true, tags: ['Relationship', 'Long-term'],
+    tags: ['Relationship', 'Long-term'],
   },
 ];
 
@@ -165,9 +165,8 @@ export default function AcademyPage() {
             <div
               key={course.id}
               className="glass card-lift"
-              style={{ borderRadius: 20, padding: '20px', cursor: 'pointer', border: `1px solid ${isDone ? course.colorBorder : 'rgba(255,255,255,0.07)'}`, background: isDone ? course.colorBg : 'rgba(255,255,255,0.035)', opacity: course.premium ? 0.72 : 1, position: 'relative', overflow: 'hidden' }}
+              style={{ borderRadius: 20, padding: '20px', cursor: 'pointer', border: `1px solid ${isDone ? course.colorBorder : 'rgba(255,255,255,0.07)'}`, background: isDone ? course.colorBg : 'rgba(255,255,255,0.035)', position: 'relative', overflow: 'hidden' }}
             >
-              {course.premium && <div style={{ position: 'absolute', top: 12, right: 12 }}><Lock size={14} color="rgba(240,240,255,0.3)" /></div>}
               {isDone && <div style={{ position: 'absolute', top: 12, right: 12 }}><Trophy size={14} color={course.color} /></div>}
 
               <div style={{ fontSize: 32, marginBottom: 12 }}>{course.emoji}</div>
@@ -192,24 +191,11 @@ export default function AcademyPage() {
 
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontSize: 11, color: 'rgba(240,240,255,0.3)', display: 'flex', alignItems: 'center', gap: 3 }}><Clock size={11} /> {course.time}</span>
-                {course.premium
-                  ? <span style={{ fontSize: 11, fontWeight: 600, color: '#fbbf24' }}>Unlock →</span>
-                  : <span style={{ fontSize: 11, fontWeight: 600, color: course.color }}>{isDone ? 'Review →' : course.done > 0 ? 'Continue →' : 'Start →'}</span>
-                }
+                <span style={{ fontSize: 11, fontWeight: 600, color: course.color }}>{isDone ? 'Review →' : course.done > 0 ? 'Continue →' : 'Start →'}</span>
               </div>
             </div>
           );
         })}
-      </div>
-
-      {/* Unlock premium */}
-      <div style={{ marginTop: 24, background: 'linear-gradient(135deg, rgba(251,191,36,0.08), rgba(124,58,237,0.07))', border: '1px solid rgba(251,191,36,0.18)', borderRadius: 20, padding: '18px 20px', display: 'flex', alignItems: 'center', gap: 14 }}>
-        <div style={{ fontSize: 32, flexShrink: 0 }}>🎓</div>
-        <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 3 }}>Unlock all 6 guidance tracks with Clarity</div>
-          <div style={{ fontSize: 12, color: 'rgba(240,240,255,0.4)' }}>Designed as support for active matches, not a separate product layer.</div>
-        </div>
-        <button className="btn-primary" style={{ fontSize: 12, padding: '9px 16px', flexShrink: 0 }}>Upgrade</button>
       </div>
 
       <style>{`

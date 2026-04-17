@@ -21,7 +21,8 @@ function normalizeTierValue(value: unknown): ViewerTier | null {
 }
 
 export function resolveViewerTier(profile: Record<string, unknown> | null | undefined): ViewerTier {
-  if (!profile) return 'free';
+  // Billing UI is temporarily disabled, so all users get full-access behavior.
+  if (!profile) return 'paid';
 
   const directTier =
     normalizeTierValue(profile.tier) ??
@@ -41,7 +42,7 @@ export function resolveViewerTier(profile: Record<string, unknown> | null | unde
 
   if (paidFlag) return 'paid';
 
-  return 'free';
+  return 'paid';
 }
 
 function isSameLocalDay(a: Date, b: Date): boolean {
@@ -70,7 +71,7 @@ function isEligibleForTier(match: MatchView, tier: ViewerTier): boolean {
 }
 
 export function getDashboardPreviewLimit(tier: ViewerTier): number {
-  return tier === 'paid' ? 6 : 3;
+  return 6;
 }
 
 export function getDashboardTodayPreview(matches: MatchView[], tier: ViewerTier, now = new Date()): MatchView[] {

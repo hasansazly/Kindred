@@ -2,7 +2,7 @@
 
 import { ReactNode, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Bell, Shield, CreditCard, Trash2, ChevronRight, LogOut, HelpCircle } from 'lucide-react';
+import { Bell, Shield, Trash2, ChevronRight, LogOut, HelpCircle } from 'lucide-react';
 
 function Section({ title, icon, children }: { title: string; icon: ReactNode; children: ReactNode }) {
   return (
@@ -159,33 +159,6 @@ export default function SettingsPage() {
           label="Blocked users"
           right={<button style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#5F5E5A', display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, fontFamily: 'inherit' }}>Manage <ChevronRight size={14} /></button>}
         />
-      </Section>
-
-      {/* ─ Subscription ─ */}
-      <Section title="Subscription" icon={<CreditCard size={16} color="#fb7185" />}>
-        <div style={{ padding: '12px 20px 16px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <div style={{ flex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                <span style={{ fontSize: 16, fontWeight: 700 }}>Free Plan</span>
-                <span style={{ background: 'rgba(139,92,246,0.12)', border: '1px solid rgba(139,92,246,0.25)', borderRadius: 999, padding: '2px 8px', fontSize: 11, fontWeight: 600, color: '#a78bfa' }}>CURRENT</span>
-              </div>
-              <div style={{ fontSize: 13, color: '#5F5E5A', marginBottom: 14 }}>3 daily matches · Basic features</div>
-            </div>
-          </div>
-          <div className="settings-sub-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-            <div style={{ background: 'linear-gradient(135deg, rgba(124,58,237,0.12), rgba(219,39,119,0.08))', border: '1px solid rgba(139,92,246,0.2)', borderRadius: 14, padding: '14px 16px' }}>
-              <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 2 }}>Spark — $19/mo</div>
-              <div style={{ fontSize: 12, color: 'rgba(240,240,255,0.45)', marginBottom: 10 }}>5 matches + AI Coach + Date Planner</div>
-              <button className="btn-primary" style={{ width: '100%', justifyContent: 'center', fontSize: 12, padding: '9px' }}>Upgrade</button>
-            </div>
-            <div style={{ background: '#FFFFFF', border: '1px solid #E5E3DF', borderRadius: 14, padding: '14px 16px' }}>
-              <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 2 }}>Deep — $39/mo</div>
-              <div style={{ fontSize: 12, color: '#5F5E5A', marginBottom: 10 }}>Unlimited + advanced features</div>
-              <button className="btn-ghost" style={{ width: '100%', justifyContent: 'center', fontSize: 12, padding: '9px' }}>Learn More</button>
-            </div>
-          </div>
-        </div>
       </Section>
 
       {/* ─ Support ─ */}

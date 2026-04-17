@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { Sparkles } from 'lucide-react';
 import { redirect } from 'next/navigation';
 import MatchCard from '@/components/matches/MatchCard';
 import { getDiscoverSections, resolveViewerTier } from '@/lib/curatedMatches';
@@ -125,22 +124,13 @@ export default async function AppDiscoverPage() {
           statusLabel="active"
         />
 
-        {tier === 'paid' ? (
-          <Section
-            title="Potential Fit"
-            subtitle="Exploratory compatibility range (50-64) for paid discovery."
-            matches={sections.potentialFit}
-            emptyText="No potential-fit explorations right now."
-            statusLabel="potential_fit"
-          />
-        ) : (
-          <section className="rounded-2xl border border-[#2A3158] bg-[#0B1024]/90 p-5 shadow-[0_24px_80px_rgba(5,10,30,0.6)] backdrop-blur">
-            <p className="flex items-center gap-2 text-sm italic text-white/50">
-              <Sparkles size={15} className="text-[#C9C0FF]" />
-              Potential Fit section is available on paid plans.
-            </p>
-          </section>
-        )}
+        <Section
+          title="Potential Fit"
+          subtitle="Exploratory compatibility range (50-64)."
+          matches={sections.potentialFit}
+          emptyText="No potential-fit explorations right now."
+          statusLabel="potential_fit"
+        />
       </div>
     </main>
   );

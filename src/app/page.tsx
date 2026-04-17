@@ -9,7 +9,6 @@ import {
 
 const NAV_LINKS = [
   { label: 'How It Works', href: '#how-it-works' },
-  { label: 'Pricing', href: '#pricing' },
   { label: 'Sign in', href: '/auth/login' },
 ];
 
@@ -569,106 +568,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── Pricing ── */}
-      <section id="pricing" className="fade-in-up" style={{ padding: '100px 24px', background: '#FDF0F5' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: 64 }}>
-            <h2 style={{ fontSize: 'clamp(32px, 4vw, 52px)', fontWeight: 800, letterSpacing: '-0.03em', marginBottom: 16 }}>Simple, fair pricing.</h2>
-            <p style={{ fontSize: 17, color: '#5F5E5A' }}>Start with clarity. Upgrade when you want deeper guidance.</p>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20, maxWidth: 900, margin: '0 auto' }} className="pricing-grid">
-            {[
-              {
-                name: 'Free',
-                price: '$0',
-                period: 'forever',
-                features: ['3 curated daily matches', 'Core compatibility view', 'Standard messaging', 'Profile setup'],
-                cta: 'Start Free',
-                href: '/auth/signup',
-                highlight: false,
-              },
-              {
-                name: 'Clarity',
-                price: '$19',
-                period: 'per month',
-                features: ['5 curated daily matches', 'Full match explanation', 'Conversation Guidance', 'Connection Track', 'Trust Signals', 'Priority matching'],
-                cta: 'Start 7-Day Free Trial',
-                href: '/auth/signup',
-                highlight: true,
-              },
-              {
-                name: 'Intelligence',
-                price: '$39',
-                period: 'per month',
-                features: ['Expanded match access', 'Everything in Clarity', 'Deeper compatibility insights', 'Advanced connection guidance', 'Date intention tools', 'VIP support'],
-                cta: 'Go Deep',
-                href: '/auth/signup',
-                highlight: false,
-              },
-            ].map(plan => (
-              <div
-                key={plan.name}
-                className={`pricing-item ${plan.highlight ? 'pricing-item-featured' : ''}`}
-                style={{
-                  borderRadius: 24,
-                  padding: plan.highlight ? '2px' : undefined,
-                  background: plan.highlight ? '#EEEDFE' : undefined,
-                }}
-              >
-                <div
-                  className={plan.highlight ? '' : ''}
-                  style={{
-                    background: '#FFFFFF',
-                    border: plan.highlight ? '2px solid #7F77DD' : '0.5px solid #CECBF6',
-                    borderRadius: plan.highlight ? 24 : 24,
-                    padding: 28,
-                    height: '100%',
-                    position: 'relative',
-                  }}
-                >
-                  {plan.highlight && (
-                    <div style={{ position: 'absolute', top: -12, left: '50%', transform: 'translateX(-50%)', background: '#7F77DD', borderRadius: 999, padding: '4px 14px', fontSize: 12, fontWeight: 700, color: 'white', whiteSpace: 'nowrap' }}>
-                      MOST POPULAR
-                    </div>
-                  )}
-                  <div style={{ marginBottom: 6, fontSize: 13, fontWeight: 600, color: '#534AB7', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{plan.name}</div>
-                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 4 }}>
-                    <span style={{ fontSize: 42, fontWeight: 800, letterSpacing: '-0.03em' }}>{plan.price}</span>
-                    <span style={{ fontSize: 13, color: '#534AB7' }}>/{plan.period}</span>
-                  </div>
-                  <div style={{ height: 1, background: '#F4C0D1', margin: '20px 0' }} />
-                  <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 28 }}>
-                    {plan.features.map(f => (
-                      <li key={f} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, color: '#1A1A2E' }}>
-                        <CheckCircle size={15} color={plan.highlight ? '#7F77DD' : '#1D9E75'} />
-                        {f}
-                      </li>
-                    ))}
-                  </ul>
-                  <Link
-                    href={plan.href}
-                    className={plan.highlight ? 'btn-primary' : 'btn-ghost'}
-                    style={{
-                      width: '100%',
-                      justifyContent: 'center',
-                      display: 'flex',
-                      ...(plan.name === 'Free'
-                        ? { opacity: 0.85 }
-                        : plan.name === 'Intelligence'
-                          ? { borderColor: '#7F77DD', color: '#7F77DD' }
-                          : {}),
-                    }}
-                  >
-                    {plan.name === 'Clarity' ? 'Start Free Trial' : plan.name === 'Intelligence' ? 'Choose Intelligence' : 'Start Free'}
-                  </Link>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* ── CTA Banner ── */}
       <section className="fade-in-up" style={{ padding: '100px 24px' }}>
         <div style={{ maxWidth: 800, margin: '0 auto', textAlign: 'center' }}>
@@ -738,9 +637,6 @@ export default function LandingPage() {
           .features-grid { grid-template-columns: 1fr !important; }
           .steps-grid { grid-template-columns: 1fr !important; gap: 16px !important; }
           .testimonials-grid { grid-template-columns: 1fr !important; }
-          .pricing-grid { display: flex !important; flex-direction: column; }
-          .pricing-item { order: 2; }
-          .pricing-item-featured { order: 1; }
         }
         @media (max-width: 767px) {
           .hamburger-btn { display: flex !important; }
@@ -756,7 +652,7 @@ export default function LandingPage() {
           }
         }
         @media (min-width: 768px) and (max-width: 1024px) {
-          .features-grid, .pricing-grid {
+          .features-grid {
             grid-template-columns: repeat(2, 1fr) !important;
           }
         }

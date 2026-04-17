@@ -203,9 +203,7 @@ export default async function DashboardPage() {
             <article className="stat-card rounded-2xl border border-white/10 bg-[#1E1E35] p-5 shadow-[0_20px_64px_rgba(5,10,30,0.55)] backdrop-blur">
               <p className="section-label stat-label">Today&apos;s matches</p>
               <p className="stat-value mt-2 text-3xl font-semibold text-[#F8F9FF]">{todayPreview.length}</p>
-              <p className="stat-desc mt-1 text-xs text-white/75">
-                {tier === 'paid' ? 'Paid limit: up to 6' : 'Free limit: up to 3'}
-              </p>
+              <p className="stat-desc mt-1 text-xs text-white/75">Showing today&apos;s curated preview (up to 6).</p>
             </article>
 
             <article className="stat-card rounded-2xl border border-white/10 bg-[#1E1E35] p-5 shadow-[0_20px_64px_rgba(5,10,30,0.55)] backdrop-blur">
@@ -243,7 +241,6 @@ export default async function DashboardPage() {
               <div className="grid gap-3 md:grid-cols-2">
                 {todayPreview.map(match => {
                   const potential =
-                    tier === 'paid' &&
                     typeof match.compatibilityScore === 'number' &&
                     match.compatibilityScore >= 50 &&
                     match.compatibilityScore < 65;
