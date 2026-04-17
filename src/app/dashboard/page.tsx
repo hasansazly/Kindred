@@ -225,15 +225,16 @@ export default async function DashboardPage() {
         />
 
         <div className="relative mx-auto w-full max-w-6xl space-y-6">
-          <header className="space-y-4">
-            <div className="flex items-start justify-between gap-4 rounded-[22px] border border-[#2A3158] bg-[#0B1024]/90 p-4 shadow-[0_24px_80px_rgba(5,10,30,0.6)] backdrop-blur">
-              <p className="section-label mt-[14px] text-[10px] tracking-[0.09em]">Dashboard</p>
-              <LogoutButton className="rounded-xl border border-[#3A4270] bg-[#101735] px-4 py-2.5 text-sm font-medium text-[#D4D9F4] transition hover:border-[#6B5CE7] hover:text-[#FFFFFF]" />
+          <header className="space-y-3">
+            <div className="flex items-center justify-between gap-3 rounded-[20px] border border-[#2A3158] bg-[#0B1024]/90 px-4 py-3 shadow-[0_24px_80px_rgba(5,10,30,0.6)] backdrop-blur">
+              <p className="section-label text-[10px] tracking-[0.09em]">Dashboard</p>
+              <LogoutButton className="rounded-xl border border-[#3A4270] bg-[#101735] px-3 py-2 text-sm font-medium text-[#D4D9F4] transition hover:border-[#6B5CE7] hover:text-[#FFFFFF]" />
             </div>
 
-            <article className="rounded-[20px] border border-[#2A3158] bg-[#EEF0F6] p-4 text-[#1A1A2E] shadow-[0_24px_80px_rgba(5,10,30,0.6)] backdrop-blur sm:p-5">
-              <div className="flex items-center gap-3">
-                <div className="relative h-20 w-20 overflow-hidden rounded-full border-[4px] border-[#2F245C] bg-[#20243B] sm:h-24 sm:w-24">
+            <article className="overflow-hidden rounded-[20px] border border-[#2A3158] bg-[#EEF0F6] text-[#1A1A2E] shadow-[0_24px_80px_rgba(5,10,30,0.6)] backdrop-blur">
+              <div className="h-28 bg-gradient-to-r from-[#C8B2EC] via-[#E6BED4] to-[#F0E0CE] sm:h-36" />
+              <div className="relative flex items-end gap-3 p-3 pt-0 sm:p-5 sm:pt-0">
+                <div className="relative -mt-12 h-20 w-20 shrink-0 overflow-hidden rounded-full border-[4px] border-[#2F245C] bg-[#20243B] sm:-mt-16 sm:h-24 sm:w-24">
                   {profilePhoto ? (
                     <img src={profilePhoto} alt={displayName} className="h-full w-full object-cover" />
                   ) : (
@@ -246,24 +247,24 @@ export default async function DashboardPage() {
                   </button>
                 </div>
 
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <h1 className="truncate text-[26px] font-semibold leading-none tracking-tight text-[#1F1A3A] sm:text-[36px]">
-                      {displayName}
-                      {typeof profileAge === 'number' ? `, ${profileAge}` : ''}
-                    </h1>
-                    <span className="inline-flex items-center gap-1.5 rounded-full border border-[#8CDCB9] bg-[#DBF5E9] px-3 py-1 text-sm font-medium text-[#1E7D5A]">
-                      <CheckCircle2 size={16} />
+                <div className="min-w-0 flex-1 pb-1">
+                  <div className="mb-1">
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-[#8CDCB9] bg-[#DBF5E9] px-3 py-1 text-xs font-medium text-[#1E7D5A] sm:text-sm">
+                      <CheckCircle2 size={15} />
                       {isVerified ? 'Verified' : 'Unverified'}
                     </span>
                   </div>
-                  <p className="mt-2 flex items-center gap-1.5 text-[17px] text-[#464262]">
+                  <h1 className="truncate text-[24px] font-semibold leading-tight tracking-tight text-[#1F1A3A] sm:text-[36px]">
+                    {displayName}
+                    {typeof profileAge === 'number' ? `, ${profileAge}` : ''}
+                  </h1>
+                  <p className="mt-1 flex items-center gap-1.5 text-[15px] text-[#464262] sm:text-[17px]">
                     <MapPin size={17} />
                     {profileLocation}
                   </p>
                 </div>
 
-                <div className="shrink-0 text-center">
+                <div className="shrink-0 pb-1 text-center">
                   <div
                     className="grid h-16 w-16 place-items-center rounded-full text-4xl font-semibold text-[#7B5BE9] sm:h-20 sm:w-20"
                     style={{
@@ -275,7 +276,7 @@ export default async function DashboardPage() {
                       {auraScore}
                     </div>
                   </div>
-                  <p className="mt-2 text-sm font-semibold text-[#6F5BDC] sm:text-base">Aura Score</p>
+                  <p className="mt-1 text-xs font-semibold text-[#6F5BDC] sm:mt-2 sm:text-base">Aura Score</p>
                 </div>
               </div>
             </article>
@@ -283,37 +284,33 @@ export default async function DashboardPage() {
 
           <section className="grid grid-cols-3 gap-2 md:gap-4">
             <article className="stat-card rounded-[14px] border border-white/10 bg-[#1E1E35] px-[8px] py-[10px] shadow-[0_20px_64px_rgba(5,10,30,0.55)] backdrop-blur md:rounded-2xl md:p-5">
-              <p className="section-label stat-label mt-[14px] text-[10px] tracking-[0.09em]">Today&apos;s matches</p>
-              <p className="stat-value mt-2 text-3xl font-semibold text-[#F8F9FF]">{todayPreview.length}</p>
-              <p className="stat-desc mt-1 text-xs text-white/75">Showing today&apos;s curated preview (up to 6).</p>
+              <p className="section-label stat-label text-[9px] tracking-[0.08em]">MATCHES</p>
+              <p className="stat-value mt-1 text-[28px] font-semibold leading-none text-[#F8F9FF]">{todayPreview.length}</p>
+              <p className="stat-desc mt-1 text-[10px] text-white/75">Up to {previewLimit} today</p>
             </article>
 
             <article className="stat-card rounded-[14px] border border-white/10 bg-[#1E1E35] px-[8px] py-[10px] shadow-[0_20px_64px_rgba(5,10,30,0.55)] backdrop-blur md:rounded-2xl md:p-5">
-              <p className="section-label stat-label mt-[14px] text-[10px] tracking-[0.09em]">Active conversations</p>
-              <p className="stat-value mt-2 text-3xl font-semibold text-[#F8F9FF]">{activeConversationCount}</p>
-              <p className="stat-desc mt-1 text-xs text-white/75">Only currently active and messageable threads.</p>
+              <p className="section-label stat-label text-[9px] tracking-[0.08em]">CHATS</p>
+              <p className="stat-value mt-1 text-[28px] font-semibold leading-none text-[#F8F9FF]">{activeConversationCount}</p>
+              <p className="stat-desc mt-1 text-[10px] text-white/75">Active threads</p>
             </article>
 
             <article className="stat-card rounded-[14px] border border-white/10 bg-[#1E1E35] px-[8px] py-[10px] shadow-[0_20px_64px_rgba(5,10,30,0.55)] backdrop-blur md:rounded-2xl md:p-5">
-              <p className="section-label stat-label mt-[14px] text-[10px] tracking-[0.09em]">Connection Track updates</p>
-              <p className="stat-value mt-2 text-3xl font-semibold text-[#F8F9FF]">{connectionTrackSummary.recentUpdates}</p>
-              <p className="stat-desc mt-1 text-xs text-white/75">
-                {connectionTrackSummary.activeTracks} active track{connectionTrackSummary.activeTracks === 1 ? '' : 's'}.
-              </p>
+              <p className="section-label stat-label text-[9px] tracking-[0.08em]">TRACKS</p>
+              <p className="stat-value mt-1 text-[28px] font-semibold leading-none text-[#F8F9FF]">{connectionTrackSummary.recentUpdates}</p>
+              <p className="stat-desc mt-1 text-[10px] text-white/75">Connection</p>
             </article>
           </section>
 
-          <section className="rounded-2xl border border-[#2A3158] bg-[#0B1024]/90 p-5 shadow-[0_24px_80px_rgba(5,10,30,0.6)] backdrop-blur">
-            <div className="mb-4 flex items-center justify-between gap-3">
+          <section className="rounded-2xl border border-[#2A3158] bg-[#0B1024]/90 p-3 shadow-[0_24px_80px_rgba(5,10,30,0.6)] backdrop-blur sm:p-5">
+            <div className="mb-3 flex items-center justify-between gap-2 sm:mb-4 sm:gap-3">
               <div className="min-w-0">
-                <h2 className="text-[40px] font-semibold tracking-tight text-[#F8F9FF]">Today&apos;s matches</h2>
-                <p className="body-on-dark mt-1 text-sm text-[#A9B0D0]">
-                  Showing {todayPreview.length} of up to {previewLimit} curated match{previewLimit === 1 ? '' : 'es'}.
-                </p>
+                <h2 className="text-3xl font-semibold tracking-tight text-[#F8F9FF] sm:text-[40px]">Today&apos;s matches</h2>
+                <p className="body-on-dark mt-1 text-xs text-[#A9B0D0] sm:text-sm">Showing {todayPreview.length} of up to {previewLimit} curated matches.</p>
               </div>
               <Link
                 href="/app/discover"
-                className="inline-flex shrink-0 items-center justify-center rounded-xl border border-[#7E62F2]/60 bg-gradient-to-r from-[#4D5FE6] via-[#7E46DB] to-[#D02E8B] px-4 py-2.5 text-sm font-semibold text-white transition hover:brightness-110"
+                className="inline-flex shrink-0 items-center justify-center rounded-full border border-[#7E62F2]/60 bg-gradient-to-r from-[#4D5FE6] via-[#7E46DB] to-[#D02E8B] px-3 py-2 text-xs font-semibold text-white transition hover:brightness-110 sm:rounded-xl sm:px-4 sm:py-2.5 sm:text-sm"
               >
                 View all matches
               </Link>
@@ -361,7 +358,8 @@ export default async function DashboardPage() {
               </div>
             ) : (
               <div className="rounded-[14px] border border-dashed border-white/12 bg-[#0E1430] p-4 text-center text-sm text-[#A9B0D0]">
-                No fresh curated matches for today yet.
+                <p>No fresh curated matches for today yet.</p>
+                <p className="mt-1 text-[11px] text-white/35">Check back soon.</p>
               </div>
             )}
           </section>
@@ -373,19 +371,25 @@ export default async function DashboardPage() {
               <p className="mt-1 text-sm text-[#A9B0D0]">{responsesCount} saved categories</p>
             </article>
 
-            <article className="rounded-2xl border border-[rgba(127,119,221,0.25)] bg-[rgba(127,119,221,0.12)] p-5 shadow-[0_20px_64px_rgba(5,10,30,0.55)] backdrop-blur">
-              <p className="mt-[14px] text-[10px] uppercase tracking-[0.09em] text-[#99A4D4]">Momentum tip</p>
-              <ul className="mt-2 space-y-2">
-                <li className="flex items-start gap-2 text-base font-medium text-[#F8F9FF]">
-                  <span className="mt-[9px] h-[5px] w-[5px] shrink-0 rounded-full bg-[#C9C0FF]" />
-                  <span>Open Discover to act on today&apos;s best fits.</span>
-                </li>
-                <li className="flex items-start gap-2 text-sm text-[#A9B0D0]">
-                  <span className="mt-[7px] h-[5px] w-[5px] shrink-0 rounded-full bg-[#C9C0FF]" />
-                  <span>Move one active conversation forward today.</span>
-                </li>
-              </ul>
+            <article className="rounded-2xl border border-[#2A3158] bg-[#0B1024]/88 p-5 shadow-[0_20px_64px_rgba(5,10,30,0.55)] backdrop-blur">
+              <p className="mt-[14px] text-[10px] uppercase tracking-[0.09em] text-[#99A4D4]">Your aura</p>
+              <p className="mt-2 text-base font-medium text-[#A78BFA]">Score {auraScore}</p>
+              <p className="mt-1 text-sm text-[#A9B0D0]">Profile readiness</p>
             </article>
+          </section>
+
+          <section className="rounded-2xl border border-[rgba(127,119,221,0.25)] bg-[rgba(127,119,221,0.12)] p-4 shadow-[0_20px_64px_rgba(5,10,30,0.55)] backdrop-blur sm:p-5">
+            <p className="mt-[14px] text-[10px] uppercase tracking-[0.09em] text-[#99A4D4]">Momentum tip</p>
+            <ul className="mt-2 space-y-2">
+              <li className="flex items-start gap-2 text-base font-medium text-[#F8F9FF]">
+                <span className="mt-[9px] h-[5px] w-[5px] shrink-0 rounded-full bg-[#C9C0FF]" />
+                <span>Open Discover to act on today&apos;s best fits.</span>
+              </li>
+              <li className="flex items-start gap-2 text-sm text-[#A9B0D0]">
+                <span className="mt-[7px] h-[5px] w-[5px] shrink-0 rounded-full bg-[#C9C0FF]" />
+                <span>Move one active conversation forward today.</span>
+              </li>
+            </ul>
           </section>
         </div>
       </main>
