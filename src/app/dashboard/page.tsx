@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Camera, CheckCircle2, MapPin, MessageCircle, Sparkles, User } from 'lucide-react';
+import { Camera, CheckCircle2, MapPin, User } from 'lucide-react';
 import { redirect } from 'next/navigation';
 import LogoutButton from '@/components/auth/LogoutButton';
 import { getDashboardPreviewLimit, getDashboardTodayPreview, resolveViewerTier } from '@/lib/curatedMatches';
@@ -214,7 +214,7 @@ export default async function DashboardPage() {
       'Member';
 
     return (
-      <main className="app-interior-page min-h-screen bg-[#060814] px-4 py-8 text-[#F3F5FF] sm:py-10">
+      <main className="app-interior-page min-h-screen bg-[#060814] px-3 py-8 text-[#F3F5FF] sm:px-4 sm:py-10">
         <div
           aria-hidden
           className="pointer-events-none fixed inset-0 opacity-90"
@@ -227,14 +227,13 @@ export default async function DashboardPage() {
         <div className="relative mx-auto w-full max-w-6xl space-y-6">
           <header className="space-y-4">
             <div className="flex items-start justify-between gap-4 rounded-[22px] border border-[#2A3158] bg-[#0B1024]/90 p-4 shadow-[0_24px_80px_rgba(5,10,30,0.6)] backdrop-blur">
-              <p className="section-label">Dashboard</p>
+              <p className="section-label mt-[14px] text-[10px] tracking-[0.09em]">Dashboard</p>
               <LogoutButton className="rounded-xl border border-[#3A4270] bg-[#101735] px-4 py-2.5 text-sm font-medium text-[#D4D9F4] transition hover:border-[#6B5CE7] hover:text-[#FFFFFF]" />
             </div>
 
-            <article className="overflow-hidden rounded-[28px] border border-[#2A3158] bg-[#0B1024]/90 shadow-[0_24px_80px_rgba(5,10,30,0.6)] backdrop-blur">
-              <div className="h-36 bg-gradient-to-r from-[#CDB6FA] via-[#E7BAD8] to-[#F6E0CF] sm:h-44" />
-              <div className="relative bg-[#EEF0F6] px-6 pb-7 pt-16 text-[#1A1A2E] sm:px-8 sm:pt-20">
-                <div className="absolute -top-12 left-6 h-24 w-24 overflow-hidden rounded-full border-[4px] border-[#2F245C] bg-[#20243B] sm:left-8 sm:h-28 sm:w-28">
+            <article className="rounded-[20px] border border-[#2A3158] bg-[#EEF0F6] p-4 text-[#1A1A2E] shadow-[0_24px_80px_rgba(5,10,30,0.6)] backdrop-blur sm:p-5">
+              <div className="flex items-center gap-3">
+                <div className="relative h-20 w-20 overflow-hidden rounded-full border-[4px] border-[#2F245C] bg-[#20243B] sm:h-24 sm:w-24">
                   {profilePhoto ? (
                     <img src={profilePhoto} alt={displayName} className="h-full w-full object-cover" />
                   ) : (
@@ -242,67 +241,61 @@ export default async function DashboardPage() {
                       <User size={36} className="text-[#AEB6D1]" />
                     </div>
                   )}
-                  <button
-                    type="button"
-                    className="pointer-events-none absolute bottom-1 right-1 inline-flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-[#7E46DB] to-[#D02E8B] text-white sm:h-9 sm:w-9"
-                    aria-label="Profile photo"
-                  >
+                  <button type="button" className="pointer-events-none absolute bottom-1 right-1 inline-flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-[#7E46DB] to-[#D02E8B] text-white" aria-label="Profile photo">
                     <Camera size={16} />
                   </button>
                 </div>
 
-                <div className="flex items-end justify-between gap-4">
-                  <div className="min-w-0">
-                    <div className="flex flex-wrap items-center gap-3">
-                      <h1 className="truncate text-[34px] font-semibold leading-none tracking-tight text-[#1F1A3A] sm:text-[44px]">
-                        {displayName}
-                        {typeof profileAge === 'number' ? `, ${profileAge}` : ''}
-                      </h1>
-                      <span className="inline-flex items-center gap-1.5 rounded-full border border-[#8CDCB9] bg-[#DBF5E9] px-3 py-1 text-sm font-medium text-[#1E7D5A]">
-                        <CheckCircle2 size={16} />
-                        {isVerified ? 'Verified' : 'Unverified'}
-                      </span>
-                    </div>
-                    <p className="mt-3 flex items-center gap-1.5 text-[17px] text-[#464262]">
-                      <MapPin size={17} />
-                      {profileLocation}
-                    </p>
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h1 className="truncate text-[26px] font-semibold leading-none tracking-tight text-[#1F1A3A] sm:text-[36px]">
+                      {displayName}
+                      {typeof profileAge === 'number' ? `, ${profileAge}` : ''}
+                    </h1>
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-[#8CDCB9] bg-[#DBF5E9] px-3 py-1 text-sm font-medium text-[#1E7D5A]">
+                      <CheckCircle2 size={16} />
+                      {isVerified ? 'Verified' : 'Unverified'}
+                    </span>
                   </div>
+                  <p className="mt-2 flex items-center gap-1.5 text-[17px] text-[#464262]">
+                    <MapPin size={17} />
+                    {profileLocation}
+                  </p>
+                </div>
 
-                  <div className="shrink-0 text-center">
-                    <div
-                      className="grid h-20 w-20 place-items-center rounded-full text-4xl font-semibold text-[#7B5BE9] sm:h-24 sm:w-24"
-                      style={{
-                        background:
-                          `conic-gradient(#7B5BE9 ${Math.round((auraScore / 100) * 360)}deg, rgba(123,91,233,0.2) 0deg)`,
-                      }}
-                    >
-                      <div className="grid h-[74px] w-[74px] place-items-center rounded-full bg-[#EEF0F6] text-[42px] font-semibold text-[#4A4666] sm:h-[88px] sm:w-[88px]">
-                        {auraScore}
-                      </div>
+                <div className="shrink-0 text-center">
+                  <div
+                    className="grid h-16 w-16 place-items-center rounded-full text-4xl font-semibold text-[#7B5BE9] sm:h-20 sm:w-20"
+                    style={{
+                      background:
+                        `conic-gradient(#7B5BE9 ${Math.round((auraScore / 100) * 360)}deg, rgba(123,91,233,0.2) 0deg)`,
+                    }}
+                  >
+                    <div className="grid h-[58px] w-[58px] place-items-center rounded-full bg-[#EEF0F6] text-[32px] font-semibold text-[#4A4666] sm:h-[74px] sm:w-[74px] sm:text-[40px]">
+                      {auraScore}
                     </div>
-                    <p className="mt-2 text-lg font-semibold text-[#6F5BDC]">Aura Score</p>
                   </div>
+                  <p className="mt-2 text-sm font-semibold text-[#6F5BDC] sm:text-base">Aura Score</p>
                 </div>
               </div>
             </article>
           </header>
 
-          <section className="grid gap-4 md:grid-cols-3">
-            <article className="stat-card rounded-2xl border border-white/10 bg-[#1E1E35] p-5 shadow-[0_20px_64px_rgba(5,10,30,0.55)] backdrop-blur">
-              <p className="section-label stat-label">Today&apos;s matches</p>
+          <section className="grid grid-cols-3 gap-2 md:gap-4">
+            <article className="stat-card rounded-[14px] border border-white/10 bg-[#1E1E35] px-[8px] py-[10px] shadow-[0_20px_64px_rgba(5,10,30,0.55)] backdrop-blur md:rounded-2xl md:p-5">
+              <p className="section-label stat-label mt-[14px] text-[10px] tracking-[0.09em]">Today&apos;s matches</p>
               <p className="stat-value mt-2 text-3xl font-semibold text-[#F8F9FF]">{todayPreview.length}</p>
               <p className="stat-desc mt-1 text-xs text-white/75">Showing today&apos;s curated preview (up to 6).</p>
             </article>
 
-            <article className="stat-card rounded-2xl border border-white/10 bg-[#1E1E35] p-5 shadow-[0_20px_64px_rgba(5,10,30,0.55)] backdrop-blur">
-              <p className="section-label stat-label">Active conversations</p>
+            <article className="stat-card rounded-[14px] border border-white/10 bg-[#1E1E35] px-[8px] py-[10px] shadow-[0_20px_64px_rgba(5,10,30,0.55)] backdrop-blur md:rounded-2xl md:p-5">
+              <p className="section-label stat-label mt-[14px] text-[10px] tracking-[0.09em]">Active conversations</p>
               <p className="stat-value mt-2 text-3xl font-semibold text-[#F8F9FF]">{activeConversationCount}</p>
               <p className="stat-desc mt-1 text-xs text-white/75">Only currently active and messageable threads.</p>
             </article>
 
-            <article className="stat-card rounded-2xl border border-white/10 bg-[#1E1E35] p-5 shadow-[0_20px_64px_rgba(5,10,30,0.55)] backdrop-blur">
-              <p className="section-label stat-label">Connection Track updates</p>
+            <article className="stat-card rounded-[14px] border border-white/10 bg-[#1E1E35] px-[8px] py-[10px] shadow-[0_20px_64px_rgba(5,10,30,0.55)] backdrop-blur md:rounded-2xl md:p-5">
+              <p className="section-label stat-label mt-[14px] text-[10px] tracking-[0.09em]">Connection Track updates</p>
               <p className="stat-value mt-2 text-3xl font-semibold text-[#F8F9FF]">{connectionTrackSummary.recentUpdates}</p>
               <p className="stat-desc mt-1 text-xs text-white/75">
                 {connectionTrackSummary.activeTracks} active track{connectionTrackSummary.activeTracks === 1 ? '' : 's'}.
@@ -311,16 +304,16 @@ export default async function DashboardPage() {
           </section>
 
           <section className="rounded-2xl border border-[#2A3158] bg-[#0B1024]/90 p-5 shadow-[0_24px_80px_rgba(5,10,30,0.6)] backdrop-blur">
-            <div className="mb-4 flex items-start justify-between gap-4">
-              <div>
-                <h2 className="text-2xl font-semibold tracking-tight text-[#F8F9FF]">Today&apos;s matches</h2>
+            <div className="mb-4 flex items-center justify-between gap-3">
+              <div className="min-w-0">
+                <h2 className="text-[40px] font-semibold tracking-tight text-[#F8F9FF]">Today&apos;s matches</h2>
                 <p className="body-on-dark mt-1 text-sm text-[#A9B0D0]">
                   Showing {todayPreview.length} of up to {previewLimit} curated match{previewLimit === 1 ? '' : 'es'}.
                 </p>
               </div>
               <Link
                 href="/app/discover"
-                className="inline-flex items-center justify-center rounded-xl border border-[#7E62F2]/60 bg-gradient-to-r from-[#4D5FE6] via-[#7E46DB] to-[#D02E8B] px-4 py-2.5 text-sm font-semibold text-white transition hover:brightness-110"
+                className="inline-flex shrink-0 items-center justify-center rounded-xl border border-[#7E62F2]/60 bg-gradient-to-r from-[#4D5FE6] via-[#7E46DB] to-[#D02E8B] px-4 py-2.5 text-sm font-semibold text-white transition hover:brightness-110"
               >
                 View all matches
               </Link>
@@ -367,29 +360,31 @@ export default async function DashboardPage() {
                 })}
               </div>
             ) : (
-              <div className="rounded-xl border border-dashed border-[#3A4270] bg-[#0E1430] p-6 text-center text-sm text-[#A9B0D0]">
+              <div className="rounded-[14px] border border-dashed border-white/12 bg-[#0E1430] p-4 text-center text-sm text-[#A9B0D0]">
                 No fresh curated matches for today yet.
               </div>
             )}
           </section>
 
-          <section className="grid gap-4 md:grid-cols-2">
+          <section className="grid grid-cols-2 gap-2 md:gap-4">
             <article className="rounded-2xl border border-[#2A3158] bg-[#0B1024]/88 p-5 shadow-[0_20px_64px_rgba(5,10,30,0.55)] backdrop-blur">
-              <p className="text-[11px] uppercase tracking-[0.07em] text-[#99A4D4]">Onboarding status</p>
+              <p className="mt-[14px] text-[10px] uppercase tracking-[0.09em] text-[#99A4D4]">Onboarding status</p>
               <p className="mt-2 text-base font-medium text-[#F8F9FF]">Complete</p>
               <p className="mt-1 text-sm text-[#A9B0D0]">{responsesCount} saved categories</p>
             </article>
 
-            <article className="rounded-2xl border border-[#2A3158] bg-[#0B1024]/88 p-5 shadow-[0_20px_64px_rgba(5,10,30,0.55)] backdrop-blur">
-              <p className="text-[11px] uppercase tracking-[0.07em] text-[#99A4D4]">Momentum tip</p>
-              <p className="mt-2 flex items-center gap-2 text-base font-medium text-[#F8F9FF]">
-                <Sparkles size={16} className="text-[#C9C0FF]" />
-                Open Discover to act on today&apos;s best fits.
-              </p>
-              <p className="mt-1 flex items-center gap-2 text-sm text-[#A9B0D0]">
-                <MessageCircle size={14} />
-                Move one active conversation forward today.
-              </p>
+            <article className="rounded-2xl border border-[rgba(127,119,221,0.25)] bg-[rgba(127,119,221,0.12)] p-5 shadow-[0_20px_64px_rgba(5,10,30,0.55)] backdrop-blur">
+              <p className="mt-[14px] text-[10px] uppercase tracking-[0.09em] text-[#99A4D4]">Momentum tip</p>
+              <ul className="mt-2 space-y-2">
+                <li className="flex items-start gap-2 text-base font-medium text-[#F8F9FF]">
+                  <span className="mt-[9px] h-[5px] w-[5px] shrink-0 rounded-full bg-[#C9C0FF]" />
+                  <span>Open Discover to act on today&apos;s best fits.</span>
+                </li>
+                <li className="flex items-start gap-2 text-sm text-[#A9B0D0]">
+                  <span className="mt-[7px] h-[5px] w-[5px] shrink-0 rounded-full bg-[#C9C0FF]" />
+                  <span>Move one active conversation forward today.</span>
+                </li>
+              </ul>
             </article>
           </section>
         </div>
