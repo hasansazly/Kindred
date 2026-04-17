@@ -7,48 +7,50 @@ import { createSupabaseServerClient } from '../../../../utils/supabase/server';
 
 type SectionProps = {
   title: string;
-  subtitle: string;
+  desc: string;
   matches: Awaited<ReturnType<typeof getMatchesForUser>>;
-  emptyText: string;
+  emptyMain: string;
+  emptySub: string;
+  emptyIcon: string;
   statusLabel: 'new' | 'active' | 'potential_fit';
 };
 
-function Section({ title, subtitle, matches, emptyText, statusLabel }: SectionProps) {
-  const badgeStyles =
+function Section({ title, desc, matches, emptyMain, emptySub, emptyIcon, statusLabel }: SectionProps) {
+  const badge =
     statusLabel === 'new'
-      ? { background: '#7F77DD', border: '#7F77DD', text: '#FFFFFF' }
+      ? { label: 'NEW', bg: '#7F77DD' }
       : statusLabel === 'active'
-        ? { background: '#1D9E75', border: '#1D9E75', text: '#FFFFFF' }
-        : { background: '#3B2E12', border: '#8B6A2E', text: '#F4C977' };
+        ? { label: 'ACTIVE', bg: '#1D9E75' }
+        : { label: '50–64%', bg: '#BA7517' };
 
   return (
-    <section className="rounded-2xl border border-[#2A3158] bg-[#0B1024]/90 p-5 shadow-[0_24px_80px_rgba(5,10,30,0.6)] backdrop-blur">
-      <div className="mb-4 flex items-start justify-between gap-4">
-        <div>
-          <h2 className="text-2xl font-semibold tracking-tight text-[#F8F9FF]">{title}</h2>
-          <p className="mt-1 text-sm text-[#A9B0D0]">{subtitle}</p>
-        </div>
+    <section
+      className="mb-[10px] rounded-[16px] border border-white/[0.08] p-[14px]"
+      style={{ background: 'rgba(255,255,255,0.05)' }}
+    >
+      <div className="mb-2 flex items-center justify-between">
+        <h2 className="text-[16px] font-semibold text-white">{title}</h2>
         <span
-          className="rounded-full border px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.05em]"
-          style={{
-            background: badgeStyles.background,
-            borderColor: badgeStyles.border,
-            color: badgeStyles.text,
-          }}
+          className="rounded-full px-[9px] py-[3px] text-[9px] font-bold tracking-[0.06em] text-white"
+          style={{ background: badge.bg }}
         >
-          {statusLabel}
+          {badge.label}
         </span>
       </div>
 
+      <p className="mb-[10px] text-[11px] leading-[1.5] text-white/45">{desc}</p>
+
       {matches.length > 0 ? (
-        <div className="grid gap-4 lg:grid-cols-2">
+        <div className="space-y-3">
           {matches.map(match => (
             <MatchCard key={match.id} match={match} />
           ))}
         </div>
       ) : (
-        <div className="rounded-xl border border-dashed border-[#3A4270] bg-[#0E1430] p-6 text-sm text-[#A9B0D0]">
-          {emptyText}
+        <div className="rounded-[12px] border border-dashed border-white/[0.10] p-[14px] text-center">
+          <div className="mb-[6px] text-[20px] opacity-40">{emptyIcon}</div>
+          <p className="text-[12px] font-medium text-white/40">{emptyMain}</p>
+          <p className="mt-[3px] text-[10px] text-white/[0.22]">{emptySub}</p>
         </div>
       )}
     </section>
@@ -79,59 +81,55 @@ export default async function AppDiscoverPage() {
   const sections = getDiscoverSections(matches, tier);
 
   return (
-    <main className="app-interior-page min-h-screen bg-[#060814] px-4 py-8 text-[#F3F5FF] sm:py-10">
-      <div
-        aria-hidden
-        className="pointer-events-none fixed inset-0 opacity-90"
-        style={{
-          background:
-            'radial-gradient(1100px 540px at 14% -8%, rgba(124,58,237,0.25), transparent 58%), radial-gradient(980px 520px at 92% -2%, rgba(236,72,153,0.2), transparent 55%), radial-gradient(820px 460px at 50% 110%, rgba(59,130,246,0.17), transparent 60%)',
-        }}
+    <div className="min-h-screen bg-[#0D0D1A] px-[14px] pt-4 pb-6 text-[#F3F5FF]">
+      {/* Page meta */}
+      <div className="mb-[14px] flex items-start justify-between">
+        <div>
+          <p className="mb-1 text-[9px] tracking-[0.1em] text-white/35">DISCOVER</p>
+          <h1 className="text-[24px] font-bold leading-[1.1] text-white">
+            Curated<br />Matches
+          </h1>
+          <p className="mt-1 text-[11px] leading-[1.5] text-white/45">
+            Focused browsing · no old history
+          </p>
+        </div>
+        <Link
+          href="/dashboard"
+          className="mt-1 shrink-0 rounded-full border border-white/[0.15] px-3 py-[5px] text-[11px] text-white/55"
+        >
+          ← Dashboard
+        </Link>
+      </div>
+
+      <Section
+        title="New Today"
+        desc="Fresh curated matches land here daily"
+        matches={sections.newToday}
+        emptyMain="No new matches yet today"
+        emptySub="Check back soon — they refresh daily"
+        emptyIcon="⏳"
+        statusLabel="new"
       />
 
-      <div className="relative mx-auto w-full max-w-6xl space-y-6">
-        <header className="rounded-[26px] border border-[#2A3158] bg-[#0B1024]/90 p-6 shadow-[0_24px_80px_rgba(5,10,30,0.6)] backdrop-blur">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <p className="section-label">Discover</p>
-              <h1 className="mt-2 text-3xl font-semibold tracking-tight text-[#F8F9FF] sm:text-5xl">Curated Matches</h1>
-              <p className="body-on-dark mt-2 text-sm text-white/70 sm:text-base">
-                Focused browsing for relevant matches now. No endless inventory, no old history.
-              </p>
-            </div>
-            <Link
-              href="/dashboard"
-              className="rounded-xl border border-[#3A4270] bg-[#101735] px-4 py-2.5 text-sm font-medium text-[#D4D9F4] transition hover:border-[#6B5CE7] hover:text-[#FFFFFF]"
-            >
-              Back to dashboard
-            </Link>
-          </div>
-        </header>
+      <Section
+        title="Active Matches"
+        desc="Current matches worth exploring now"
+        matches={sections.activeMatches}
+        emptyMain="No active matches right now"
+        emptySub="Your curated picks will appear here"
+        emptyIcon="✦"
+        statusLabel="active"
+      />
 
-        <Section
-          title="New Today"
-          subtitle={`${sections.newToday.length} fresh curated match${sections.newToday.length === 1 ? '' : 'es'} available now.`}
-          matches={sections.newToday}
-          emptyText="No new curated matches have landed yet today."
-          statusLabel="new"
-        />
-
-        <Section
-          title="Active Matches"
-          subtitle={`${sections.activeMatches.length} current match${sections.activeMatches.length === 1 ? '' : 'es'} worth exploring.`}
-          matches={sections.activeMatches}
-          emptyText="No active curated matches right now."
-          statusLabel="active"
-        />
-
-        <Section
-          title="Potential Fit"
-          subtitle="Exploratory compatibility range (50-64)."
-          matches={sections.potentialFit}
-          emptyText="No potential-fit explorations right now."
-          statusLabel="potential_fit"
-        />
-      </div>
-    </main>
+      <Section
+        title="Potential Fit"
+        desc="Exploratory range · upgrade to unlock full view"
+        matches={sections.potentialFit}
+        emptyMain="No potential fits right now"
+        emptySub="Available on paid plans"
+        emptyIcon="✦"
+        statusLabel="potential_fit"
+      />
+    </div>
   );
 }
