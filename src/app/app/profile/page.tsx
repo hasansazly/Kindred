@@ -588,15 +588,15 @@ export default function ProfilePage() {
 
           <div className="profile-hero-meta" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginTop: 12, flexWrap: 'wrap', gap: 12 }}>
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                <h2 style={{ fontSize: 22, fontWeight: 800, letterSpacing: '-0.02em' }}>
-                  {user.name}{user.age > 0 ? `, ${user.age}` : ''}
-                </h2>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 4, background: 'rgba(52,211,153,0.12)', border: '1px solid rgba(52,211,153,0.25)', borderRadius: 999, padding: '2px 8px' }}>
-                  <CheckCircle size={11} color="#34d399" />
-                  <span style={{ fontSize: 11, fontWeight: 600, color: '#34d399' }}>Verified</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                  <h2 style={{ fontSize: 22, fontWeight: 800, letterSpacing: '-0.02em' }}>
+                    {user.name}{user.age > 0 ? `, ${user.age}` : ''}
+                  </h2>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 4, background: 'rgba(52,211,153,0.12)', border: '1px solid rgba(52,211,153,0.25)', borderRadius: 999, padding: '2px 8px', flexShrink: 0 }}>
+                    <CheckCircle size={11} color="#34d399" />
+                    <span style={{ fontSize: 11, fontWeight: 600, color: '#34d399', whiteSpace: 'nowrap' }}>Verified</span>
+                  </div>
                 </div>
-              </div>
               <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
                 {user.occupation && (
                   <span style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 13, color: 'rgba(240,240,255,0.6)' }}>
