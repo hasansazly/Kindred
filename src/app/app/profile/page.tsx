@@ -706,11 +706,11 @@ export default function ProfilePage() {
                 type="button"
                 onClick={() => !isUploadingPhoto && fileInputRef.current?.click()}
                 disabled={isUploadingPhoto || bucketPhotoCount >= 10}
-                style={{ aspectRatio: '1', borderRadius: 12, border: '2px dashed rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: isUploadingPhoto ? 'wait' : bucketPhotoCount >= 10 ? 'not-allowed' : 'pointer', transition: 'all 0.2s', background: 'transparent' }}
+                style={{ aspectRatio: '1', borderRadius: 12, border: '2px dashed rgba(91,79,207,0.42)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: isUploadingPhoto ? 'wait' : bucketPhotoCount >= 10 ? 'not-allowed' : 'pointer', transition: 'all 0.2s', background: 'rgba(127,119,221,0.08)' }}
               >
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
-                  <Plus size={20} color="rgba(255,255,255,0.35)" />
-                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>
+                  <Plus size={20} color="#5B4FCF" />
+                  <span style={{ fontSize: 11, color: '#5B4FCF' }}>
                     {isUploadingPhoto ? 'Uploading...' : bucketPhotoCount >= 10 ? 'Limit reached' : 'Add'}
                   </span>
                 </div>
@@ -863,8 +863,8 @@ export default function ProfilePage() {
 
       <style>{`
         .profile-page .glass {
-          background: #FFFFFF !important;
-          border: 1px solid #E5E3DF !important;
+          background: #F4F1FF !important;
+          border: 1px solid #DCD5FF !important;
         }
         .profile-page .glass p,
         .profile-page .glass h2,
@@ -874,10 +874,17 @@ export default function ProfilePage() {
           color: #1A1A2E;
         }
         .profile-page .glass [style*="text-transform: uppercase"] {
-          color: #5F5E5A !important;
+          color: #6B5EA8 !important;
         }
         .profile-page .glass .tag {
           color: #4B3FA0 !important;
+        }
+        .profile-page .about-text {
+          color: #2D2848 !important;
+        }
+        .profile-page .empty,
+        .profile-page .placeholder {
+          color: #7E779E !important;
         }
         .profile-page .glass button,
         .profile-page .glass button * {
