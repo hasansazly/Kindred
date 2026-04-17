@@ -19,6 +19,7 @@ export default function SignupPage() {
   const [step, setStep] = useState(1);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [name, setName] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -71,6 +72,14 @@ export default function SignupPage() {
     }
     if (!/\S+@\S+\.\S+/.test(email)) {
       setError('Enter a valid email.');
+      return;
+    }
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters.');
+      return;
+    }
+    if (password !== confirmPassword) {
+      setError('Password and confirm password must match.');
       return;
     }
     if (!isTempleEmail(email)) {
@@ -233,12 +242,31 @@ export default function SignupPage() {
                 {error && <div style={{ background: 'rgba(244,63,94,0.1)', border: '1px solid rgba(244,63,94,0.25)', borderRadius: 10, padding: '12px 14px', fontSize: 13, color: '#fda4af' }}>{error}</div>}
                 {success && <div style={{ background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', borderRadius: 10, padding: '12px 14px', fontSize: 13, color: '#6ee7b7' }}>{success}</div>}
                 <div>
-                  <label style={{ fontSize: 13, fontWeight: 500, color: 'rgba(240,240,255,0.55)', display: 'block', marginBottom: 8 }}>Email</label>
-                  <input className="input-field" type="email" placeholder="you@example.com" value={email} onChange={e => setEmail(e.target.value)} autoComplete="email" />
+                  <label style={{ fontSize: 13, fontWeight: 500, color: 'rgba(240,240,255,0.82)', display: 'block', marginBottom: 8 }}>Email</label>
+                  <input className="input-field" type="email" placeholder="you@temple.edu" value={email} onChange={e => setEmail(e.target.value)} autoComplete="email" />
                 </div>
-                <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center', fontSize: 15, padding: '15px', marginTop: 4 }}>
-                  Continue with Email <ArrowRight size={18} />
-                </button>
+                <div>
+                  <label style={{ fontSize: 13, fontWeight: 500, color: 'rgba(240,240,255,0.82)', display: 'block', marginBottom: 8 }}>Add Password</label>
+                  <input
+                    className="input-field"
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder="At least 8 characters"
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                    autoComplete="new-password"
+                  />
+                </div>
+                <div>
+                  <label style={{ fontSize: 13, fontWeight: 500, color: 'rgba(240,240,255,0.82)', display: 'block', marginBottom: 8 }}>Confirm Password</label>
+                  <input
+                    className="input-field"
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder="Re-enter your password"
+                    value={confirmPassword}
+                    onChange={e => setConfirmPassword(e.target.value)}
+                    autoComplete="new-password"
+                  />
+                </div>
                 <button
                   type="button"
                   className="btn-ghost"
@@ -256,12 +284,12 @@ export default function SignupPage() {
               {success && <div style={{ background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', borderRadius: 10, padding: '12px 14px', fontSize: 13, color: '#6ee7b7' }}>{success}</div>}
 
               <div>
-                <label style={{ fontSize: 13, fontWeight: 500, color: 'rgba(240,240,255,0.55)', display: 'block', marginBottom: 8 }}>Email</label>
-                <input className="input-field" type="email" value={email} onChange={e => setEmail(e.target.value)} autoComplete="email" />
+                <label style={{ fontSize: 13, fontWeight: 500, color: 'rgba(240,240,255,0.82)', display: 'block', marginBottom: 8 }}>Email</label>
+                <input className="input-field" type="email" value={email} placeholder="you@temple.edu" onChange={e => setEmail(e.target.value)} autoComplete="email" />
               </div>
 
               <div>
-                <label style={{ fontSize: 13, fontWeight: 500, color: 'rgba(240,240,255,0.55)', display: 'block', marginBottom: 8 }}>Verification code</label>
+                <label style={{ fontSize: 13, fontWeight: 500, color: 'rgba(240,240,255,0.82)', display: 'block', marginBottom: 8 }}>Verification code</label>
                 <input
                   className="input-field"
                   type="text"
