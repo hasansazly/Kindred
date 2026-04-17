@@ -873,6 +873,12 @@ export default function ProfilePage() {
         .profile-page .glass div {
           color: #1A1A2E;
         }
+        .profile-page .profile-hero-meta h2 {
+          color: #1A1A2E !important;
+        }
+        .profile-page .profile-hero-meta span {
+          color: #4A4761 !important;
+        }
         .profile-page .glass [style*="text-transform: uppercase"] {
           color: #6B5EA8 !important;
         }
