@@ -767,7 +767,7 @@ export default function ProfilePage() {
               <Brain size={16} color="#a78bfa" />
               <span style={{ fontSize: 15, fontWeight: 700, color: '#a78bfa' }}>Your Aura Profile</span>
             </div>
-            <p style={{ fontSize: 14, color: 'rgba(240,240,255,0.55)', lineHeight: 1.7, marginBottom: 20 }}>
+            <p style={{ fontSize: 14, color: '#5F5B74', lineHeight: 1.7, marginBottom: 20 }}>
               Aura reflects how complete and aligned your profile is across intent, values, and communication preferences.
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
@@ -777,12 +777,12 @@ export default function ProfilePage() {
                   <div key={dim.label}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6, gap: 8, flexWrap: 'wrap' }}>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <span style={{ fontSize: 14, fontWeight: 600 }}>{dim.label}</span>
-                        <span className="aura-desc" style={{ fontSize: 12, color: 'rgba(240,240,255,0.4)', marginLeft: 8, display: 'inline' }}>{dim.desc}</span>
+                        <span style={{ fontSize: 14, fontWeight: 600, color: '#1E1B2E' }}>{dim.label}</span>
+                        <span className="aura-desc" style={{ fontSize: 12, color: '#7A7692', marginLeft: 8, display: 'inline' }}>{dim.desc}</span>
                       </div>
                       <span style={{ fontSize: 14, fontWeight: 700, color, flexShrink: 0 }}>{dim.score}</span>
                     </div>
-                    <div style={{ height: 6, borderRadius: 3, background: 'rgba(255,255,255,0.07)', overflow: 'hidden' }}>
+                    <div style={{ height: 6, borderRadius: 3, background: 'rgba(91,79,207,0.18)', overflow: 'hidden' }}>
                       <div style={{ height: '100%', width: `${dim.score}%`, borderRadius: 3, background: `linear-gradient(90deg, ${color}99, ${color})`, transition: 'width 0.8s ease' }} />
                     </div>
                   </div>
@@ -793,10 +793,16 @@ export default function ProfilePage() {
 
           {user.personalityTraits.length > 0 && (
             <div className="glass" style={{ borderRadius: 20, padding: '20px 24px' }}>
-              <div style={{ fontSize: 13, fontWeight: 600, color: 'rgba(240,240,255,0.4)', marginBottom: 12 }}>Personality snapshot</div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: '#6B5EA8', marginBottom: 12 }}>Personality snapshot</div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                 {user.personalityTraits.map(trait => (
-                  <span key={trait} className="tag" style={{ fontSize: 13, background: 'rgba(255,255,255,0.06)' }}>{trait}</span>
+                  <span
+                    key={trait}
+                    className="tag"
+                    style={{ fontSize: 13, background: '#EEEDFE', color: '#3C3489', borderColor: '#CECBF6' }}
+                  >
+                    {trait}
+                  </span>
                 ))}
               </div>
             </div>
