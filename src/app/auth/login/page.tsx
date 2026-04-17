@@ -171,31 +171,6 @@ export default function LoginPage() {
             <Link href="/auth/signup" style={{ color: '#a78bfa', textDecoration: 'none', fontWeight: 500 }}>Create an account</Link>
           </p>
 
-          {/* Social logins */}
-          <div className="auth-social-row" style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
-            {[
-              { name: 'Google', icon: '🔵' },
-              { name: 'Apple', icon: '🍎' },
-            ].map(s => (
-              <button
-                key={s.name}
-                className="btn-ghost"
-                style={{ flex: 1, justifyContent: 'center', fontSize: 14 }}
-                onClick={() => router.push('/app/discover')}
-              >
-                <span>{s.icon}</span>
-                Continue with {s.name}
-              </button>
-            ))}
-          </div>
-
-          {/* Divider */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
-            <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.08)' }} />
-            <span style={{ fontSize: 12, color: 'rgba(240,240,255,0.3)', fontWeight: 500 }}>or</span>
-            <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.08)' }} />
-          </div>
-
           {/* Form */}
           {!codeMode ? (
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
