@@ -189,21 +189,6 @@ export default function SignupPage() {
             })}
           </div>
 
-          {/* Social proof */}
-          <div className="glass" style={{ borderRadius: 16, padding: '16px 20px', marginTop: 36, display: 'flex', alignItems: 'center', gap: 16, background: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.2)' }}>
-            <div style={{ display: 'flex' }}>
-              {['https://images.unsplash.com/photo-1494790108755-2616b612b786?w=80&q=80',
-                'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&q=80',
-                'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=80&q=80',
-              ].map((src, i) => (
-                <img key={i} src={src} alt="" style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover', border: '2px solid rgba(255,255,255,0.4)', marginLeft: i > 0 ? -8 : 0 }} />
-              ))}
-            </div>
-            <div>
-              <div style={{ fontSize: 14, fontWeight: 600, color: '#FFFFFF' }}>200k+ members</div>
-              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.75)' }}>joined this month</div>
-            </div>
-          </div>
         </div>
       </div>
 
