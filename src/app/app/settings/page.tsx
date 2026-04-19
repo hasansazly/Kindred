@@ -6,7 +6,7 @@ import { Bell, Shield, Trash2, ChevronRight, LogOut, HelpCircle } from 'lucide-r
 
 function Section({ title, icon, children }: { title: string; icon: ReactNode; children: ReactNode }) {
   return (
-    <div className="glass" style={{ borderRadius: 20, overflow: 'hidden', marginBottom: 16, background: '#FFFFFF', border: '1px solid #E5E3DF' }}>
+    <div className="glass" style={{ borderRadius: 'var(--radius-lg)', overflow: 'hidden', marginBottom: 'var(--space-4)', background: '#FFFFFF', border: '1px solid #E5E3DF', boxShadow: 'var(--shadow-sm)' }}>
       <div style={{ padding: '16px 20px', borderBottom: '1px solid #ECE9E2', display: 'flex', alignItems: 'center', gap: 10 }}>
         {icon}
         <span style={{ fontSize: 16, fontWeight: 600, color: '#1A1A2E' }}>{title}</span>
@@ -18,10 +18,10 @@ function Section({ title, icon, children }: { title: string; icon: ReactNode; ch
 
 function Row({ label, desc, right }: { label: string; desc?: string; right: ReactNode }) {
   return (
-    <div style={{ padding: '13px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+    <div style={{ padding: '14px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
       <div>
         <div style={{ fontSize: 14, fontWeight: 500, color: '#1A1A2E', marginBottom: desc ? 2 : 0 }}>{label}</div>
-        {desc && <div style={{ fontSize: 13, color: '#888780' }}>{desc}</div>}
+        {desc && <div style={{ fontSize: 13, color: '#777671', lineHeight: 1.45 }}>{desc}</div>}
       </div>
       {right}
     </div>
@@ -59,10 +59,10 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="app-interior-page settings-page" style={{ padding: '32px', maxWidth: 680, width: '100%', margin: '0 auto' }}>
-      <div style={{ marginBottom: 28 }}>
-        <h1 style={{ fontSize: 26, fontWeight: 800, letterSpacing: '-0.03em', marginBottom: 4, color: '#FFFFFF' }}>Settings</h1>
-        <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.75)' }}>Manage your preferences and account</p>
+    <div className="app-interior-page settings-page" style={{ padding: '32px', paddingBottom: 'calc(var(--app-main-bottom-clearance) + 16px)', maxWidth: 680, width: '100%', margin: '0 auto' }}>
+      <div style={{ marginBottom: 24 }}>
+        <h1 style={{ fontSize: 28, fontWeight: 700, letterSpacing: '-0.03em', marginBottom: 6, color: '#FFFFFF' }}>Settings</h1>
+        <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.78)' }}>Manage your preferences and account</p>
       </div>
 
       {/* ─ Discovery Preferences ─ */}
@@ -205,7 +205,7 @@ export default function SettingsPage() {
 
       <style>{`
         @media (max-width: 767px) {
-          .settings-page { padding: 24px 16px 32px !important; }
+          .settings-page { padding: 24px 16px calc(var(--app-main-bottom-clearance) + 12px) !important; }
           .settings-interest-row button { flex: 1 1 calc(50% - 4px) !important; }
           .settings-sub-grid { grid-template-columns: 1fr !important; }
         }

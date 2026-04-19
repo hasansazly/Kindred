@@ -174,13 +174,13 @@ function MobileBottomNav() {
         left: 0,
         right: 0,
         bottom: 0,
-        zIndex: 1000,
+        zIndex: 'var(--z-bottom-nav)',
         background: 'rgba(7,7,15,0.97)',
         backdropFilter: 'blur(24px)',
         WebkitBackdropFilter: 'blur(24px)',
         borderTop: '1px solid rgba(255,255,255,0.07)',
         display: 'flex',
-        paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+        paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 6px)',
       }}
     >
       {NAV.map(item => {
@@ -194,16 +194,16 @@ function MobileBottomNav() {
             href={item.href}
             style={{
               flex: 1,
-              minHeight: 56,
+              minHeight: 'var(--mobile-nav-height)',
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
               gap: 3,
               textDecoration: 'none',
-              padding: '10px 0 8px',
+              padding: '8px 0 6px',
               color: isActive ? activeColor : inactiveColor,
               position: 'relative',
-              transition: 'color 0.15s',
+              transition: 'color var(--dur-fast) var(--ease-standard)',
               WebkitTapHighlightColor: 'transparent',
             }}
           >
@@ -289,7 +289,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             borderBottom: '1px solid rgba(255,255,255,0.06)',
             padding: '0 16px',
             paddingTop: 'env(safe-area-inset-top, 0px)',
-            height: 52,
+            minHeight: 'calc(52px + env(safe-area-inset-top, 0px))',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
@@ -313,7 +313,16 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </div>
 
         {/* Page content — scrolls within */}
-        <main className="app-main-scroll" style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', WebkitOverflowScrolling: 'touch' } as React.CSSProperties}>
+        <main
+          className="app-main-scroll"
+          style={{
+            flex: 1,
+            overflowY: 'auto',
+            overflowX: 'hidden',
+            WebkitOverflowScrolling: 'touch',
+            scrollPaddingBottom: 'var(--app-main-bottom-clearance)',
+          } as React.CSSProperties}
+        >
           {children}
         </main>
 
@@ -328,7 +337,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           .mobile-only { display: flex !important; }
           .desktop-only { display: none !important; }
           .app-main-scroll {
-            padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px)) !important;
+            padding-bottom: var(--app-main-bottom-clearance) !important;
           }
         }
       `}</style>

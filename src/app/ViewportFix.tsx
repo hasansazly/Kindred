@@ -10,9 +10,8 @@ export default function ViewportFix() {
       meta.setAttribute('name', 'viewport');
       document.head.appendChild(meta);
     }
-    meta.setAttribute('content', 'width=device-width, initial-scale=1.0');
+    meta.setAttribute('content', 'width=device-width, initial-scale=1.0, viewport-fit=cover');
   }, []);
 
   return null;
 }
-

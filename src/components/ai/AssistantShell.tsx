@@ -105,16 +105,17 @@ export default function AssistantShell() {
           style={{
             position: 'fixed',
             right: 16,
-            bottom: 'calc(78px + env(safe-area-inset-bottom, 0px))',
+            bottom: 'calc(var(--mobile-nav-total-height) + 12px)',
             width: 'min(360px, calc(100vw - 24px))',
-            borderRadius: 16,
+            maxHeight: 'min(72vh, 560px)',
+            borderRadius: 'var(--radius-lg)',
             border: '1px solid rgba(139,92,246,0.3)',
             background: 'rgba(12,12,23,0.95)',
             backdropFilter: 'blur(18px)',
             WebkitBackdropFilter: 'blur(18px)',
-            zIndex: 1100,
+            zIndex: 'var(--z-fab)',
             overflow: 'hidden',
-            boxShadow: '0 10px 40px rgba(0,0,0,0.35)',
+            boxShadow: 'var(--shadow-lg)',
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
@@ -127,7 +128,7 @@ export default function AssistantShell() {
             </button>
           </div>
 
-          <div style={{ padding: 12 }}>
+          <div style={{ padding: 12, maxHeight: 'calc(min(72vh, 560px) - 48px)', overflowY: 'auto' }}>
             <div style={{ fontSize: 12, color: 'rgba(240,240,255,0.55)', marginBottom: 8, lineHeight: 1.5 }}>
               {contextHint(pathname)}
             </div>
@@ -150,6 +151,7 @@ export default function AssistantShell() {
                     fontSize: 11,
                     fontFamily: 'inherit',
                     cursor: 'pointer',
+                    transition: 'border-color var(--dur-fast) var(--ease-standard), background var(--dur-fast) var(--ease-standard)',
                   }}
                 >
                   {cmd}
@@ -236,7 +238,7 @@ export default function AssistantShell() {
         style={{
           position: 'fixed',
           right: 16,
-          bottom: 'calc(16px + env(safe-area-inset-bottom, 0px) + 56px)',
+          bottom: 'calc(var(--mobile-nav-total-height) + 16px)',
           width: 52,
           height: 52,
           borderRadius: '50%',
@@ -247,8 +249,9 @@ export default function AssistantShell() {
           alignItems: 'center',
           justifyContent: 'center',
           cursor: 'pointer',
-          zIndex: 1100,
+          zIndex: 'var(--z-fab)',
           boxShadow: '0 8px 24px rgba(124,58,237,0.35)',
+          transition: 'transform var(--dur-fast) var(--ease-standard), box-shadow var(--dur-med) var(--ease-standard)',
         }}
       >
         <Brain size={20} />
@@ -256,4 +259,3 @@ export default function AssistantShell() {
     </>
   );
 }
-

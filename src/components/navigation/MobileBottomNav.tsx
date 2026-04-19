@@ -28,13 +28,13 @@ export default function MobileBottomNav() {
         left: 0,
         right: 0,
         bottom: 0,
-        zIndex: 1000,
+        zIndex: 'var(--z-bottom-nav)',
         background: 'rgba(7,7,15,0.97)',
         backdropFilter: 'blur(24px)',
         WebkitBackdropFilter: 'blur(24px)',
         borderTop: '1px solid rgba(255,255,255,0.07)',
         display: 'flex',
-        paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+        paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 6px)',
       }}
     >
       {NAV.map(item => {
@@ -46,16 +46,16 @@ export default function MobileBottomNav() {
             href={item.href}
             style={{
               flex: 1,
-              minHeight: 56,
+              minHeight: 'var(--mobile-nav-height)',
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
               gap: 3,
               textDecoration: 'none',
-              padding: '10px 0 8px',
+              padding: '8px 0 6px',
               color: isActive ? '#a78bfa' : 'rgba(240,240,255,0.28)',
               position: 'relative',
-              transition: 'color 0.15s',
+              transition: 'color var(--dur-fast) var(--ease-standard)',
               WebkitTapHighlightColor: 'transparent',
             }}
           >
