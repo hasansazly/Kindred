@@ -6,6 +6,7 @@ import { findMatchById, getMatchesForUser } from '@/lib/matches';
 import StartConversationButton from '@/components/messages/StartConversationButton';
 import ConnectionSafetyActions from '@/components/safety/ConnectionSafetyActions';
 import TrustSignals from '@/components/matches/TrustSignals';
+import PreDateBriefingCard from '@/components/matches/PreDateBriefingCard';
 
 type MatchDetailPageProps = {
   params: Promise<{ id: string }>;
@@ -191,6 +192,12 @@ export default async function MatchDetailPage({ params }: MatchDetailPageProps) 
         </section>
 
         <TrustSignals signals={trustSignals} potentialFit={potentialFit} />
+
+        <PreDateBriefingCard
+          matchId={match.id}
+          isMutualMatch={match.isMutualMatch}
+        />
+
 
         <section className="rounded-3xl border border-slate-700/80 bg-slate-900/65 p-6 backdrop-blur">
           <h2 className="flex items-center gap-2 text-lg font-medium">

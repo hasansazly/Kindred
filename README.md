@@ -132,3 +132,21 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+
+## AI Pre-Date Briefing (V1)
+
+The app supports a lightweight **AI Pre-Date Briefing** for mutual matches.
+
+Environment configuration:
+
+```bash
+AI_PRE_DATE_BRIEFING_ENABLED=true
+OPENAI_API_KEY=
+OPENAI_MODEL=gpt-4o-mini
+```
+
+Behavior:
+- If `OPENAI_API_KEY` is missing, the app falls back to a safe rule-based briefing.
+- If the feature flag is disabled, the briefing is hidden without affecting other flows.
+- No secrets should be committed; use `.env.local` for real keys.
