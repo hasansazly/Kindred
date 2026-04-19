@@ -1,450 +1,473 @@
 'use client';
 
-import { useState } from 'react';
-import {
-  Heart, Sparkles, Brain, Star, Calendar, Camera, MessageCircle,
-  Coffee, Mountain, Music, Film, CheckCircle, Flame, Lock,
-  TrendingUp, Gift, ChevronRight, ArrowRight, Plus, Mic,
-} from 'lucide-react';
+import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import { CalendarCheck2, Heart, HeartHandshake, Loader2, MessageCircleHeart, Shield } from 'lucide-react';
 
-const COUPLE = {
-  name: 'Sophie',
-  photo: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=200&q=80',
-  myPhoto: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&q=80',
-  together: '23 days',
-  since: 'March 21, 2026',
-  compatScore: 94,
-  nextDate: 'Saturday, Apr 19',
-  nextDateActivity: 'Farmers market + cook together',
+type ModuleResponse = {
+  id: string;
+  userId: string;
+  createdAt: string;
+  text: string;
+  value: Record<string, unknown>;
+  preview: string;
 };
 
-const DAILY_QUESTION = {
-  question: "What's one small thing I do that makes you feel most seen?",
-  category: 'Intimacy',
-  myAnswer: null as string | null,
-  theirAnswer: null as string | null,
+type ModuleState = {
+  type: 'daily_micro_question' | 'weekly_pulse';
+  question: {
+    id: string;
+    text: string;
+    category: string;
+    metadata: Record<string, unknown>;
+  };
+  cycleKey: string;
+  status: 'pending_self' | 'waiting_partner' | 'complete';
+  responses: ModuleResponse[];
 };
 
-const MEMORIES = [
-  { id: 1, date: 'Apr 14', emoji: '☕', label: 'First coffee', note: 'Blue Bottle, 11am. She was 3 minutes early.' },
-  { id: 2, date: 'Apr 5', emoji: '🍝', label: 'Cooking together', note: 'Pasta carbonara. She claimed she invented a better technique.' },
-  { id: 3, date: 'Apr 1', emoji: '📸', label: 'Golden Gate walk', note: 'Foggy. Both underdressed. Worth it.' },
-];
+type LoveNote = {
+  id: string;
+  body: string;
+  createdAt: string;
+  senderUserId: string;
+  isMine: boolean;
+};
 
-const GROWTH_AREAS = [
-  { label: 'Meeting each other\'s world', desc: 'You\'ve talked about your work deeply — consider sharing your friend group next.', icon: Users2, color: '#a78bfa' },
-  { label: 'Navigating disagreement', desc: 'Your Spark answers suggest different conflict styles. Worth exploring early.', icon: Brain, color: '#fb7185' },
-  { label: 'Physical quality time', desc: 'Most of your time together has been over food. Mix in more active shared experiences.', icon: Mountain, color: '#34d399' },
-];
+type CoupleState = {
+  enabled: boolean;
+  hasCouple: boolean;
+  viewerUserId?: string;
+  unavailableReason?: string;
+  couple?: {
+    id: string;
+    partnerUserId: string;
+    partnerName: string;
+    partnerPhotoUrl: string | null;
+    confirmedAt: string;
+  };
+  modules?: {
+    daily: ModuleState;
+    weekly: ModuleState;
+  };
+  loveNotes?: LoveNote[];
+  timeline?: Array<{
+    id: string;
+    type: 'prompt' | 'checkin' | 'love_note';
+    title: string;
+    summary: string;
+    createdAt: string;
+  }>;
+};
 
-const DATE_IDEAS_COUPLES = [
-  { title: 'Cook a cuisine you\'ve never tried', emoji: '🍜', time: 'Evening', cost: '$' },
-  { title: 'Visit a museum and rate every exhibit', emoji: '🖼️', time: '3 hours', cost: '$$' },
-  { title: 'Sunrise hike with breakfast after', emoji: '🌄', time: 'Morning', cost: 'Free' },
-  { title: 'Vinyl record shop + listen party at home', emoji: '🎵', time: 'Afternoon', cost: '$' },
-  { title: 'Take a class together (pottery, cooking, dance)', emoji: '🎨', time: '2 hours', cost: '$$' },
-  { title: 'Road trip with no destination set', emoji: '🚗', time: 'Full day', cost: '$' },
-];
+function formatDate(value: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  return date.toLocaleDateString(undefined, {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+}
 
-const LOVE_EXERCISES = [
-  { title: '36 Questions', desc: 'Arthur Aron\'s research-backed questions proven to accelerate intimacy between two people.', time: '90 min', icon: '💬' },
-  { title: 'Love Map', desc: 'How well do you know each other\'s inner world? Map out each other\'s passions, fears, dreams.', time: '45 min', icon: '🗺️' },
-  { title: 'Gratitude Exchange', desc: 'Each share 5 specific things you appreciate about each other. Then discuss what surprised you.', time: '20 min', icon: '🙏' },
-  { title: 'Future Visioning', desc: 'Independently write your ideal life in 5 years. Share and find the overlaps — and the gaps.', time: '60 min', icon: '🔭' },
-];
-
-function Users2({ size, color }: { size: number; color: string }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-    </svg>
-  );
+function formatDateTime(value: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  return date.toLocaleString(undefined, {
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+  });
 }
 
 export default function CouplesPage() {
-  const [dailyAnswer, setDailyAnswer] = useState('');
-  const [submitted, setSubmitted] = useState(false);
-  const [activeTab, setActiveTab] = useState<'home' | 'memories' | 'grow' | 'dates' | 'intel'>('home');
-  const [newMemory, setNewMemory] = useState('');
-  const [showMemoryForm, setShowMemoryForm] = useState(false);
+  const [state, setState] = useState<CoupleState | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [dailyDraft, setDailyDraft] = useState('');
+  const [weeklyScore, setWeeklyScore] = useState<number | null>(null);
+  const [weeklyGood, setWeeklyGood] = useState('');
+  const [weeklyMore, setWeeklyMore] = useState('');
+  const [loveNoteDraft, setLoveNoteDraft] = useState('');
+  const [saving, setSaving] = useState<'daily' | 'weekly' | 'note' | null>(null);
+
+  const loadState = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch('/api/couples/state', { method: 'GET' });
+      const payload = (await res.json().catch(() => ({}))) as CoupleState & { error?: string };
+      if (!res.ok) {
+        throw new Error(typeof payload.error === 'string' ? payload.error : 'Unable to load Couple Mode');
+      }
+      setState(payload);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unable to load Couple Mode');
+      setState(null);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void loadState();
+  }, [loadState]);
+
+  const submitDaily = async (event: FormEvent) => {
+    event.preventDefault();
+    if (!dailyDraft.trim()) return;
+    setSaving('daily');
+    setError(null);
+    try {
+      const res = await fetch('/api/couples/respond', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ module: 'daily', responseText: dailyDraft.trim() }),
+      });
+      const payload = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(typeof payload.error === 'string' ? payload.error : 'Failed to submit response');
+      }
+      setDailyDraft('');
+      await loadState();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to submit response');
+    } finally {
+      setSaving(null);
+    }
+  };
+
+  const submitWeekly = async (event: FormEvent) => {
+    event.preventDefault();
+    if (weeklyScore === null && !weeklyGood.trim() && !weeklyMore.trim()) return;
+
+    setSaving('weekly');
+    setError(null);
+    try {
+      const res = await fetch('/api/couples/respond', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          module: 'weekly',
+          responseValue: {
+            connectedScore: weeklyScore,
+            feltGood: weeklyGood.trim(),
+            wantMore: weeklyMore.trim(),
+          },
+        }),
+      });
+      const payload = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(typeof payload.error === 'string' ? payload.error : 'Failed to submit check-in');
+      }
+      setWeeklyScore(null);
+      setWeeklyGood('');
+      setWeeklyMore('');
+      await loadState();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to submit check-in');
+    } finally {
+      setSaving(null);
+    }
+  };
+
+  const submitLoveNote = async (event: FormEvent) => {
+    event.preventDefault();
+    if (!loveNoteDraft.trim()) return;
+
+    setSaving('note');
+    setError(null);
+    try {
+      const res = await fetch('/api/couples/love-notes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ body: loveNoteDraft.trim() }),
+      });
+      const payload = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(typeof payload.error === 'string' ? payload.error : 'Failed to send love note');
+      }
+      setLoveNoteDraft('');
+      await loadState();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to send love note');
+    } finally {
+      setSaving(null);
+    }
+  };
+
+  const daily = state?.modules?.daily;
+  const weekly = state?.modules?.weekly;
+  const notes = state?.loveNotes ?? [];
+  const timeline = state?.timeline ?? [];
+  const partnerName = state?.couple?.partnerName ?? 'Partner';
+  const confirmedLabel = state?.couple?.confirmedAt ? formatDate(state.couple.confirmedAt) : '';
+
+  const statusText = useMemo(() => {
+    if (!daily) return '';
+    if (daily.status === 'pending_self') return 'Your response needed';
+    if (daily.status === 'waiting_partner') return `Waiting for ${partnerName}`;
+    return 'Both answers unlocked';
+  }, [daily, partnerName]);
 
   return (
-    <div className="couples-page" style={{ padding: '32px', maxWidth: 900, width: '100%', margin: '0 auto' }}>
+    <div className="min-h-screen bg-[#060814] px-4 pb-10 pt-6 text-[#F3F5FF]">
+      <div
+        aria-hidden
+        className="pointer-events-none fixed inset-0 opacity-90"
+        style={{
+          background:
+            'radial-gradient(1100px 540px at 14% -8%, rgba(124,58,237,0.25), transparent 58%), radial-gradient(980px 520px at 92% -2%, rgba(236,72,153,0.2), transparent 55%), radial-gradient(820px 460px at 50% 110%, rgba(59,130,246,0.17), transparent 60%)',
+        }}
+      />
+      <div className="relative mx-auto flex w-full max-w-5xl flex-col gap-4">
+        <header className="rounded-2xl border border-[#2A3158] bg-[#0B1024]/90 p-5 shadow-[0_24px_80px_rgba(5,10,30,0.6)] backdrop-blur">
+          <p className="text-[11px] uppercase tracking-[0.08em] text-[#A6AED0]">Private Couple Space</p>
+          <h1 className="mt-1 text-2xl font-semibold text-white">Couple Mode</h1>
+          <p className="mt-2 text-sm text-[#A9B0D0]">
+            A calm shared space for rituals, check-ins, memories, and appreciation.
+          </p>
+        </header>
 
-      {/* Couples Hero */}
-      <div className="couples-hero" style={{ position: 'relative', borderRadius: 28, overflow: 'hidden', marginBottom: 24, background: 'linear-gradient(135deg, rgba(124,58,237,0.2) 0%, rgba(219,39,119,0.2) 50%, rgba(251,191,36,0.1) 100%)', border: '1px solid rgba(139,92,246,0.2)', padding: '32px 36px' }}>
-        <div className="orb" style={{ width: 300, height: 300, background: 'rgba(139,92,246,0.12)', top: -100, right: -50, zIndex: 0 }} />
-        <div style={{ position: 'relative', zIndex: 1 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 20, marginBottom: 20, flexWrap: 'wrap' }}>
-            {/* Avatar pair */}
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <div style={{ width: 68, height: 68, borderRadius: '50%', overflow: 'hidden', border: '3px solid rgba(139,92,246,0.5)' }}>
-                <img src={COUPLE.myPhoto} alt="You" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              </div>
-              <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'linear-gradient(135deg, #7c3aed, #db2777)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 -10px', zIndex: 1, boxShadow: '0 0 20px rgba(124,58,237,0.4)' }}>
-                <Heart size={20} color="white" fill="white" />
-              </div>
-              <div style={{ width: 68, height: 68, borderRadius: '50%', overflow: 'hidden', border: '3px solid rgba(219,39,119,0.5)' }}>
-                <img src={COUPLE.photo} alt={COUPLE.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              </div>
-            </div>
-            <div>
-              <h1 style={{ fontSize: 26, fontWeight: 800, letterSpacing: '-0.03em', marginBottom: 4 }}>
-                You & {COUPLE.name}
-              </h1>
-              <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-                <span style={{ fontSize: 13, color: 'rgba(240,240,255,0.5)' }}>💍 Together {COUPLE.together}</span>
-                <span style={{ fontSize: 13, color: 'rgba(240,240,255,0.5)' }}>Since {COUPLE.since}</span>
-                <span style={{ fontSize: 13, color: '#a78bfa', fontWeight: 600 }}>{COUPLE.compatScore}% compatible</span>
-              </div>
-            </div>
-          </div>
+        {loading ? (
+          <section className="rounded-2xl border border-[#2A3158] bg-[#0B1024]/90 p-6">
+            <p className="inline-flex items-center gap-2 text-sm text-[#A9B0D0]">
+              <Loader2 size={16} className="animate-spin" />
+              Loading Couple Mode...
+            </p>
+          </section>
+        ) : null}
 
-          {/* Quick stats */}
-          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-            {[
-              { icon: '🔥', label: '12-day streak', sub: 'Daily questions' },
-              { icon: '📅', label: COUPLE.nextDate, sub: COUPLE.nextDateActivity },
-              { icon: '💬', label: '340 messages', sub: 'In 23 days' },
-            ].map(s => (
-              <div key={s.label} style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 14, padding: '10px 16px', display: 'flex', alignItems: 'center', gap: 10 }}>
-                <span style={{ fontSize: 18 }}>{s.icon}</span>
-                <div>
-                  <div style={{ fontSize: 13, fontWeight: 600 }}>{s.label}</div>
-                  <div style={{ fontSize: 11, color: 'rgba(240,240,255,0.4)' }}>{s.sub}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+        {error ? (
+          <section className="rounded-2xl border border-rose-500/40 bg-rose-950/30 p-4 text-sm text-rose-200">
+            {error}
+          </section>
+        ) : null}
 
-      {/* Tabs */}
-      <div className="couples-tabs" style={{ display: 'flex', gap: 0, marginBottom: 24, background: 'rgba(255,255,255,0.04)', borderRadius: 14, padding: 4, overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
-        {([['home', '🏠 Home'], ['memories', '📸 Memories'], ['grow', '🌱 Grow'], ['dates', '☕ Dates'], ['intel', '🧠 Intel']] as [string, string][]).map(([tab, label]) => (
-          <button key={tab} onClick={() => setActiveTab(tab as typeof activeTab)} style={{ flex: 1, padding: '10px', borderRadius: 10, border: 'none', background: activeTab === tab ? 'rgba(139,92,246,0.15)' : 'transparent', color: activeTab === tab ? '#c4b5fd' : 'rgba(240,240,255,0.4)', fontSize: 13, fontWeight: activeTab === tab ? 600 : 400, cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.2s', borderStyle: 'solid', borderWidth: 1, borderColor: activeTab === tab ? 'rgba(139,92,246,0.25)' : 'transparent' }}>
-            {label}
-          </button>
-        ))}
-      </div>
+        {!loading && state && !state.enabled ? (
+          <section className="rounded-2xl border border-[#2A3158] bg-[#0B1024]/90 p-6">
+            <p className="text-sm text-[#A9B0D0]">Couple Mode is currently disabled.</p>
+          </section>
+        ) : null}
 
-      {/* HOME TAB */}
-      {activeTab === 'home' && (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }} className="couples-grid">
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+        {!loading && state?.enabled && !state.hasCouple ? (
+          <section className="rounded-2xl border border-[#2A3158] bg-[#0B1024]/90 p-6">
+            <h2 className="text-lg font-medium text-white">Not in Couple Mode yet</h2>
+            <p className="mt-2 text-sm text-[#A9B0D0]">
+              Couple Mode unlocks after a confirmed couple status is set for your pair.
+            </p>
+            {state.unavailableReason === 'pair_unavailable' ? (
+              <p className="mt-2 text-xs text-[#D6DDFB]/75">
+                This pair is currently unavailable because of a safety or unmatch state.
+              </p>
+            ) : null}
+          </section>
+        ) : null}
 
-            {/* Today's couple question */}
-            <div className="glass" style={{ borderRadius: 22, overflow: 'hidden' }}>
-              <div style={{ padding: '18px 22px', borderBottom: '1px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', gap: 8 }}>
-                <Flame size={16} color="#fb923c" />
-                <span style={{ fontSize: 13, fontWeight: 700, color: '#fb923c' }}>Today&apos;s Question</span>
-                <span style={{ marginLeft: 'auto', fontSize: 11, color: 'rgba(240,240,255,0.35)' }}>12-day streak 🔥</span>
-              </div>
-              <div style={{ padding: '20px 22px' }}>
-                <p style={{ fontSize: 17, fontWeight: 700, lineHeight: 1.45, marginBottom: 16, letterSpacing: '-0.01em' }}>{DAILY_QUESTION.question}</p>
-                {!submitted ? (
-                  <>
-                    <div style={{ background: 'rgba(251,146,60,0.07)', border: '1px solid rgba(251,146,60,0.15)', borderRadius: 10, padding: '8px 12px', marginBottom: 12, fontSize: 12, color: '#fb923c' }}>
-                      🔒 {COUPLE.name}&apos;s answer is hidden until you both reply.
+        {!loading && state?.enabled && state.hasCouple && daily && weekly ? (
+          <>
+            <section className="rounded-2xl border border-[#2A3158] bg-[#0B1024]/90 p-5">
+              <div className="flex flex-wrap items-center gap-3">
+                <div className="h-14 w-14 overflow-hidden rounded-full border border-[#4B3FA0] bg-[#171E3A]">
+                  {state.couple?.partnerPhotoUrl ? (
+                    <img
+                      src={state.couple.partnerPhotoUrl}
+                      alt={partnerName}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center text-lg text-[#A6AED0]">
+                      <Heart size={20} />
                     </div>
-                    <textarea className="input-field" placeholder="Your honest answer…" rows={3} value={dailyAnswer} onChange={e => setDailyAnswer(e.target.value)} style={{ resize: 'none', lineHeight: 1.6, marginBottom: 10 }} />
-                    <button onClick={() => setSubmitted(true)} disabled={!dailyAnswer.trim()} className="btn-primary" style={{ width: '100%', justifyContent: 'center', fontSize: 13, padding: '11px', opacity: dailyAnswer.trim() ? 1 : 0.4 }}>
-                      Lock in my answer
+                  )}
+                </div>
+                <div className="min-w-[180px] flex-1">
+                  <p className="text-[11px] uppercase tracking-[0.08em] text-[#A6AED0]">Confirmed Couple</p>
+                  <h2 className="text-xl font-semibold text-white">You & {partnerName}</h2>
+                  {confirmedLabel ? <p className="text-xs text-[#A9B0D0]">Confirmed on {confirmedLabel}</p> : null}
+                </div>
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-[#4B3FA0]/45 bg-[#1A1640] px-3 py-1 text-xs text-[#D6D1FF]">
+                  <Shield size={13} />
+                  Private
+                </span>
+              </div>
+            </section>
+
+            <div className="grid gap-4 lg:grid-cols-[1.2fr_1fr]">
+              <section className="space-y-4">
+                <article className="rounded-2xl border border-[#2A3158] bg-[#0B1024]/90 p-5">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-[11px] uppercase tracking-[0.08em] text-[#A6AED0]">Today&apos;s Prompt</p>
+                      <h3 className="mt-1 text-lg font-medium text-white">{daily.question.text}</h3>
+                    </div>
+                    <span className="rounded-full border border-[#36416D] bg-[#121A3A] px-3 py-1 text-[11px] text-[#D6DDFB]">
+                      {statusText}
+                    </span>
+                  </div>
+
+                  {daily.status === 'pending_self' ? (
+                    <form className="mt-4 space-y-2" onSubmit={submitDaily}>
+                      <textarea
+                        value={dailyDraft}
+                        onChange={event => setDailyDraft(event.target.value)}
+                        placeholder="Share a thoughtful answer..."
+                        className="min-h-[92px] w-full rounded-lg border border-[#4E5A92] bg-[#121A3A] px-3 py-2 text-sm text-[#F6F8FF] outline-none focus:border-[#6B5CE7]"
+                      />
+                      <button
+                        type="submit"
+                        disabled={!dailyDraft.trim() || saving === 'daily'}
+                        className="inline-flex items-center justify-center rounded-lg bg-[#4B3FA0] px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
+                      >
+                        {saving === 'daily' ? 'Saving...' : 'Submit answer'}
+                      </button>
+                    </form>
+                  ) : null}
+
+                  {daily.responses.length > 0 ? (
+                    <div className="mt-4 grid gap-2 sm:grid-cols-2">
+                      {daily.responses.map(response => (
+                        <div key={response.id} className="rounded-xl border border-[#36416D] bg-[#121A3A] p-3">
+                          <p className="text-[11px] uppercase tracking-[0.06em] text-[#A6AED0]">
+                            {response.userId === state.viewerUserId ? 'You' : partnerName}
+                          </p>
+                          <p className="mt-1 text-sm text-[#E8ECFF]">{response.preview}</p>
+                        </div>
+                      ))}
+                    </div>
+                  ) : null}
+                </article>
+
+                <article className="rounded-2xl border border-[#2A3158] bg-[#0B1024]/90 p-5">
+                  <div className="flex items-center gap-2">
+                    <CalendarCheck2 size={16} className="text-[#C9C0FF]" />
+                    <p className="text-[11px] uppercase tracking-[0.08em] text-[#A6AED0]">Weekly Check-In</p>
+                  </div>
+                  <h3 className="mt-1 text-lg font-medium text-white">{weekly.question.text}</h3>
+                  <p className="mt-1 text-xs text-[#A9B0D0]">
+                    Keep it short and honest: how connected, what felt good, and what you want more of.
+                  </p>
+
+                  {weekly.status === 'pending_self' ? (
+                    <form className="mt-4 space-y-3" onSubmit={submitWeekly}>
+                      <div>
+                        <p className="mb-2 text-xs text-[#D6DDFB]">How connected did you feel this week?</p>
+                        <div className="flex flex-wrap gap-2">
+                          {[1, 2, 3, 4, 5].map(score => (
+                            <button
+                              key={score}
+                              type="button"
+                              onClick={() => setWeeklyScore(score)}
+                              className={`h-8 w-8 rounded-full border text-xs ${
+                                weeklyScore === score
+                                  ? 'border-[#4B3FA0] bg-[#EDE9FA] text-[#4B3FA0]'
+                                  : 'border-[#4E5A92] bg-[#121A3A] text-[#D6DDFB]'
+                              }`}
+                            >
+                              {score}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      <textarea
+                        value={weeklyGood}
+                        onChange={event => setWeeklyGood(event.target.value)}
+                        placeholder="What felt good this week?"
+                        className="min-h-[70px] w-full rounded-lg border border-[#4E5A92] bg-[#121A3A] px-3 py-2 text-sm text-[#F6F8FF] outline-none focus:border-[#6B5CE7]"
+                      />
+                      <textarea
+                        value={weeklyMore}
+                        onChange={event => setWeeklyMore(event.target.value)}
+                        placeholder="What would you like more of next week?"
+                        className="min-h-[70px] w-full rounded-lg border border-[#4E5A92] bg-[#121A3A] px-3 py-2 text-sm text-[#F6F8FF] outline-none focus:border-[#6B5CE7]"
+                      />
+                      <button
+                        type="submit"
+                        disabled={saving === 'weekly' || (weeklyScore === null && !weeklyGood.trim() && !weeklyMore.trim())}
+                        className="inline-flex items-center justify-center rounded-lg bg-[#4B3FA0] px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
+                      >
+                        {saving === 'weekly' ? 'Saving...' : 'Submit weekly check-in'}
+                      </button>
+                    </form>
+                  ) : null}
+
+                  {weekly.responses.length > 0 ? (
+                    <div className="mt-4 grid gap-2 sm:grid-cols-2">
+                      {weekly.responses.map(response => (
+                        <div key={response.id} className="rounded-xl border border-[#36416D] bg-[#121A3A] p-3">
+                          <p className="text-[11px] uppercase tracking-[0.06em] text-[#A6AED0]">
+                            {response.userId === state.viewerUserId ? 'You' : partnerName}
+                          </p>
+                          <p className="mt-1 text-sm text-[#E8ECFF]">{response.preview}</p>
+                        </div>
+                      ))}
+                    </div>
+                  ) : null}
+                </article>
+              </section>
+
+              <section className="space-y-4">
+                <article className="rounded-2xl border border-[#2A3158] bg-[#0B1024]/90 p-5">
+                  <div className="flex items-center gap-2">
+                    <MessageCircleHeart size={16} className="text-[#C9C0FF]" />
+                    <p className="text-[11px] uppercase tracking-[0.08em] text-[#A6AED0]">Love Notes</p>
+                  </div>
+                  <form className="mt-3 space-y-2" onSubmit={submitLoveNote}>
+                    <textarea
+                      value={loveNoteDraft}
+                      onChange={event => setLoveNoteDraft(event.target.value)}
+                      placeholder={`Send a quick appreciation to ${partnerName}...`}
+                      className="min-h-[82px] w-full rounded-lg border border-[#4E5A92] bg-[#121A3A] px-3 py-2 text-sm text-[#F6F8FF] outline-none focus:border-[#6B5CE7]"
+                    />
+                    <button
+                      type="submit"
+                      disabled={!loveNoteDraft.trim() || saving === 'note'}
+                      className="inline-flex items-center justify-center rounded-lg bg-[#4B3FA0] px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
+                    >
+                      {saving === 'note' ? 'Sending...' : 'Send love note'}
                     </button>
-                  </>
-                ) : (
-                  <div>
-                    <div style={{ background: 'rgba(52,211,153,0.08)', border: '1px solid rgba(52,211,153,0.2)', borderRadius: 12, padding: '12px 14px', marginBottom: 12, display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-                      <CheckCircle size={16} color="#34d399" style={{ flexShrink: 0, marginTop: 1 }} />
-                      <div>
-                        <div style={{ fontSize: 12, fontWeight: 600, color: '#34d399', marginBottom: 4 }}>Your answer is in!</div>
-                        <p style={{ fontSize: 13, color: 'rgba(240,240,255,0.65)', lineHeight: 1.5 }}>{dailyAnswer}</p>
-                      </div>
+                  </form>
+                  {notes.length > 0 ? (
+                    <div className="mt-4 space-y-2">
+                      {notes.slice(0, 5).map(note => (
+                        <div key={note.id} className="rounded-xl border border-[#36416D] bg-[#121A3A] p-3">
+                          <p className="text-xs text-[#D6DDFB]">{note.body}</p>
+                          <p className="mt-1 text-[11px] text-[#A6AED0]">
+                            {note.isMine ? 'You' : partnerName} · {formatDateTime(note.createdAt)}
+                          </p>
+                        </div>
+                      ))}
                     </div>
-                    <div style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: '12px 14px', display: 'flex', alignItems: 'center', gap: 10 }}>
-                      <div style={{ width: 28, height: 28, borderRadius: '50%', overflow: 'hidden' }}>
-                        <img src={COUPLE.photo} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                      </div>
-                      <div style={{ fontSize: 13, color: 'rgba(240,240,255,0.4)', fontStyle: 'italic' }}>Waiting for {COUPLE.name}… answer reveals when she replies.</div>
-                    </div>
+                  ) : null}
+                </article>
+
+                <article className="rounded-2xl border border-[#2A3158] bg-[#0B1024]/90 p-5">
+                  <div className="flex items-center gap-2">
+                    <HeartHandshake size={16} className="text-[#C9C0FF]" />
+                    <p className="text-[11px] uppercase tracking-[0.08em] text-[#A6AED0]">Shared Memory Timeline</p>
                   </div>
-                )}
-              </div>
+
+                  {timeline.length > 0 ? (
+                    <ul className="mt-3 space-y-2">
+                      {timeline.map(item => (
+                        <li key={item.id} className="rounded-xl border border-[#36416D] bg-[#121A3A] p-3">
+                          <p className="text-xs uppercase tracking-[0.06em] text-[#A6AED0]">{item.title}</p>
+                          <p className="mt-1 text-sm text-[#E8ECFF]">{item.summary}</p>
+                          <p className="mt-1 text-[11px] text-[#A6AED0]">{formatDateTime(item.createdAt)}</p>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="mt-3 text-sm text-[#A9B0D0]">
+                      Shared memories will appear here after you both answer prompts/check-ins or send notes.
+                    </p>
+                  )}
+                </article>
+              </section>
             </div>
-
-            {/* Next date countdown */}
-            <div className="glass" style={{ borderRadius: 22, padding: '22px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
-                <Calendar size={16} color="#a78bfa" />
-                <span style={{ fontSize: 13, fontWeight: 700, color: '#a78bfa' }}>Next Date</span>
-              </div>
-              <div style={{ fontSize: 18, fontWeight: 700, marginBottom: 4 }}>{COUPLE.nextDate}</div>
-              <div style={{ fontSize: 14, color: 'rgba(240,240,255,0.5)', marginBottom: 16 }}>{COUPLE.nextDateActivity}</div>
-              <div style={{ display: 'flex', gap: 8 }}>
-                <button className="btn-ghost" style={{ flex: 1, justifyContent: 'center', fontSize: 12, padding: '9px' }}>Change plan</button>
-                <button className="btn-primary" style={{ flex: 1, justifyContent: 'center', fontSize: 12, padding: '9px' }}>
-                  <CheckCircle size={13} /> Confirm
-                </button>
-              </div>
-            </div>
-
-            {/* Love exercises */}
-            <div className="glass" style={{ borderRadius: 22, padding: '22px' }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: 'rgba(240,240,255,0.45)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 14 }}>Couple Exercises</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {LOVE_EXERCISES.map(ex => (
-                  <div key={ex.title} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 12, cursor: 'pointer', transition: 'all 0.2s' }}
-                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(139,92,246,0.07)'; e.currentTarget.style.borderColor = 'rgba(139,92,246,0.2)'; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)'; }}
-                  >
-                    <span style={{ fontSize: 24, flexShrink: 0 }}>{ex.icon}</span>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 2 }}>{ex.title}</div>
-                      <div style={{ fontSize: 11, color: 'rgba(240,240,255,0.4)', lineHeight: 1.4 }}>{ex.desc}</div>
-                    </div>
-                    <div style={{ fontSize: 11, color: 'rgba(240,240,255,0.3)', flexShrink: 0 }}>{ex.time}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Right column */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-
-            {/* Compatibility evolution */}
-            <div className="glass" style={{ borderRadius: 22, padding: '22px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-                <TrendingUp size={16} color="#34d399" />
-                <span style={{ fontSize: 13, fontWeight: 700, color: '#34d399' }}>Compatibility Growth</span>
-              </div>
-              <div style={{ fontSize: 12, color: 'rgba(240,240,255,0.35)', marginBottom: 16 }}>How you&apos;ve evolved together</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {[['Values', 92, '+4'], ['Communication', 91, '+7'], ['Lifestyle', 88, '+3'], ['Emotional depth', 95, '+11'], ['Humor', 89, '+6']].map(([label, score, change]) => (
-                  <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <span style={{ fontSize: 12, color: 'rgba(240,240,255,0.45)', width: 80, flexShrink: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{label}</span>
-                    <div style={{ flex: 1, height: 5, background: 'rgba(255,255,255,0.07)', borderRadius: 3, overflow: 'hidden' }}>
-                      <div style={{ height: '100%', width: `${score}%`, background: 'linear-gradient(90deg, #34d399, #059669)', borderRadius: 3 }} />
-                    </div>
-                    <span style={{ fontSize: 12, fontWeight: 700, color: '#34d399', width: 28, textAlign: 'right' }}>{score}</span>
-                    <span style={{ fontSize: 10, color: '#34d399', width: 28, textAlign: 'right', fontWeight: 600 }}>{change}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Growth areas */}
-            <div className="glass" style={{ borderRadius: 22, padding: '22px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
-                <Brain size={16} color="#a78bfa" />
-                <span style={{ fontSize: 13, fontWeight: 700, color: '#a78bfa' }}>AI Growth Areas</span>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                {GROWTH_AREAS.map((area, i) => {
-                  const Icon = area.icon;
-                  return (
-                    <div key={i} style={{ display: 'flex', gap: 12 }}>
-                      <div style={{ width: 32, height: 32, borderRadius: 10, background: `${area.color}14`, border: `1px solid ${area.color}22`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                        <Icon size={15} color={area.color} />
-                      </div>
-                      <div>
-                        <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 3 }}>{area.label}</div>
-                        <div style={{ fontSize: 12, color: 'rgba(240,240,255,0.45)', lineHeight: 1.5 }}>{area.desc}</div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Our story */}
-            <div className="glass" style={{ borderRadius: 22, padding: '22px', background: 'rgba(124,58,237,0.06)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-                <Sparkles size={16} color="#a78bfa" />
-                <span style={{ fontSize: 13, fontWeight: 700, color: '#a78bfa' }}>Your Story So Far</span>
-              </div>
-              <p style={{ fontSize: 13, color: 'rgba(240,240,255,0.6)', lineHeight: 1.75, fontStyle: 'italic' }}>
-                &ldquo;You matched on March 21st with a 94% compatibility — one of the highest scores Vinculo has ever generated. The first thing Sophie noticed was your sourdough. The first thing you noticed was her honesty in the onboarding quiz. In 23 days you&apos;ve exchanged 340 messages, answered 12 Spark questions, and gone on 3 dates. Your communication score has grown faster than 97% of couples on Vinculo.&rdquo;
-              </p>
-              <div style={{ marginTop: 14, fontSize: 11, color: 'rgba(240,240,255,0.25)', fontStyle: 'normal' }}>AI-generated from your real activity. Updates weekly.</div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* MEMORIES TAB */}
-      {activeTab === 'memories' && (
-        <div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-            <p style={{ fontSize: 14, color: 'rgba(240,240,255,0.4)' }}>Your shared moments, preserved forever.</p>
-            <button onClick={() => setShowMemoryForm(!showMemoryForm)} className="btn-primary" style={{ fontSize: 13, padding: '9px 18px', display: 'flex', alignItems: 'center', gap: 6 }}>
-              <Plus size={14} /> Add Memory
-            </button>
-          </div>
-
-          {showMemoryForm && (
-            <div className="glass" style={{ borderRadius: 18, padding: '20px', marginBottom: 20 }}>
-              <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 14 }}>Capture this moment</div>
-              <div style={{ display: 'flex', gap: 10, marginBottom: 12 }}>
-                {['☕', '🍝', '🥂', '📸', '🎵', '🌅', '✈️', '🎭', '🎉', '💌'].map(emoji => (
-                  <button key={emoji} style={{ fontSize: 22, background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>{emoji}</button>
-                ))}
-              </div>
-              <input className="input-field" placeholder="Give this memory a name…" style={{ marginBottom: 10 }} />
-              <textarea className="input-field" placeholder="A note to your future selves…" rows={2} style={{ resize: 'none', lineHeight: 1.6, marginBottom: 12 }} />
-              <div style={{ display: 'flex', gap: 10 }}>
-                <button className="btn-ghost" style={{ flex: 1, justifyContent: 'center', fontSize: 13 }} onClick={() => setShowMemoryForm(false)}>Cancel</button>
-                <button className="btn-primary" style={{ flex: 1, justifyContent: 'center', fontSize: 13 }}>Save Memory</button>
-              </div>
-            </div>
-          )}
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-            {MEMORIES.map(m => (
-              <div key={m.id} className="glass card-lift" style={{ borderRadius: 18, padding: '20px', display: 'flex', gap: 16 }}>
-                <div style={{ width: 56, height: 56, borderRadius: 14, background: 'rgba(139,92,246,0.12)', border: '1px solid rgba(139,92,246,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, flexShrink: 0 }}>
-                  {m.emoji}
-                </div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                    <span style={{ fontSize: 15, fontWeight: 700 }}>{m.label}</span>
-                    <span style={{ fontSize: 12, color: 'rgba(240,240,255,0.35)' }}>{m.date}</span>
-                  </div>
-                  <p style={{ fontSize: 13, color: 'rgba(240,240,255,0.55)', lineHeight: 1.5, fontStyle: 'italic' }}>&ldquo;{m.note}&rdquo;</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* GROW TAB */}
-      {activeTab === 'grow' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <div className="glass" style={{ borderRadius: 22, padding: '22px 24px' }}>
-            <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 4 }}>Relationship Health Score</div>
-            <div style={{ fontSize: 13, color: 'rgba(240,240,255,0.4)', marginBottom: 20 }}>Based on your interactions, check-ins, and Spark answers.</div>
-            {[
-              { label: 'Communication quality', score: 91, icon: '💬' },
-              { label: 'Emotional safety', score: 87, icon: '🛡️' },
-              { label: 'Shared experiences', score: 74, icon: '🌍' },
-              { label: 'Individual respect', score: 93, icon: '🤝' },
-              { label: 'Future alignment', score: 88, icon: '🔭' },
-              { label: 'Physical connection', score: 79, icon: '💗' },
-            ].map(item => (
-              <div key={item.label} style={{ marginBottom: 14 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-                  <span style={{ fontSize: 13, color: 'rgba(240,240,255,0.65)' }}>{item.icon} {item.label}</span>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: item.score >= 85 ? '#34d399' : item.score >= 70 ? '#a78bfa' : '#fbbf24' }}>{item.score}</span>
-                </div>
-                <div style={{ height: 6, borderRadius: 3, background: 'rgba(255,255,255,0.07)', overflow: 'hidden' }}>
-                  <div style={{ height: '100%', width: `${item.score}%`, borderRadius: 3, background: item.score >= 85 ? '#34d399' : item.score >= 70 ? '#8b5cf6' : '#fbbf24', transition: 'width 0.8s ease' }} />
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="glass" style={{ borderRadius: 22, padding: '22px 24px' }}>
-            <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 4 }}>AI Recommendation This Week</div>
-            <div style={{ background: 'rgba(139,92,246,0.08)', border: '1px solid rgba(139,92,246,0.18)', borderRadius: 14, padding: '16px 18px', marginTop: 12 }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: '#a78bfa', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Focus area</div>
-              <p style={{ fontSize: 14, color: 'rgba(240,240,255,0.7)', lineHeight: 1.7 }}>
-                Your shared experiences score (74) is the lowest dimension. You&apos;ve been great at conversation and emotional depth — the next step is doing more things together that aren&apos;t over a table. Try the sunrise hike date idea this weekend.
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* DATE IDEAS TAB */}
-      {activeTab === 'dates' && (
-        <div>
-          <p style={{ fontSize: 14, color: 'rgba(240,240,255,0.4)', marginBottom: 20 }}>AI-curated for where you are in your relationship.</p>
-          <div className="dates-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 14 }}>
-            {DATE_IDEAS_COUPLES.map(idea => (
-              <div key={idea.title} className="glass card-lift" style={{ borderRadius: 18, padding: '20px', cursor: 'pointer' }}>
-                <div style={{ fontSize: 36, marginBottom: 12 }}>{idea.emoji}</div>
-                <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 8 }}>{idea.title}</div>
-                <div style={{ display: 'flex', gap: 8 }}>
-                  <span className="tag" style={{ fontSize: 11 }}>⏱ {idea.time}</span>
-                  <span className="tag" style={{ fontSize: 11 }}>💰 {idea.cost}</span>
-                </div>
-                <button className="btn-primary" style={{ width: '100%', justifyContent: 'center', fontSize: 12, padding: '9px', marginTop: 14 }}>
-                  Plan this date
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* INTELLIGENCE TAB */}
-      {activeTab === 'intel' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          {/* Weekly Report */}
-          <div style={{ background: 'linear-gradient(135deg, rgba(124,58,237,0.15), rgba(219,39,119,0.1))', border: '1px solid rgba(139,92,246,0.2)', borderRadius: 22, padding: '22px 24px' }}>
-            <div style={{ fontSize: 11, fontWeight: 600, color: '#a78bfa', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 10 }}>Week of Apr 14 — AI Report</div>
-            <p style={{ fontSize: 15, color: 'rgba(240,240,255,0.85)', lineHeight: 1.8, marginBottom: 18 }}>
-              This was your best week since you started tracking. You answered the daily question every day, Sophie initiated 3 of your 5 conversations, and you planned your next date proactively. Your communication score reached an all-time high of 91.
-            </p>
-            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-              {[
-                { label: 'Best moment', value: 'Daily Q streak ×12', color: '#fb923c' },
-                { label: 'Growth area', value: 'Shared experiences', color: '#fbbf24' },
-                { label: 'Trend', value: '↑ Communication +7', color: '#34d399' },
-              ].map(item => (
-                <div key={item.label} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, padding: '8px 14px' }}>
-                  <div style={{ fontSize: 10, color: 'rgba(240,240,255,0.35)', marginBottom: 2 }}>{item.label}</div>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: item.color }}>{item.value}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Pattern analysis */}
-          <div className="glass" style={{ borderRadius: 22, padding: '22px 24px' }}>
-            <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 4 }}>Relationship Patterns</div>
-            <div style={{ fontSize: 12, color: 'rgba(240,240,255,0.4)', marginBottom: 18, lineHeight: 1.6 }}>AI-detected patterns from your interactions and Spark answers.</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-              {[
-                { icon: '✅', label: 'You initiate more dates', desc: 'Sophie responds enthusiastically every time. Healthy balance.', color: '#34d399' },
-                { icon: '⚠️', label: 'Late-night messages cluster', desc: "Most of your deeper conversations happen after 10pm. Consider daytime check-ins too.", color: '#fbbf24' },
-                { icon: '✅', label: 'Conflict resolution speed', desc: "When you've disagreed, resolution happened within 2 hours. Above average.", color: '#34d399' },
-                { icon: '💡', label: 'Sophie uses future language', desc: "She references 'us' and future plans often — strong signal of investment.", color: '#a78bfa' },
-              ].map(p => (
-                <div key={p.label} style={{ display: 'flex', gap: 12 }}>
-                  <div style={{ fontSize: 20, flexShrink: 0 }}>{p.icon}</div>
-                  <div>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: p.color, marginBottom: 3 }}>{p.label}</div>
-                    <div style={{ fontSize: 12, color: 'rgba(240,240,255,0.5)', lineHeight: 1.5 }}>{p.desc}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* This week's focus */}
-          <div style={{ background: 'rgba(139,92,246,0.08)', border: '1px solid rgba(139,92,246,0.18)', borderRadius: 20, padding: '20px 22px' }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: '#a78bfa', marginBottom: 10 }}>🎯 This week&apos;s focus</div>
-            <p style={{ fontSize: 14, color: 'rgba(240,240,255,0.7)', lineHeight: 1.75 }}>
-              Your shared experiences score (74) is the only dimension below 80. You&apos;ve been excellent at emotional depth and conversation. This week: do something active together. The sunrise hike date idea would directly move this score.
-            </p>
-            <button className="btn-primary" style={{ marginTop: 14, fontSize: 13, padding: '10px 20px' }}>Plan this weekend</button>
-          </div>
-        </div>
-      )}
-
-      <style>{`
-        @media (max-width: 767px) {
-          .couples-grid { grid-template-columns: 1fr !important; }
-          .dates-grid { grid-template-columns: 1fr !important; }
-        }
-        @media (max-width: 767px) {
-          .couples-page { padding: 24px 16px 32px !important; }
-          .couples-hero { padding: 20px !important; }
-          .couples-tabs button { min-width: 80px; white-space: nowrap; }
-        }
-      `}</style>
+          </>
+        ) : null}
+      </div>
     </div>
   );
 }
