@@ -156,7 +156,7 @@ export default function SignupPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#07070f', display: 'flex' }}>
+    <div className="auth-page auth-signup-page" style={{ minHeight: '100vh', background: '#07070f', display: 'flex' }}>
       {/* Left panel */}
       <div style={{ flex: 1, position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: 48 }} className="auth-desktop-panel auth-left-panel">
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(160deg, #1A1A2E 0%, #3C3489 100%)' }} />

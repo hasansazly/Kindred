@@ -214,7 +214,7 @@ export default async function DashboardPage() {
       'Member';
 
     return (
-      <main className="min-h-screen bg-[#0D0D1A] text-[#F3F5FF]">
+      <main className="app-interior-page dashboard-screen min-h-screen bg-[#0D0D1A] text-[#F3F5FF]">
         <div
           aria-hidden
           className="pointer-events-none fixed inset-0 opacity-90"

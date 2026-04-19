@@ -137,7 +137,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#07070f', display: 'flex' }}>
+    <div className="auth-page auth-login-page" style={{ minHeight: '100vh', background: '#07070f', display: 'flex' }}>
       {/* Left panel — decorative */}
       <div style={{ flex: 1, position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: 48 }} className="auth-desktop-panel auth-left-panel">
         {/* Gradient BG */}

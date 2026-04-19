@@ -297,7 +297,7 @@ export default function ConversationPage() {
   };
 
   return (
-    <main className="app-interior-page min-h-screen bg-[#060814] px-4 py-6 text-[#F3F5FF]">
+    <main className="app-interior-page mobile-premium-screen conversation-screen min-h-screen bg-[#060814] px-4 py-6 text-[#F3F5FF]">
       <div
         aria-hidden
         className="pointer-events-none fixed inset-0 opacity-90"

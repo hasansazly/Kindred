@@ -995,3 +995,143 @@ input[type="range"]::-webkit-slider-thumb {
   position: relative;
   z-index: 1;
 }
+
+/* ========================================================================
+   Mobile Premium Visual Pass (no logic changes)
+   ======================================================================== */
+.auth-page {
+  position: relative;
+}
+
+.auth-page::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(820px 360px at 10% -8%, rgba(124, 58, 237, 0.16), transparent 65%),
+    radial-gradient(760px 340px at 100% 8%, rgba(219, 39, 119, 0.13), transparent 62%);
+}
+
+.auth-page .auth-form-shell {
+  background: linear-gradient(180deg, rgba(10, 10, 22, 0.9), rgba(8, 8, 20, 0.94));
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: -24px 0 48px rgba(6, 6, 18, 0.35);
+}
+
+.auth-page .btn-primary,
+.auth-page .btn-ghost,
+.onboarding-page .btn-primary,
+.onboarding-page .btn-ghost {
+  min-height: 46px;
+}
+
+.onboarding-page {
+  background:
+    radial-gradient(900px 360px at 0% 0%, rgba(124, 58, 237, 0.16), transparent 66%),
+    radial-gradient(740px 340px at 100% 4%, rgba(219, 39, 119, 0.11), transparent 62%),
+    #07070f !important;
+}
+
+.onboarding-page .glass {
+  border-radius: 24px !important;
+  border-color: rgba(255, 255, 255, 0.14) !important;
+  box-shadow: 0 22px 56px rgba(3, 6, 24, 0.5);
+}
+
+.dashboard-screen article,
+.mobile-premium-screen header,
+.mobile-premium-screen section {
+  box-shadow: 0 18px 42px rgba(3, 8, 30, 0.36);
+}
+
+.mobile-premium-screen .matches-grid > *,
+.messages-screen section > a {
+  transition: transform var(--dur-fast) var(--ease-standard), border-color var(--dur-med) var(--ease-standard), background var(--dur-med) var(--ease-standard), box-shadow var(--dur-med) var(--ease-standard);
+}
+
+.mobile-premium-screen .matches-grid > *:hover,
+.messages-screen section > a:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 16px 34px rgba(8, 12, 36, 0.34);
+}
+
+.messages-screen header,
+.messages-screen section > a,
+.messages-screen section > div {
+  border-color: rgba(136, 145, 194, 0.26) !important;
+}
+
+.conversation-screen header,
+.conversation-screen section {
+  border-color: rgba(119, 128, 182, 0.35) !important;
+}
+
+.conversation-screen section form {
+  background: linear-gradient(180deg, rgba(8, 14, 36, 0.62), rgba(8, 14, 36, 0.82));
+}
+
+.conversation-screen input {
+  border-radius: 16px !important;
+}
+
+.match-detail-screen > .relative section {
+  box-shadow: 0 20px 46px rgba(2, 6, 26, 0.45);
+}
+
+.match-detail-screen section.fixed {
+  padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px)) !important;
+  background: linear-gradient(180deg, rgba(5, 8, 23, 0.72), rgba(5, 8, 23, 0.95));
+}
+
+@media (max-width: 767px) {
+  .auth-page .auth-form-shell {
+    border-left: none;
+    box-shadow: none;
+    background: transparent;
+    padding: 24px 16px 32px !important;
+  }
+
+  .onboarding-page {
+    padding: 14px !important;
+  }
+
+  .onboarding-page .glass {
+    padding: 20px 16px !important;
+    border-radius: 20px !important;
+  }
+
+  .dashboard-screen .grid.grid-cols-3 {
+    gap: 8px !important;
+  }
+
+  .dashboard-screen .grid.grid-cols-3 > * {
+    border-radius: 14px;
+    min-height: 96px;
+  }
+
+  .mobile-premium-screen {
+    padding-bottom: var(--app-main-bottom-clearance) !important;
+  }
+
+  .messages-screen {
+    padding-top: 20px !important;
+  }
+
+  .messages-screen header {
+    border-radius: 18px !important;
+    padding: 18px 16px !important;
+  }
+
+  .messages-screen section > a {
+    border-radius: 16px !important;
+  }
+
+  .conversation-screen {
+    padding-top: 16px !important;
+  }
+
+  .match-detail-screen {
+    padding-top: 16px !important;
+  }
+}
