@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, ArrowRight, CheckCircle, Heart } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CheckCircle } from 'lucide-react';
 import { getSupabaseBrowserClient } from '../../../utils/supabase/client';
 
 type OnboardingClientProps = {
@@ -383,9 +383,7 @@ export default function OnboardingClient({
     <main className="onboarding-page" style={{ minHeight: '100vh', background: '#07070f', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
       <div style={{ width: '100%', maxWidth: 720 }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, marginBottom: 20 }}>
-          <div style={{ width: 34, height: 34, borderRadius: 10, background: 'linear-gradient(135deg, #7c3aed, #db2777)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Heart size={16} color="white" fill="white" />
-          </div>
+          <img src="/vinculo-logo.svg" alt="Vinculo" style={{ width: 34, height: 34, borderRadius: 10, display: 'block' }} />
           <span style={{ fontWeight: 700, fontSize: 20, letterSpacing: '-0.03em' }}>vinculo</span>
         </div>
 

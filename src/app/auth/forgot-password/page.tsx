@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { ArrowRight, Heart } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { getSupabaseBrowserClient } from '../../../../utils/supabase/client';
 
@@ -147,9 +147,7 @@ export default function ForgotPasswordPage() {
       <div className="auth-form-shell" style={{ width: '100%', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: '32px 16px' }}>
         <div style={{ width: '100%', maxWidth: 520, marginTop: 10 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 40 }} className="auth-mobile-logo">
-            <div style={{ width: 34, height: 34, borderRadius: 9, background: 'linear-gradient(135deg, #7c3aed, #db2777)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Heart size={16} color="white" fill="white" />
-            </div>
+            <img src="/vinculo-logo.svg" alt="Vinculo" style={{ width: 34, height: 34, borderRadius: 9, display: 'block' }} />
             <span style={{ fontWeight: 700, fontSize: 20, letterSpacing: '-0.03em', color: '#F8F7FF' }}>vinculo</span>
           </div>
 

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Heart, Compass, Users, MessageCircle, User, Settings, Sparkles, LogOut, HeartHandshake } from 'lucide-react';
+import { Compass, Users, MessageCircle, User, Settings, Sparkles, LogOut, HeartHandshake } from 'lucide-react';
 import AssistantShell from '@/components/ai/AssistantShell';
 import LogoutButton from '@/components/auth/LogoutButton';
 import { getSupabaseBrowserClient } from '../../../utils/supabase/client';
@@ -119,9 +119,11 @@ function Sidebar() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', padding: '24px 16px' }}>
       <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none', marginBottom: 32, paddingLeft: 4 }}>
-        <div style={{ width: 32, height: 32, borderRadius: 9, background: 'linear-gradient(135deg, #7c3aed, #db2777)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 16px rgba(124,58,237,0.35)' }}>
-          <Heart size={15} color="white" fill="white" />
-        </div>
+        <img
+          src="/vinculo-logo.svg"
+          alt="Vinculo"
+          style={{ width: 32, height: 32, borderRadius: 9, display: 'block', boxShadow: '0 0 16px rgba(124,58,237,0.35)' }}
+        />
         <span style={{ fontWeight: 700, fontSize: 19, letterSpacing: '-0.03em' }}>vinculo</span>
       </Link>
 
@@ -340,9 +342,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           }}
         >
           <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
-            <div style={{ width: 26, height: 26, borderRadius: 7, background: 'linear-gradient(135deg, #7c3aed, #db2777)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Heart size={12} color="white" fill="white" />
-            </div>
+            <img src="/vinculo-logo.svg" alt="Vinculo" style={{ width: 26, height: 26, borderRadius: 7, display: 'block' }} />
           </Link>
 
           <div className="desktop-top-links" style={{ alignItems: 'center', gap: 16 }}>

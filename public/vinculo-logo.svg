@@ -1,0 +1,11 @@
+<svg width="1024" height="1024" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <title>Vinculo app icon 1024x1024</title>
+  <rect x="0" y="0" width="200" height="200" rx="48" fill="#FF5864"/>
+  <rect x="8" y="12" width="184" height="184" rx="40" fill="#FF3B5C"/>
+  <ellipse cx="58" cy="92" rx="28" ry="44" fill="none" stroke="#ffffff" stroke-width="14" stroke-linecap="round"/>
+  <ellipse cx="142" cy="92" rx="28" ry="44" fill="none" stroke="#FFD6DC" stroke-width="14" stroke-linecap="round"/>
+  <rect x="83" y="50" width="36" height="42" fill="#FF3B5C"/>
+  <rect x="83" y="98" width="36" height="40" fill="#FF3B5C"/>
+  <path d="M 83 50 A 28 44 0 0 1 58 48" fill="none" stroke="#ffffff" stroke-width="14" stroke-linecap="round"/>
+  <path d="M 119 138 A 28 44 0 0 1 142 136" fill="none" stroke="#FFD6DC" stroke-width="14" stroke-linecap="round"/>
+</svg>

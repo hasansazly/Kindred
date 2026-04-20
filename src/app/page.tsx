@@ -194,14 +194,11 @@ export default function LandingPage() {
         <div className="landing-nav-inner" style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', height: 68, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           {/* Logo */}
           <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
-            <div style={{
-              width: 36, height: 36, borderRadius: 10,
-              background: 'linear-gradient(135deg, #7c3aed, #db2777)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              boxShadow: '0 8px 20px rgba(127,119,221,0.28)',
-            }}>
-              <Heart size={18} color="white" fill="white" />
-            </div>
+            <img
+              src="/vinculo-logo.svg"
+              alt="Vinculo"
+              style={{ width: 36, height: 36, borderRadius: 10, display: 'block', boxShadow: '0 8px 20px rgba(127,119,221,0.28)' }}
+            />
             <span style={{ fontWeight: 500, fontSize: 24, letterSpacing: '-0.02em', fontFamily: "'Playfair Display', Georgia, serif" }}>vinculo</span>
           </Link>
 
@@ -550,9 +547,7 @@ export default function LandingPage() {
       <footer style={{ borderTop: '1px solid #2E2A49', padding: '48px 24px', background: '#1A1A2E' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 24 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div style={{ width: 30, height: 30, borderRadius: 8, background: 'linear-gradient(135deg, #7c3aed, #db2777)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Heart size={14} color="white" fill="white" />
-            </div>
+            <img src="/vinculo-logo.svg" alt="Vinculo" style={{ width: 30, height: 30, borderRadius: 8, display: 'block' }} />
             <span style={{ fontWeight: 500, fontSize: 21, letterSpacing: '-0.02em', color: '#CECBF6', fontFamily: "'Playfair Display', Georgia, serif" }}>vinculo</span>
           </div>
           <div style={{ display: 'flex', gap: 28, flexWrap: 'wrap' }}>

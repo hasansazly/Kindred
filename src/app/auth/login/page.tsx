@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { Heart, Eye, EyeOff, ArrowRight } from 'lucide-react';
+import { Eye, EyeOff, ArrowRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { getSupabaseBrowserClient } from '../../../../utils/supabase/client';
 
@@ -147,9 +147,7 @@ export default function LoginPage() {
 
         {/* Logo */}
         <div style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ width: 36, height: 36, borderRadius: 10, background: 'linear-gradient(135deg, #7c3aed, #db2777)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Heart size={18} color="white" fill="white" />
-          </div>
+          <img src="/vinculo-logo.svg" alt="Vinculo" style={{ width: 36, height: 36, borderRadius: 10, display: 'block' }} />
           <span style={{ fontWeight: 700, fontSize: 22, letterSpacing: '-0.03em', color: '#FFFFFF' }}>vinculo</span>
         </div>
 
@@ -186,9 +184,7 @@ export default function LoginPage() {
         <div style={{ width: '100%' }}>
           {/* Mobile logo */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 40 }} className="auth-mobile-logo">
-            <div style={{ width: 34, height: 34, borderRadius: 9, background: 'linear-gradient(135deg, #7c3aed, #db2777)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Heart size={16} color="white" fill="white" />
-            </div>
+            <img src="/vinculo-logo.svg" alt="Vinculo" style={{ width: 34, height: 34, borderRadius: 9, display: 'block' }} />
             <span style={{ fontWeight: 700, fontSize: 20, letterSpacing: '-0.03em', color: '#F8F7FF' }}>vinculo</span>
           </div>
 
