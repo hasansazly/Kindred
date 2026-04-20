@@ -3,13 +3,11 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { Eye, EyeOff, ArrowRight } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { getSupabaseBrowserClient } from '../../../../utils/supabase/client';
 
 const isTempleEmail = (email: string) => email.trim().toLowerCase().endsWith('.edu');
 
 export default function LoginPage() {
-  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -38,29 +36,41 @@ export default function LoginPage() {
     if (!isTempleEmail(email)) { setError('Only .edu email addresses are allowed.'); return; }
     setLoading(true);
     try {
+      const supabase = getSupabaseBrowserClient();
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: email.trim().toLowerCase(),
+        password,
+      });
+
+      if (signInError) {
+        setError(signInError.message);
+        return;
+      }
+
+      let hasSession = false;
+      for (let i = 0; i < 8; i += 1) {
+        const { data } = await supabase.auth.getSession();
+        if (data.session) {
+          hasSession = true;
+          break;
+        }
+        await new Promise(resolve => setTimeout(resolve, 150));
+      }
+
+      if (!hasSession) {
+        setError('Sign in completed but session not ready yet. Please try once more.');
+        return;
+      }
+
       const requestedNext =
         typeof window !== 'undefined'
           ? new URLSearchParams(window.location.search).get('next') ?? ''
           : '';
-
-      const response = await fetch('/api/auth/password-login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: email.trim().toLowerCase(),
-          password,
-          next: requestedNext,
-        }),
-      });
-
-      if (!response.ok) {
-        const message = await readResponseError(response);
-        setError(message);
-        return;
-      }
-
-      const payload = (await response.json().catch(() => ({}))) as { next?: string };
-      const target = typeof payload.next === 'string' && payload.next.trim() ? payload.next : '/dashboard';
+      const candidate = requestedNext.trim();
+      const target =
+        candidate.startsWith('/') && !candidate.startsWith('//') && !candidate.startsWith('/auth')
+          ? candidate
+          : '/dashboard';
       window.location.assign(target);
     } catch (signinFailure) {
       const message = signinFailure instanceof Error ? signinFailure.message : 'Sign in failed.';
@@ -145,7 +155,7 @@ export default function LoginPage() {
     } finally {
       setLoading(false);
     }
-    router.push('/onboarding');
+    window.location.assign('/onboarding');
   }
 
   return (
