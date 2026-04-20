@@ -68,11 +68,7 @@ export default async function MatchDetailPage({ params }: MatchDetailPageProps) 
     match.compatibilityScore < 65;
 
   return (
-<<<<<<< HEAD
     <main className="app-interior-page mobile-premium-screen match-detail-screen min-h-screen bg-slate-950 px-4 pb-28 pt-6 text-slate-100 sm:pb-10">
-=======
-    <main className="app-interior-page min-h-screen text-slate-100">
->>>>>>> 1b3d934 (..)
       <div
         aria-hidden
         className="pointer-events-none fixed inset-0 opacity-70"

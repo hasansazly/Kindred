@@ -33,11 +33,7 @@ export default async function MatchesPage() {
   const matches = await getMatchesForUser(supabase, user.id);
 
   return (
-<<<<<<< HEAD
     <main className="app-interior-page mobile-premium-screen matches-screen min-h-screen bg-[#060814] px-4 py-8 pb-24 text-[#F3F5FF]">
-=======
-    <main className="app-interior-page min-h-screen text-[#F3F5FF]">
->>>>>>> 1b3d934 (..)
       <div
         aria-hidden
         className="pointer-events-none fixed inset-0 opacity-90"

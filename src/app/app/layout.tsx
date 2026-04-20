@@ -216,7 +216,6 @@ function MobileBottomNav() {
     : [...BASE_NAV];
 
   return (
-<<<<<<< HEAD
     <div
       className="mobile-only"
       style={{
@@ -235,10 +234,6 @@ function MobileBottomNav() {
       }}
     >
       {navItems.map(item => {
-=======
-    <div className="mobile-only app-mobile-bottom-nav">
-      {NAV.map(item => {
->>>>>>> 1b3d934 (..)
         const Icon = item.icon;
         const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
         const activeColor = item.isSpark ? '#fb923c' : '#a78bfa';
@@ -249,7 +244,6 @@ function MobileBottomNav() {
             href={item.href}
             className="app-mobile-bottom-nav-link"
             style={{
-<<<<<<< HEAD
               flex: 1,
               minHeight: 'var(--mobile-nav-height)',
               display: 'flex',
@@ -262,9 +256,6 @@ function MobileBottomNav() {
               position: 'relative',
               transition: 'color var(--dur-fast) var(--ease-standard)',
               WebkitTapHighlightColor: 'transparent',
-=======
-              color: isActive ? activeColor : inactiveColor,
->>>>>>> 1b3d934 (..)
             }}
           >
             {/* Active indicator dot */}
@@ -319,20 +310,10 @@ function MobileBottomNav() {
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
-<<<<<<< HEAD
     <div style={{ height: '100dvh', background: '#07070f', display: 'flex', overflow: 'hidden' }}>
-=======
-    <div className="app-shell-root">
-      {/* Desktop sidebar */}
-      <div className="desktop-only app-sidebar app-shell-sidebar">
-        <Sidebar />
-      </div>
-
->>>>>>> 1b3d934 (..)
       {/* Content column */}
       <div className="app-shell-content">
         {/* Mobile top bar */}
-<<<<<<< HEAD
         <div
           style={{
             flexShrink: 0,
@@ -348,16 +329,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             justifyContent: 'space-between',
           }}
         >
-=======
-        <div className="mobile-only app-shell-topbar">
->>>>>>> 1b3d934 (..)
           <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
             <div style={{ width: 26, height: 26, borderRadius: 7, background: 'linear-gradient(135deg, #7c3aed, #db2777)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Heart size={12} color="white" fill="white" />
             </div>
           </Link>
 
-<<<<<<< HEAD
           <div className="desktop-top-links" style={{ alignItems: 'center', gap: 16 }}>
             <Link href="/app/discover" style={{ color: 'rgba(240,240,255,0.72)', textDecoration: 'none', fontSize: 13 }}>Discover</Link>
             <Link href="/app/matches" style={{ color: 'rgba(240,240,255,0.72)', textDecoration: 'none', fontSize: 13 }}>Matches</Link>
@@ -382,30 +359,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 justifyContent: 'center',
               }}
               aria-label="Settings"
-=======
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <Link
-              href="/app/settings"
-              aria-label="Settings"
-              style={{
-                width: 34,
-                height: 34,
-                borderRadius: 999,
-                border: '1px solid rgba(255,255,255,0.14)',
-                color: 'rgba(240,240,255,0.75)',
-                textDecoration: 'none',
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                background: 'rgba(255,255,255,0.04)',
-              }}
->>>>>>> 7048f9d (..)
             >
               <Settings size={16} />
             </Link>
             <Link
               href="/app/profile"
-<<<<<<< HEAD
               style={{
                 width: 32,
                 height: 32,
@@ -418,21 +376,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 justifyContent: 'center',
               }}
               aria-label="Profile"
-=======
-              aria-label="Profile"
-              style={{
-                width: 34,
-                height: 34,
-                borderRadius: 999,
-                border: '1px solid rgba(139,92,246,0.5)',
-                color: 'rgba(240,240,255,0.9)',
-                textDecoration: 'none',
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                background: 'rgba(139,92,246,0.12)',
-              }}
->>>>>>> 7048f9d (..)
             >
               <User size={16} />
             </Link>
@@ -440,7 +383,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </div>
 
         {/* Page content — scrolls within */}
-<<<<<<< HEAD
         <main
           className="app-main-scroll"
           style={{
@@ -451,9 +393,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             scrollPaddingBottom: 'var(--app-main-bottom-clearance)',
           } as React.CSSProperties}
         >
-=======
-        <main className="app-main-scroll app-shell-main">
->>>>>>> 1b3d934 (..)
           {children}
         </main>
 
@@ -461,7 +400,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <MobileBottomNav />
       </div>
       <AssistantShell />
-<<<<<<< HEAD
       <style>{`
         .desktop-top-links { display: flex; }
         .mobile-only { display: none; }
@@ -475,8 +413,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           }
         }
       `}</style>
-=======
->>>>>>> 1b3d934 (..)
     </div>
   );
 }

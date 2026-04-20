@@ -101,7 +101,6 @@ export default function AssistantShell() {
   return (
     <>
       {open && (
-<<<<<<< HEAD
         <div
           style={{
             position: 'fixed',
@@ -119,9 +118,6 @@ export default function AssistantShell() {
             boxShadow: 'var(--shadow-lg)',
           }}
         >
-=======
-        <div className="app-floating-panel">
->>>>>>> 1b3d934 (..)
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <Brain size={15} color="#a78bfa" />
@@ -241,15 +237,12 @@ export default function AssistantShell() {
         aria-label="Open Vinculo Assistant"
         className="app-fab"
         style={{
-<<<<<<< HEAD
           position: 'fixed',
           right: 16,
           bottom: 'calc(var(--mobile-nav-total-height) + 16px)',
           width: 52,
           height: 52,
           borderRadius: '50%',
-=======
->>>>>>> 1b3d934 (..)
           border: '1px solid rgba(139,92,246,0.45)',
           background: 'linear-gradient(135deg, rgba(124,58,237,0.92), rgba(219,39,119,0.92))',
           color: 'white',
@@ -257,12 +250,9 @@ export default function AssistantShell() {
           alignItems: 'center',
           justifyContent: 'center',
           cursor: 'pointer',
-<<<<<<< HEAD
           zIndex: 'var(--z-fab)',
           boxShadow: '0 8px 24px rgba(124,58,237,0.35)',
           transition: 'transform var(--dur-fast) var(--ease-standard), box-shadow var(--dur-med) var(--ease-standard)',
-=======
->>>>>>> 1b3d934 (..)
         }}
       >
         <Brain size={20} />
