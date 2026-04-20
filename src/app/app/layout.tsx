@@ -112,8 +112,8 @@ function Sidebar() {
   }, []);
 
   const mainNav = coupleModeOn
-    ? [NAV_MESSAGES, NAV_PROFILE, COUPLES_NAV_ITEM]
-    : [...BASE_NAV, COUPLES_NAV_ITEM];
+    ? [COUPLES_NAV_ITEM, NAV_MATCHES, NAV_MESSAGES, NAV_PROFILE]
+    : [...BASE_NAV];
   const sidebarNav = [...mainNav, ...SIDE_EXTRA];
 
   return (
@@ -210,7 +210,7 @@ function MobileBottomNav() {
   }, []);
 
   const navItems = coupleModeOn
-    ? [BASE_NAV[2], BASE_NAV[3], COUPLES_NAV_ITEM]
+    ? [COUPLES_NAV_ITEM, BASE_NAV[1], BASE_NAV[2], BASE_NAV[3]]
     : [...BASE_NAV];
 
   return (

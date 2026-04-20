@@ -12,6 +12,7 @@ import {
   Brain,
   CheckCircle,
   Heart,
+  Settings,
   Plus,
   X,
   User,
@@ -676,6 +677,15 @@ export default function ProfilePage() {
           >
             <Heart size={14} />
             Couples Mode
+          </button>
+          <button
+            type="button"
+            onClick={() => router.push('/app/settings')}
+            className="btn-ghost profile-edit-btn"
+            style={{ padding: '9px 18px', fontSize: 13, display: 'flex', alignItems: 'center', gap: 6 }}
+          >
+            <Settings size={14} />
+            Settings
           </button>
           <button
             type="button"

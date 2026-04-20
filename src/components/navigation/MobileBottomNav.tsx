@@ -42,7 +42,7 @@ export default function MobileBottomNav() {
   }, []);
 
   const navItems = coupleModeOn
-    ? [NAV_MESSAGES, NAV_PROFILE, COUPLES_ITEM]
+    ? [COUPLES_ITEM, NAV_MATCHES, NAV_MESSAGES, NAV_PROFILE]
     : [...NAV];
 
   return (
