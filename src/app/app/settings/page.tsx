@@ -59,10 +59,17 @@ export default function SettingsPage() {
   }
 
   return (
+<<<<<<< HEAD
     <div className="app-interior-page settings-page" style={{ padding: '32px', paddingBottom: 'calc(var(--app-main-bottom-clearance) + 16px)', maxWidth: 680, width: '100%', margin: '0 auto' }}>
       <div style={{ marginBottom: 24 }}>
         <h1 style={{ fontSize: 28, fontWeight: 700, letterSpacing: '-0.03em', marginBottom: 6, color: '#FFFFFF' }}>Settings</h1>
         <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.78)' }}>Manage your preferences and account</p>
+=======
+    <div className="app-interior-page app-page-shell settings-page" style={{ maxWidth: 680 }}>
+      <div style={{ marginBottom: 28 }}>
+        <h1 style={{ fontSize: 26, fontWeight: 800, letterSpacing: '-0.03em', marginBottom: 4, color: '#FFFFFF' }}>Settings</h1>
+        <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.75)' }}>Manage your preferences and account</p>
+>>>>>>> 1b3d934 (..)
       </div>
 
       {/* ─ Couples Mode ─ */}
@@ -231,7 +238,10 @@ export default function SettingsPage() {
 
       <style>{`
         @media (max-width: 767px) {
+<<<<<<< HEAD
           .settings-page { padding: 24px 16px calc(var(--app-main-bottom-clearance) + 12px) !important; }
+=======
+>>>>>>> 1b3d934 (..)
           .settings-interest-row button { flex: 1 1 calc(50% - 4px) !important; }
           .settings-sub-grid { grid-template-columns: 1fr !important; }
         }

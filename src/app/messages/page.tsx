@@ -75,8 +75,13 @@ export default async function MessagesInboxPage() {
 
   if (myParticipantsError) {
     return (
+<<<<<<< HEAD
       <main className="app-interior-page mobile-premium-screen messages-screen min-h-screen bg-[#060814] px-4 py-8 pb-24 text-white">
         <div className="mx-auto max-w-4xl rounded-2xl border border-white/10 bg-[#1E1E35] p-6">
+=======
+      <main className="app-interior-page min-h-screen text-white">
+        <div className="app-page-shell with-mobile-nav max-w-4xl rounded-2xl border border-white/10 bg-[#1E1E35] p-6">
+>>>>>>> 1b3d934 (..)
           <h1 className="text-xl font-semibold text-white">Messages</h1>
           <p className="mt-2 text-sm text-rose-300">{myParticipantsError.message}</p>
         </div>
@@ -90,8 +95,13 @@ export default async function MessagesInboxPage() {
 
   if (conversationIds.length === 0) {
     return (
+<<<<<<< HEAD
       <main className="app-interior-page mobile-premium-screen messages-screen min-h-screen bg-[#060814] px-4 py-8 pb-24 text-white">
         <div className="mx-auto max-w-4xl rounded-2xl border border-white/10 bg-[#1E1E35] p-6">
+=======
+      <main className="app-interior-page min-h-screen text-white">
+        <div className="app-page-shell with-mobile-nav max-w-4xl rounded-2xl border border-white/10 bg-[#1E1E35] p-6">
+>>>>>>> 1b3d934 (..)
           <h1 className="text-xl font-semibold text-white">Messages</h1>
           <div className="mt-6 rounded-xl border border-white/10 bg-[#1E1E35] p-8 text-center">
             <MessageCircle size={34} className="mx-auto text-white/50" />
@@ -244,8 +254,13 @@ export default async function MessagesInboxPage() {
     });
 
   return (
+<<<<<<< HEAD
     <main className="app-interior-page mobile-premium-screen messages-screen min-h-screen bg-[#060814] px-4 py-8 pb-24 text-white">
       <div className="mx-auto max-w-4xl">
+=======
+    <main className="app-interior-page min-h-screen text-white">
+      <div className="app-page-shell with-mobile-nav max-w-4xl">
+>>>>>>> 1b3d934 (..)
         <header className="mb-6 rounded-2xl border border-white/10 bg-[#1E1E35] p-6">
           <h1 className="text-2xl font-semibold tracking-tight text-white">Messages</h1>
           <p className="body-on-dark mt-1 text-sm text-white/70">{conversations.length} active conversation{conversations.length > 1 ? 's' : ''}</p>

@@ -312,7 +312,11 @@ export default function ConversationPage() {
   };
 
   return (
+<<<<<<< HEAD
     <main className="app-interior-page mobile-premium-screen conversation-screen min-h-screen bg-[#060814] px-4 py-6 text-[#F3F5FF]">
+=======
+    <main className="app-interior-page min-h-screen text-[#F3F5FF]">
+>>>>>>> 1b3d934 (..)
       <div
         aria-hidden
         className="pointer-events-none fixed inset-0 opacity-90"
@@ -322,7 +326,7 @@ export default function ConversationPage() {
         }}
       />
 
-      <div className="relative mx-auto flex w-full max-w-4xl flex-col gap-4">
+      <div className="app-page-shell relative flex max-w-4xl flex-col gap-4">
         <header className="rounded-2xl border border-[#2A3158] bg-[#0B1024]/90 p-4 shadow-[0_24px_80px_rgba(5,10,30,0.6)] backdrop-blur">
           <div className="flex items-center justify-between gap-3">
             <Link

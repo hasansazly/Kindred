@@ -36,7 +36,7 @@ export default function CoachPage() {
   const [debriefDone, setDebriefDone] = useState(false);
 
   return (
-    <div className="app-interior-page coach-page" style={{ padding: '32px', maxWidth: 780, width: '100%', margin: '0 auto', color: '#FFFFFF' }}>
+    <div className="app-interior-page app-page-shell coach-page" style={{ maxWidth: 780, color: '#FFFFFF' }}>
 
       {/* Header */}
       <div style={{ marginBottom: 24 }}>
@@ -60,7 +60,8 @@ export default function CoachPage() {
           <button
             key={val}
             onClick={() => setSection(val)}
-            style={{ flexShrink: 0, padding: '9px 16px', borderRadius: 10, border: `1.5px solid ${section === val ? 'rgba(167,139,250,0.5)' : 'rgba(255,255,255,0.08)'}`, background: section === val ? 'rgba(167,139,250,0.12)' : 'rgba(255,255,255,0.03)', color: section === val ? '#c4b5fd' : 'rgba(240,240,255,0.5)', fontSize: 13, fontWeight: section === val ? 600 : 400, cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.18s', whiteSpace: 'nowrap' }}
+            className={`app-tab-chip ${section === val ? 'is-active' : ''}`}
+            style={{ flexShrink: 0 }}
           >
             {label}
           </button>
@@ -288,7 +289,6 @@ export default function CoachPage() {
 
       <style>{`
         @media (max-width: 767px) {
-          .coach-page { padding: 24px 16px 32px !important; }
           .coach-grid { grid-template-columns: 1fr 1fr !important; }
         }
         @media (max-width: 380px) {

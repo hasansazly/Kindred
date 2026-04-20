@@ -33,7 +33,11 @@ export default async function MatchesPage() {
   const matches = await getMatchesForUser(supabase, user.id);
 
   return (
+<<<<<<< HEAD
     <main className="app-interior-page mobile-premium-screen matches-screen min-h-screen bg-[#060814] px-4 py-8 pb-24 text-[#F3F5FF]">
+=======
+    <main className="app-interior-page min-h-screen text-[#F3F5FF]">
+>>>>>>> 1b3d934 (..)
       <div
         aria-hidden
         className="pointer-events-none fixed inset-0 opacity-90"
@@ -43,7 +47,7 @@ export default async function MatchesPage() {
         }}
       />
 
-      <div className="relative mx-auto w-full max-w-6xl">
+      <div className="app-page-shell with-mobile-nav relative max-w-6xl">
         <header className="mb-6 flex items-center justify-between rounded-[26px] border border-[#2A3158] bg-[#0B1024]/90 p-6 shadow-[0_24px_80px_rgba(5,10,30,0.6)] backdrop-blur">
           <div>
             <p className="section-label">Matches</p>

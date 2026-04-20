@@ -86,7 +86,12 @@ export default async function AppDiscoverPage() {
   const sections = getDiscoverSections(matches, tier);
 
   return (
+<<<<<<< HEAD
     <div className="app-interior-page min-h-full bg-[#0D0D1A] px-4 pt-6 pb-8 text-[#F3F5FF]">
+=======
+    <div className="app-interior-page min-h-screen text-[#F3F5FF]">
+      <div className="app-page-shell px-[14px] pt-4">
+>>>>>>> 1b3d934 (..)
       {/* Page meta */}
       <div className="mb-4 flex items-start justify-between gap-3">
         <div>
@@ -135,6 +140,7 @@ export default async function AppDiscoverPage() {
         emptyIcon="✦"
         statusLabel="potential_fit"
       />
+      </div>
     </div>
   );
 }

@@ -14,7 +14,7 @@ export default function MatchCard({ match }: { match: MatchView }) {
     typeof match.compatibilityScore === 'number' && match.compatibilityScore >= 50 && match.compatibilityScore < 65;
 
   return (
-    <article className="match-card group overflow-hidden rounded-[24px] border border-[#2A3158] bg-[#0B1024]/92 shadow-[0_26px_70px_rgba(5,10,30,0.6)] backdrop-blur transition duration-300 hover:-translate-y-0.5 hover:border-[#6D5CE8]">
+    <article className="app-card match-card group overflow-hidden rounded-[24px] border border-[#2A3158] bg-[#0B1024]/92 shadow-[0_26px_70px_rgba(5,10,30,0.6)] backdrop-blur transition duration-300 hover:-translate-y-0.5 hover:border-[#6D5CE8]">
       <div className="match-photo-area relative h-64">
         {match.canViewPhotos && match.matchedProfile.photoUrl ? (
           <img
@@ -80,7 +80,7 @@ export default function MatchCard({ match }: { match: MatchView }) {
           ) : null}
           <Link
             href={`/matches/${match.id}`}
-            className="inline-flex w-full items-center justify-center rounded-xl border border-[#7E62F2]/60 bg-gradient-to-r from-[#4D5FE6] via-[#7E46DB] to-[#D02E8B] px-4 py-3 text-sm font-semibold text-white transition hover:brightness-110"
+            className="inline-flex min-h-11 w-full items-center justify-center rounded-xl border border-[#7E62F2]/60 bg-gradient-to-r from-[#4D5FE6] via-[#7E46DB] to-[#D02E8B] px-4 py-3 text-sm font-semibold text-white transition hover:brightness-110"
           >
             View match
           </Link>

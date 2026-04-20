@@ -46,6 +46,7 @@ export default function MobileBottomNav() {
     : [...NAV];
 
   return (
+<<<<<<< HEAD
     <div
       className="mobile-only"
       style={{
@@ -63,13 +64,19 @@ export default function MobileBottomNav() {
       }}
     >
       {navItems.map(item => {
+=======
+    <div className="mobile-only app-mobile-bottom-nav">
+      {NAV.map(item => {
+>>>>>>> 1b3d934 (..)
         const Icon = item.icon;
         const isActive = isActivePath(pathname, item.href);
         return (
           <Link
             key={item.href}
             href={item.href}
+            className="app-mobile-bottom-nav-link"
             style={{
+<<<<<<< HEAD
               flex: 1,
               minHeight: 'var(--mobile-nav-height)',
               display: 'flex',
@@ -82,6 +89,9 @@ export default function MobileBottomNav() {
               position: 'relative',
               transition: 'color var(--dur-fast) var(--ease-standard)',
               WebkitTapHighlightColor: 'transparent',
+=======
+              color: isActive ? '#a78bfa' : 'rgba(240,240,255,0.28)',
+>>>>>>> 1b3d934 (..)
             }}
           >
             {isActive ? (

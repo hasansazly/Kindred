@@ -114,7 +114,7 @@ export default function JourneyPage() {
   const compatColor = getCompatibilityColor(match.compatibilityScore);
 
   return (
-    <div className="journey-page" style={{ padding: '32px', maxWidth: 860, width: '100%', margin: '0 auto' }}>
+    <div className="app-interior-page app-page-shell journey-page" style={{ maxWidth: 860 }}>
       {/* Back */}
       <button onClick={() => router.back()} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(240,240,255,0.5)', fontSize: 13, display: 'flex', alignItems: 'center', gap: 6, marginBottom: 20, fontFamily: 'inherit', padding: 0 }}>
         <ArrowLeft size={16} /> Back
@@ -307,7 +307,7 @@ export default function JourneyPage() {
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
               <div>
                 <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 3 }}>Vinculo Moments</div>
-                <div style={{ fontSize: 12, color: 'rgba(240,240,255,0.4)' }}>Send a "thinking of you" pulse · 2 left today</div>
+                <div style={{ fontSize: 12, color: 'rgba(240,240,255,0.4)' }}>Send a &quot;thinking of you&quot; pulse · 2 left today</div>
               </div>
               <div style={{ fontSize: 22 }}>🫀</div>
             </div>
@@ -374,7 +374,6 @@ export default function JourneyPage() {
 
       <style>{`
         @media (max-width: 767px) {
-          .journey-page { padding: 24px 16px 32px !important; }
           .journey-grid { grid-template-columns: 1fr !important; }
         }
       `}</style>

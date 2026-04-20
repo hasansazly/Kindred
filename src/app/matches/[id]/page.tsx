@@ -68,7 +68,11 @@ export default async function MatchDetailPage({ params }: MatchDetailPageProps) 
     match.compatibilityScore < 65;
 
   return (
+<<<<<<< HEAD
     <main className="app-interior-page mobile-premium-screen match-detail-screen min-h-screen bg-slate-950 px-4 pb-28 pt-6 text-slate-100 sm:pb-10">
+=======
+    <main className="app-interior-page min-h-screen text-slate-100">
+>>>>>>> 1b3d934 (..)
       <div
         aria-hidden
         className="pointer-events-none fixed inset-0 opacity-70"
@@ -78,7 +82,7 @@ export default async function MatchDetailPage({ params }: MatchDetailPageProps) 
         }}
       />
 
-      <div className="relative mx-auto w-full max-w-5xl space-y-6">
+      <div className="app-page-shell relative max-w-5xl space-y-6 pb-24 sm:pb-8">
         <Link
           href="/matches"
           className="inline-flex items-center gap-1.5 rounded-full border border-slate-700/80 bg-slate-900/70 px-3 py-1.5 text-sm text-slate-300 backdrop-blur hover:border-violet-400/40 hover:text-violet-200"
@@ -217,7 +221,7 @@ export default async function MatchDetailPage({ params }: MatchDetailPageProps) 
           </div>
         </section>
 
-        <section className="fixed inset-x-0 bottom-0 z-20 border-t border-slate-700/70 bg-slate-950/85 px-4 py-3 backdrop-blur sm:static sm:border-none sm:bg-transparent sm:px-0 sm:py-0">
+        <section className="app-bottom-sheet sm:static sm:border-none sm:bg-transparent sm:px-0 sm:py-0">
           <StartConversationButton
             matchUserId={match.matchedUserId}
             disabled={match.conversationDisabled}

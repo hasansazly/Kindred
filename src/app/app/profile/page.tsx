@@ -634,7 +634,7 @@ export default function ProfilePage() {
 
   if (!user) {
     return (
-      <div className="profile-page" style={{ padding: '32px', maxWidth: 800, width: '100%', margin: '0 auto' }}>
+      <div className="app-page-shell profile-page" style={{ maxWidth: 800 }}>
         <h1 style={{ fontSize: 26, fontWeight: 800, letterSpacing: '-0.03em', marginBottom: 10 }}>Your Profile</h1>
         <p style={{ color: 'rgba(240,240,255,0.65)', fontSize: 14 }}>
           {loadError ? `Could not load profile: ${loadError}` : 'Loading your profile...'}
@@ -657,7 +657,7 @@ export default function ProfilePage() {
   const galleryPhotos = user.photos;
 
   return (
-    <div className="app-interior-page profile-page" style={{ padding: '32px', maxWidth: 800, width: '100%', margin: '0 auto' }}>
+    <div className="app-interior-page app-page-shell profile-page" style={{ maxWidth: 800 }}>
       <input
         ref={fileInputRef}
         type="file"

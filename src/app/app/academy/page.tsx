@@ -83,7 +83,7 @@ export default function AcademyPage() {
   });
 
   return (
-    <div className="app-interior-page academy-page" style={{ padding: '32px', maxWidth: 820, width: '100%', margin: '0 auto', color: '#FFFFFF' }}>
+    <div className="app-interior-page app-page-shell academy-page" style={{ maxWidth: 820, color: '#FFFFFF' }}>
 
       {/* Header */}
       <div style={{ marginBottom: 28 }}>
@@ -149,7 +149,13 @@ export default function AcademyPage() {
           <button
             key={val}
             onClick={() => setFilter(val)}
-            style={{ flexShrink: 0, padding: '8px 16px', borderRadius: 10, border: `1.5px solid ${filter === val ? '#FFFFFF' : 'rgba(255,255,255,0.2)'}`, background: filter === val ? '#FFFFFF' : 'transparent', color: filter === val ? '#1A1A2E' : 'rgba(255,255,255,0.6)', fontSize: 13, fontWeight: filter === val ? 600 : 400, cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.18s', whiteSpace: 'nowrap' }}
+            className={`app-tab-chip ${filter === val ? 'is-active' : ''}`}
+            style={{
+              flexShrink: 0,
+              borderColor: filter === val ? '#FFFFFF' : undefined,
+              background: filter === val ? '#FFFFFF' : undefined,
+              color: filter === val ? '#1A1A2E' : undefined,
+            }}
           >
             {label}
           </button>
@@ -200,7 +206,6 @@ export default function AcademyPage() {
 
       <style>{`
         @media (max-width: 767px) {
-          .academy-page { padding: 24px 16px 32px !important; }
           .academy-grid { grid-template-columns: 1fr !important; }
         }
       `}</style>

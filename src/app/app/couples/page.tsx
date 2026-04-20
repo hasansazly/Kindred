@@ -360,7 +360,7 @@ export default function CouplesPage() {
   }, [daily, partnerName]);
 
   return (
-    <div className="min-h-screen bg-[#060814] px-4 pb-10 pt-6 text-[#F3F5FF]">
+    <div className="app-interior-page min-h-screen text-[#F3F5FF]">
       <div
         aria-hidden
         className="pointer-events-none fixed inset-0 opacity-90"
@@ -369,7 +369,7 @@ export default function CouplesPage() {
             'radial-gradient(1100px 540px at 14% -8%, rgba(124,58,237,0.25), transparent 58%), radial-gradient(980px 520px at 92% -2%, rgba(236,72,153,0.2), transparent 55%), radial-gradient(820px 460px at 50% 110%, rgba(59,130,246,0.17), transparent 60%)',
         }}
       />
-      <div className="relative mx-auto flex w-full max-w-5xl flex-col gap-4">
+      <div className="app-page-shell relative flex max-w-5xl flex-col gap-4 pt-6">
         <header className="rounded-2xl border border-[#2A3158] bg-[#0B1024]/90 p-5 shadow-[0_24px_80px_rgba(5,10,30,0.6)] backdrop-blur">
           <p className="text-[11px] uppercase tracking-[0.08em] text-[#A6AED0]">Private Couple Space</p>
           <h1 className="mt-1 text-2xl font-semibold text-white">Couple Mode</h1>

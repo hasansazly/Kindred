@@ -55,7 +55,7 @@ export default function StartConversationButton({
         type="button"
         onClick={onStart}
         disabled={isLoading || disabled}
-        className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-violet-400/35 bg-gradient-to-r from-violet-500/30 to-fuchsia-500/25 px-4 py-3 text-sm font-semibold text-violet-100 hover:from-violet-500/45 hover:to-fuchsia-500/40 disabled:cursor-not-allowed disabled:opacity-70"
+        className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-violet-400/35 bg-gradient-to-r from-violet-500/30 to-fuchsia-500/25 px-4 py-3 text-sm font-semibold text-violet-100 hover:from-violet-500/45 hover:to-fuchsia-500/40 disabled:cursor-not-allowed disabled:opacity-70"
       >
         {disabled ? <Lock size={16} /> : <MessageCircle size={16} />}
         {disabled ? 'Messaging unavailable' : isLoading ? 'Opening chat...' : 'Message This Match'}
