@@ -1,5 +1,6 @@
 import { computeCandidateScore, MATCHMAKING_ENGINE_VERSION, passesHardFilters, passesIncompleteProfileFilter } from './engine';
 import { getMatchmakingStore } from './store';
+import { applyAiRankingLayer } from './ai';
 import type {
   MatchmakingCandidateScore,
   MatchmakingResponse,
@@ -18,15 +19,16 @@ function createId(prefix: string): string {
 }
 
 function parseTier(input: unknown): MatchmakingTier {
-  return input === 'paid' ? 'paid' : 'free';
+  // Subscription logic is disabled: app runs as free-only.
+  return 'free';
 }
 
 function minimumCompatibilityScore(tier: MatchmakingTier): number {
-  return tier === 'paid' ? 50 : 65;
+  return 65;
 }
 
 function dailyLimitForTier(tier: MatchmakingTier): number {
-  return tier === 'paid' ? 6 : 3;
+  return 3;
 }
 
 function profileCompleteness(profile: Record<string, unknown>): number {
@@ -97,6 +99,7 @@ export async function getTodayMatches(userId: string, tier: MatchmakingTier): Pr
     .filter(candidate => !shownWithin30Days.has(candidate.id));
 
   const scored: MatchmakingCandidateScore[] = [];
+  const candidateById = new Map<string, typeof candidates[number]>();
   for (const candidate of eligibleCandidates) {
     const [pairSignals, alreadyQueuedForThem] = await Promise.all([
       store.listPairSignals(userId, candidate.id, DEFAULT_LOOKBACK_DAYS),
@@ -117,16 +120,47 @@ export async function getTodayMatches(userId: string, tier: MatchmakingTier): Pr
 
     if (!result) continue;
     scored.push(result);
+    candidateById.set(candidate.id, candidate);
   }
 
   const filtered = scored
     .filter(item => item.compatibilityScore >= minimumCompatibilityScore(tier))
+    .sort((a, b) => b.rankingScore - a.rankingScore);
+
+  const aiPool = filtered.slice(0, 12).map(item => ({
+    score: item,
+    profile: candidateById.get(item.userId),
+  })).filter((item): item is { score: MatchmakingCandidateScore; profile: typeof candidates[number] } => Boolean(item.profile));
+
+  const aiLayer = await applyAiRankingLayer(user, aiPool);
+  const adjusted = filtered.map(item => {
+    const decision = aiLayer.byUserId.get(item.userId);
+    if (!decision) return item;
+    return {
+      ...item,
+      rankingScore: Math.max(0, Math.min(100, Math.round(item.rankingScore + decision.delta))),
+      reasons: decision.summary ? [decision.summary, ...item.reasons].slice(0, 3) : item.reasons,
+      explanation: {
+        ...item.explanation,
+        summary: decision.summary || item.explanation.summary,
+        reasons: decision.reason ? [decision.reason, ...item.explanation.reasons].slice(0, 3) : item.explanation.reasons,
+      },
+      whySignals: [
+        ...item.whySignals,
+        aiLayer.applied
+          ? `AI quality layer (${aiLayer.source}) adjusted ranking by ${decision.delta >= 0 ? '+' : ''}${decision.delta}.`
+          : 'AI quality layer fallback: algorithm-only ranking used.',
+      ],
+    };
+  });
+
+  const daily = adjusted
     .sort((a, b) => b.rankingScore - a.rankingScore)
     .slice(0, dailyLimitForTier(tier));
 
-  if (filtered.length > 0) {
+  if (daily.length > 0) {
     await store.saveShownHistory(
-      filtered.map(item => ({
+      daily.map(item => ({
         userId,
         candidateId: item.userId,
         shownAt: new Date().toISOString(),
@@ -134,7 +168,7 @@ export async function getTodayMatches(userId: string, tier: MatchmakingTier): Pr
     );
   }
 
-  return filtered;
+  return daily;
 }
 
 export async function runMatchmaking(

@@ -21,28 +21,9 @@ function normalizeTierValue(value: unknown): ViewerTier | null {
 }
 
 export function resolveViewerTier(profile: Record<string, unknown> | null | undefined): ViewerTier {
-  // Billing UI is temporarily disabled, so all users get full-access behavior.
-  if (!profile) return 'paid';
-
-  const directTier =
-    normalizeTierValue(profile.tier) ??
-    normalizeTierValue(profile.plan_tier) ??
-    normalizeTierValue(profile.subscription_tier) ??
-    normalizeTierValue(profile.account_tier) ??
-    normalizeTierValue(profile.membership_tier);
-
-  if (directTier) return directTier;
-
-  const paidFlag =
-    profile.is_paid === true ||
-    profile.paid === true ||
-    profile.is_premium === true ||
-    profile.premium === true ||
-    profile.is_pro === true;
-
-  if (paidFlag) return 'paid';
-
-  return 'paid';
+  // Subscription is removed: all users are on a single free plan.
+  void profile;
+  return 'free';
 }
 
 function isSameLocalDay(a: Date, b: Date): boolean {
@@ -71,7 +52,8 @@ function isEligibleForTier(match: MatchView, tier: ViewerTier): boolean {
 }
 
 export function getDashboardPreviewLimit(tier: ViewerTier): number {
-  return 6;
+  void tier;
+  return 3;
 }
 
 export function getDashboardTodayPreview(matches: MatchView[], tier: ViewerTier, now = new Date()): MatchView[] {
@@ -102,13 +84,12 @@ export function getDiscoverSections(
     })
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
-  const potentialFit = tier === 'paid' ? currentCurated.filter(isPotentialFit) : [];
+  const potentialFit: MatchView[] = [];
 
   const newToday = currentCurated.filter(match => {
     const createdAt = parseDate(match.createdAt);
     if (!createdAt) return false;
     if (!isSameLocalDay(createdAt, now)) return false;
-    if (tier === 'paid' && isPotentialFit(match)) return false;
     return true;
   });
 
@@ -116,7 +97,6 @@ export function getDiscoverSections(
     const createdAt = parseDate(match.createdAt);
     if (!createdAt) return false;
     if (isSameLocalDay(createdAt, now)) return false;
-    if (tier === 'paid' && isPotentialFit(match)) return false;
     return true;
   });
 

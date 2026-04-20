@@ -58,6 +58,16 @@ type OnboardingRow = {
   response: unknown;
 };
 
+type MatchmakingSignalRow = {
+  id: string;
+  idempotency_key: string;
+  actor_user_id: string;
+  target_user_id: string;
+  signal_type: string;
+  metadata: Record<string, unknown> | null;
+  created_at: string;
+};
+
 function getState() {
   if (!globalThis.__vinculoMatchStore) {
     globalThis.__vinculoMatchStore = {
@@ -543,23 +553,94 @@ export class InMemoryMatchmakingStore implements MatchmakingStore {
   async listPairSignals(userId: string, candidateId: string, lookbackDays: number): Promise<MatchmakingSignal[]> {
     const state = getState();
     const cutoff = Date.now() - lookbackDays * 24 * 60 * 60 * 1000;
-    return state.signals.filter(signal => {
+    const memorySignals = state.signals.filter(signal => {
       const ts = new Date(signal.createdAt).getTime();
       if (ts < cutoff) return false;
       const isForward = signal.actorUserId === userId && signal.targetUserId === candidateId;
       const isBackward = signal.actorUserId === candidateId && signal.targetUserId === userId;
       return isForward || isBackward;
     });
+
+    try {
+      const supabase = await createSupabaseServerClient();
+      const since = new Date(cutoff).toISOString();
+      const { data } = await supabase
+        .from('matchmaking_signals')
+        .select('id,idempotency_key,actor_user_id,target_user_id,signal_type,metadata,created_at')
+        .or(
+          `and(actor_user_id.eq.${userId},target_user_id.eq.${candidateId}),and(actor_user_id.eq.${candidateId},target_user_id.eq.${userId})`
+        )
+        .gte('created_at', since)
+        .returns<MatchmakingSignalRow[]>();
+
+      const persisted = (data ?? []).map(row => ({
+        id: row.id,
+        idempotencyKey: row.idempotency_key,
+        actorUserId: row.actor_user_id,
+        targetUserId: row.target_user_id,
+        type: row.signal_type as MatchmakingSignal['type'],
+        metadata: row.metadata ?? undefined,
+        createdAt: row.created_at,
+      }));
+
+      const byIdempotency = new Map<string, MatchmakingSignal>();
+      for (const signal of [...persisted, ...memorySignals]) {
+        byIdempotency.set(signal.idempotencyKey, signal);
+      }
+      return [...byIdempotency.values()];
+    } catch {
+      return memorySignals;
+    }
   }
 
   async getSignalsByIdempotencyKey(idempotencyKey: string): Promise<MatchmakingSignal | null> {
     const state = getState();
-    return state.signals.find(signal => signal.idempotencyKey === idempotencyKey) ?? null;
+    const cached = state.signals.find(signal => signal.idempotencyKey === idempotencyKey) ?? null;
+    if (cached) return cached;
+
+    try {
+      const supabase = await createSupabaseServerClient();
+      const { data } = await supabase
+        .from('matchmaking_signals')
+        .select('id,idempotency_key,actor_user_id,target_user_id,signal_type,metadata,created_at')
+        .eq('idempotency_key', idempotencyKey)
+        .maybeSingle<MatchmakingSignalRow>();
+      if (!data) return null;
+      return {
+        id: data.id,
+        idempotencyKey: data.idempotency_key,
+        actorUserId: data.actor_user_id,
+        targetUserId: data.target_user_id,
+        type: data.signal_type as MatchmakingSignal['type'],
+        metadata: data.metadata ?? undefined,
+        createdAt: data.created_at,
+      };
+    } catch {
+      return null;
+    }
   }
 
   async insertSignal(signal: MatchmakingSignal): Promise<void> {
     const state = getState();
     state.signals.push(signal);
+
+    try {
+      const supabase = await createSupabaseServerClient();
+      await supabase.from('matchmaking_signals').upsert(
+        {
+          id: signal.id,
+          idempotency_key: signal.idempotencyKey,
+          actor_user_id: signal.actorUserId,
+          target_user_id: signal.targetUserId,
+          signal_type: signal.type,
+          metadata: signal.metadata ?? {},
+          created_at: signal.createdAt,
+        },
+        { onConflict: 'idempotency_key' }
+      );
+    } catch {
+      // Keep in-memory fallback when DB table is unavailable.
+    }
 
     if (signal.type === 'report') {
       try {
