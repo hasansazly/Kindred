@@ -476,35 +476,35 @@ export default function CouplesPage() {
   }, [daily, partnerName]);
 
   return (
-    <div className="app-interior-page min-h-screen text-[#F3F5FF]">
+    <div className="app-interior-page couple-mode-v2 min-h-screen text-[#F3F5FF]">
       <div
         aria-hidden
-        className="pointer-events-none fixed inset-0 opacity-90"
+        className="pointer-events-none fixed inset-0 opacity-70"
         style={{
           background:
-            'radial-gradient(1100px 540px at 14% -8%, rgba(124,58,237,0.25), transparent 58%), radial-gradient(980px 520px at 92% -2%, rgba(236,72,153,0.2), transparent 55%), radial-gradient(820px 460px at 50% 110%, rgba(59,130,246,0.17), transparent 60%)',
+            'radial-gradient(920px 440px at 10% -10%, rgba(124,58,237,0.22), transparent 56%), radial-gradient(760px 420px at 95% 0%, rgba(236,72,153,0.17), transparent 55%)',
         }}
       />
-      <div className="app-page-shell relative flex max-w-5xl flex-col gap-4 pt-6">
-        <header className="rounded-2xl border border-[#2A3158] bg-[#0B1024]/90 p-5 shadow-[0_24px_80px_rgba(5,10,30,0.6)] backdrop-blur">
-          <p className="text-[11px] uppercase tracking-[0.08em] text-[#A6AED0]">Private Couple Space</p>
-          <h1 className="mt-1 text-2xl font-semibold text-white">Couple Mode</h1>
-          <p className="mt-2 text-sm text-[#A9B0D0]">
+      <div className="app-page-shell cm-shell relative flex max-w-[420px] flex-col gap-3 pt-4">
+        <header className="cm-card cm-header p-5">
+          <p className="cm-kicker text-[11px] uppercase tracking-[0.08em] text-[#A6AED0]">Private Couple Space</p>
+          <h1 className="cm-title mt-1 text-3xl font-semibold text-white">Couple Mode</h1>
+          <p className="mt-2 text-sm text-[#BFA9D4]">
             A calm shared space for rituals, check-ins, memories, and appreciation.
           </p>
         </header>
 
         {!loading && state?.hasCouple ? (
-          <section className="rounded-2xl border border-[#2A3158] bg-[#0B1024]/90 p-5">
+          <section className="cm-card p-4">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <p className="text-[11px] uppercase tracking-[0.08em] text-[#A6AED0]">Couple Mode Status</p>
+                <p className="cm-kicker text-[11px] uppercase tracking-[0.08em] text-[#A6AED0]">Couple Mode Status</p>
                 <p className="mt-1 text-sm text-[#E8ECFF]">
                   You: <span className={selfModeOn ? 'text-emerald-300' : 'text-[#A9B0D0]'}>{selfModeOn ? 'ON' : 'OFF'}</span>
                   {' · '}
                   {partnerName}: <span className={partnerModeOn ? 'text-emerald-300' : 'text-[#A9B0D0]'}>{partnerModeOn ? 'ON' : 'OFF'}</span>
                 </p>
-                <p className="mt-1 text-xs text-[#A9B0D0]">
+                <p className="mt-1 text-xs text-[#A78BFA99]">
                   {effectiveModeOn
                     ? 'Both partners are ON. Dating sections are hidden and only your couple connection is visible.'
                     : 'Turn this ON so your partner can see your commitment status.'}
@@ -514,8 +514,8 @@ export default function CouplesPage() {
                 type="button"
                 onClick={() => void toggleMode(!selfModeOn)}
                 disabled={modeSaving}
-                className={`inline-flex min-w-[120px] items-center justify-center rounded-lg px-4 py-2 text-sm font-medium text-white ${
-                  selfModeOn ? 'bg-rose-600/90' : 'bg-[#4B3FA0]'
+                className={`inline-flex min-w-[120px] items-center justify-center rounded-xl px-4 py-2 text-sm font-medium text-white ${
+                  selfModeOn ? 'bg-[#a855f7]' : 'bg-[#2D1A44]'
                 } disabled:opacity-60`}
               >
                 {modeSaving ? 'Updating...' : selfModeOn ? 'Turn OFF' : 'Turn ON'}
@@ -525,7 +525,7 @@ export default function CouplesPage() {
         ) : null}
 
         {loading ? (
-          <section className="rounded-2xl border border-[#2A3158] bg-[#0B1024]/90 p-6">
+          <section className="cm-card p-6">
             <p className="inline-flex items-center gap-2 text-sm text-[#A9B0D0]">
               <Loader2 size={16} className="animate-spin" />
               Loading Couple Mode...
@@ -534,19 +534,19 @@ export default function CouplesPage() {
         ) : null}
 
         {error ? (
-          <section className="rounded-2xl border border-rose-500/40 bg-rose-950/30 p-4 text-sm text-rose-200">
+          <section className="cm-card border border-rose-500/40 bg-rose-950/30 p-4 text-sm text-rose-200">
             {error}
           </section>
         ) : null}
 
         {!loading && state && !state.enabled ? (
-          <section className="rounded-2xl border border-[#2A3158] bg-[#0B1024]/90 p-6">
+          <section className="cm-card p-6">
             <p className="text-sm text-[#A9B0D0]">Couple Mode is currently disabled.</p>
           </section>
         ) : null}
 
         {!loading && state?.enabled && !state.hasCouple ? (
-          <section className="rounded-2xl border border-[#2A3158] bg-[#0B1024]/90 p-6">
+          <section className="cm-card p-6">
             <h2 className="text-lg font-medium text-white">Not in Couple Mode yet</h2>
             <p className="mt-2 text-sm text-[#A9B0D0]">
               Couple Mode unlocks after a confirmed couple status is set for your pair.
@@ -557,7 +557,7 @@ export default function CouplesPage() {
               </p>
             ) : null}
             {inviteCodeFromUrl ? (
-              <div className="mt-4 rounded-xl border border-[#3A4474] bg-[#11183A] p-4">
+              <div className="mt-4 rounded-xl border border-[#3D2B58] bg-[#120D1E] p-4">
                 <p className="text-sm font-medium text-white">You were invited to join as a partner</p>
                 <p className="mt-1 text-xs text-[#A9B0D0]">
                   This invite is email-locked. Sign in with the invited email to accept.
@@ -566,13 +566,13 @@ export default function CouplesPage() {
                   type="button"
                   onClick={() => void acceptInvite()}
                   disabled={inviteLoading}
-                  className="mt-3 rounded-lg bg-[#4B3FA0] px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
+                  className="mt-3 rounded-lg bg-[#A855F7] px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
                 >
                   {inviteLoading ? 'Accepting...' : 'Accept Invite'}
                 </button>
               </div>
             ) : null}
-            <div className="mt-4 rounded-xl border border-[#3A4474] bg-[#11183A] p-4">
+            <div className="mt-4 rounded-xl border border-[#3D2B58] bg-[#120D1E] p-4">
               <p className="text-sm font-medium text-white">Invite your partner</p>
               <p className="mt-1 text-xs text-[#A9B0D0]">
                 Only Temple users can send invites. Your partner can join from any school.
@@ -580,7 +580,7 @@ export default function CouplesPage() {
               {canCreateInvite ? (
                 <form className="mt-3 space-y-2" onSubmit={createInvite}>
                   <input
-                    className="w-full rounded-lg border border-[#4E5A92] bg-[#121A3A] px-3 py-2 text-sm text-[#F6F8FF] outline-none focus:border-[#6B5CE7]"
+                    className="w-full rounded-lg border border-[#7C3AED44] bg-[#120D1E] px-3 py-2 text-sm text-[#F6F8FF] outline-none focus:border-[#A855F7]"
                     type="email"
                     placeholder="partner@example.edu"
                     value={inviteEmail}
@@ -589,7 +589,7 @@ export default function CouplesPage() {
                   <button
                     type="submit"
                     disabled={inviteLoading}
-                    className="rounded-lg bg-[#4B3FA0] px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
+                    className="rounded-lg bg-[#A855F7] px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
                   >
                     {inviteLoading ? 'Creating...' : 'Create Invite Link'}
                   </button>
@@ -598,7 +598,7 @@ export default function CouplesPage() {
                 <p className="mt-3 text-xs text-amber-200">{inviteReason ?? 'Invites are unavailable right now.'}</p>
               )}
               {pendingInvite ? (
-                <div className="mt-3 rounded-lg border border-[#3B4B88] bg-[#0E1633] p-3">
+                <div className="mt-3 rounded-lg border border-[#3B2A54] bg-[#0E0A16] p-3">
                   <p className="text-xs text-[#C9D2FF]">Invite link</p>
                   <p className="mt-1 break-all text-xs text-[#AFC0FF]">{pendingInvite.inviteLink}</p>
                   <p className="mt-2 text-[11px] text-[#A9B0D0]">
@@ -614,9 +614,9 @@ export default function CouplesPage() {
 
         {!loading && state?.enabled && state.hasCouple && selfModeOn && daily && weekly ? (
           <>
-            <section className="rounded-2xl border border-[#2A3158] bg-[#0B1024]/90 p-5">
+            <section className="cm-card p-5">
               <div className="flex flex-wrap items-center gap-3">
-                <div className="h-14 w-14 overflow-hidden rounded-full border border-[#4B3FA0] bg-[#171E3A]">
+                <div className="h-14 w-14 overflow-hidden rounded-full border border-[#4B3FA0] bg-[#2D1A44]">
                   {state.couple?.partnerPhotoUrl ? (
                     <img
                       src={state.couple.partnerPhotoUrl}
@@ -630,19 +630,19 @@ export default function CouplesPage() {
                   )}
                 </div>
                 <div className="min-w-[180px] flex-1">
-                  <p className="text-[11px] uppercase tracking-[0.08em] text-[#A6AED0]">Confirmed Couple</p>
-                  <h2 className="text-xl font-semibold text-white">You & {partnerName}</h2>
-                  {confirmedLabel ? <p className="text-xs text-[#A9B0D0]">Confirmed on {confirmedLabel}</p> : null}
+                  <p className="cm-kicker text-[11px] uppercase tracking-[0.08em] text-[#A6AED0]">Confirmed Couple</p>
+                  <h2 className="cm-title text-2xl font-semibold text-white">You & {partnerName}</h2>
+                  {confirmedLabel ? <p className="text-xs text-[#A78BFA99]">Confirmed on {confirmedLabel}</p> : null}
                 </div>
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-[#4B3FA0]/45 bg-[#1A1640] px-3 py-1 text-xs text-[#D6D1FF]">
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-[#7C3AED55] bg-[#2D1A44] px-3 py-1 text-xs text-[#D6D1FF]">
                   <Shield size={13} />
                   Private
                 </span>
               </div>
             </section>
 
-            <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-              <article className="rounded-2xl border border-[#2A3158] bg-[#0B1024]/90 p-4">
+            <section className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+              <article className="cm-card p-4">
                 <p className="text-[11px] uppercase tracking-[0.08em] text-[#A6AED0]">Next Reminder</p>
                 <p className="mt-2 text-sm font-medium text-white">
                   {dashboard?.nextReminder?.title ?? 'No pending reminders'}
@@ -651,17 +651,17 @@ export default function CouplesPage() {
                   <p className="mt-1 text-xs text-[#A9B0D0]">{formatDateTime(dashboard.nextReminder.dueAt)}</p>
                 ) : null}
               </article>
-              <article className="rounded-2xl border border-[#2A3158] bg-[#0B1024]/90 p-4">
+              <article className="cm-card p-4">
                 <p className="text-[11px] uppercase tracking-[0.08em] text-[#A6AED0]">Open Reminders</p>
                 <p className="mt-2 text-2xl font-semibold text-white">{dashboard?.openReminderCount ?? 0}</p>
                 <p className="mt-1 text-xs text-[#A9B0D0]">Shared responsibilities at a glance.</p>
               </article>
-              <article className="rounded-2xl border border-[#2A3158] bg-[#0B1024]/90 p-4">
+              <article className="cm-card p-4">
                 <p className="text-[11px] uppercase tracking-[0.08em] text-[#A6AED0]">Memory Timeline</p>
                 <p className="mt-2 text-2xl font-semibold text-white">{dashboard?.memoryCount ?? 0}</p>
                 <p className="mt-1 text-xs text-[#A9B0D0]">Moments saved together.</p>
               </article>
-              <article className="rounded-2xl border border-[#2A3158] bg-[#0B1024]/90 p-4">
+              <article className="cm-card p-4">
                 <p className="text-[11px] uppercase tracking-[0.08em] text-[#A6AED0]">Latest Date Plan</p>
                 <p className="mt-2 text-sm font-medium text-white">{dashboard?.lastDatePlanTitle ?? 'Not planned yet'}</p>
                 <p className="mt-1 text-xs text-[#A9B0D0]">{dashboard?.completedCheckins ?? 0} completed weekly check-ins</p>
@@ -670,9 +670,9 @@ export default function CouplesPage() {
 
             <div className="grid gap-4 lg:grid-cols-[1.2fr_1fr]">
               <section className="space-y-4">
-                <article className="rounded-2xl border border-[#2A3158] bg-[#0B1024]/90 p-5">
+                <article className="cm-card cm-plan-card p-5">
                   <p className="text-[11px] uppercase tracking-[0.08em] text-[#A6AED0]">Date Concierge</p>
-                  <h3 className="mt-1 text-lg font-medium text-white">Generate your next date plan</h3>
+                  <h3 className="cm-title mt-1 text-lg font-medium text-white">Generate your next date plan</h3>
                   <p className="mt-1 text-xs text-[#A9B0D0]">
                     Quick planning based on your vibe, budget, and time.
                   </p>
@@ -680,7 +680,7 @@ export default function CouplesPage() {
                     <select
                       value={plannerVibe}
                       onChange={event => setPlannerVibe(event.target.value)}
-                      className="rounded-lg border border-[#4E5A92] bg-[#121A3A] px-3 py-2 text-sm text-[#F6F8FF] outline-none focus:border-[#6B5CE7]"
+                      className="cm-input rounded-lg border border-[#4E5A92] bg-[#121A3A] px-3 py-2 text-sm text-[#F6F8FF] outline-none focus:border-[#6B5CE7]"
                     >
                       <option value="cozy">Cozy</option>
                       <option value="playful">Playful</option>
@@ -690,7 +690,7 @@ export default function CouplesPage() {
                     <select
                       value={plannerBudget}
                       onChange={event => setPlannerBudget(event.target.value)}
-                      className="rounded-lg border border-[#4E5A92] bg-[#121A3A] px-3 py-2 text-sm text-[#F6F8FF] outline-none focus:border-[#6B5CE7]"
+                      className="cm-input rounded-lg border border-[#4E5A92] bg-[#121A3A] px-3 py-2 text-sm text-[#F6F8FF] outline-none focus:border-[#6B5CE7]"
                     >
                       <option value="$">$</option>
                       <option value="$$">$$</option>
@@ -700,18 +700,18 @@ export default function CouplesPage() {
                       value={plannerDuration}
                       onChange={event => setPlannerDuration(event.target.value)}
                       placeholder="Duration (e.g. 2-3h)"
-                      className="rounded-lg border border-[#4E5A92] bg-[#121A3A] px-3 py-2 text-sm text-[#F6F8FF] outline-none focus:border-[#6B5CE7]"
+                      className="cm-input rounded-lg border border-[#4E5A92] bg-[#121A3A] px-3 py-2 text-sm text-[#F6F8FF] outline-none focus:border-[#6B5CE7]"
                     />
                     <input
                       value={plannerLocation}
                       onChange={event => setPlannerLocation(event.target.value)}
                       placeholder="Area or city"
-                      className="rounded-lg border border-[#4E5A92] bg-[#121A3A] px-3 py-2 text-sm text-[#F6F8FF] outline-none focus:border-[#6B5CE7]"
+                      className="cm-input rounded-lg border border-[#4E5A92] bg-[#121A3A] px-3 py-2 text-sm text-[#F6F8FF] outline-none focus:border-[#6B5CE7]"
                     />
                     <button
                       type="submit"
                       disabled={plannerSaving}
-                      className="inline-flex items-center justify-center rounded-lg bg-[#4B3FA0] px-4 py-2 text-sm font-medium text-white disabled:opacity-60 sm:col-span-2"
+                      className="inline-flex items-center justify-center rounded-lg bg-[#2D1A44] px-4 py-2 text-sm font-medium text-[#C084FC] disabled:opacity-60 sm:col-span-2"
                     >
                       {plannerSaving ? 'Generating...' : 'Generate date plan'}
                     </button>
@@ -720,8 +720,8 @@ export default function CouplesPage() {
                   {datePlans.length > 0 ? (
                     <div className="mt-4 space-y-2">
                       {datePlans.slice(0, 3).map(plan => (
-                        <div key={plan.id} className="rounded-xl border border-[#36416D] bg-[#121A3A] p-3">
-                          <p className="text-sm font-medium text-[#E8ECFF]">{plan.title}</p>
+                        <div key={plan.id} className="rounded-xl border border-[#7C3AED44] bg-[#120D1E] p-3">
+                          <p className="cm-title text-sm font-medium text-[#E8ECFF]">{plan.title}</p>
                           <p className="mt-1 text-xs text-[#D6DDFB]">{plan.summary}</p>
                           {plan.steps.length > 0 ? (
                             <p className="mt-1 text-[11px] text-[#A6AED0]">{plan.steps.join(' · ')}</p>
@@ -732,11 +732,11 @@ export default function CouplesPage() {
                   ) : null}
                 </article>
 
-                <article className="rounded-2xl border border-[#2A3158] bg-[#0B1024]/90 p-5">
+                <article className="cm-card p-5">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="text-[11px] uppercase tracking-[0.08em] text-[#A6AED0]">Today&apos;s Prompt</p>
-                      <h3 className="mt-1 text-lg font-medium text-white">{daily.question.text}</h3>
+                      <h3 className="cm-title mt-1 text-lg font-medium text-white">{daily.question.text}</h3>
                     </div>
                     <span className="rounded-full border border-[#36416D] bg-[#121A3A] px-3 py-1 text-[11px] text-[#D6DDFB]">
                       {statusText}
@@ -749,12 +749,12 @@ export default function CouplesPage() {
                         value={dailyDraft}
                         onChange={event => setDailyDraft(event.target.value)}
                         placeholder="Share a thoughtful answer..."
-                        className="min-h-[92px] w-full rounded-lg border border-[#4E5A92] bg-[#121A3A] px-3 py-2 text-sm text-[#F6F8FF] outline-none focus:border-[#6B5CE7]"
+                        className="cm-input min-h-[92px] w-full rounded-lg border border-[#4E5A92] bg-[#121A3A] px-3 py-2 text-sm text-[#F6F8FF] outline-none focus:border-[#6B5CE7]"
                       />
                       <button
                         type="submit"
                         disabled={!dailyDraft.trim() || saving === 'daily'}
-                        className="inline-flex items-center justify-center rounded-lg bg-[#4B3FA0] px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
+                        className="inline-flex items-center justify-center rounded-lg bg-[#A855F7] px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
                       >
                         {saving === 'daily' ? 'Saving...' : 'Submit answer'}
                       </button>
@@ -764,7 +764,7 @@ export default function CouplesPage() {
                   {daily.responses.length > 0 ? (
                     <div className="mt-4 grid gap-2 sm:grid-cols-2">
                       {daily.responses.map(response => (
-                        <div key={response.id} className="rounded-xl border border-[#36416D] bg-[#121A3A] p-3">
+                        <div key={response.id} className="rounded-xl border border-[#7C3AED44] bg-[#120D1E] p-3">
                           <p className="text-[11px] uppercase tracking-[0.06em] text-[#A6AED0]">
                             {response.userId === state.viewerUserId ? 'You' : partnerName}
                           </p>
@@ -775,12 +775,12 @@ export default function CouplesPage() {
                   ) : null}
                 </article>
 
-                <article className="rounded-2xl border border-[#2A3158] bg-[#0B1024]/90 p-5">
+                <article className="cm-card p-5">
                   <div className="flex items-center gap-2">
                     <CalendarCheck2 size={16} className="text-[#C9C0FF]" />
                     <p className="text-[11px] uppercase tracking-[0.08em] text-[#A6AED0]">Weekly Check-In</p>
                   </div>
-                  <h3 className="mt-1 text-lg font-medium text-white">{weekly.question.text}</h3>
+                  <h3 className="cm-title mt-1 text-lg font-medium text-white">{weekly.question.text}</h3>
                   <p className="mt-1 text-xs text-[#A9B0D0]">
                     Keep it short and honest: how connected, what felt good, and what you want more of.
                   </p>
@@ -797,8 +797,8 @@ export default function CouplesPage() {
                               onClick={() => setWeeklyScore(score)}
                               className={`h-8 w-8 rounded-full border text-xs ${
                                 weeklyScore === score
-                                  ? 'border-[#4B3FA0] bg-[#EDE9FA] text-[#4B3FA0]'
-                                  : 'border-[#4E5A92] bg-[#121A3A] text-[#D6DDFB]'
+                                  ? 'border-[#A855F7] bg-[#EDE9FA] text-[#4B3FA0]'
+                                  : 'border-[#7C3AED44] bg-[#120D1E] text-[#D6DDFB]'
                               }`}
                             >
                               {score}
@@ -810,18 +810,18 @@ export default function CouplesPage() {
                         value={weeklyGood}
                         onChange={event => setWeeklyGood(event.target.value)}
                         placeholder="What felt good this week?"
-                        className="min-h-[70px] w-full rounded-lg border border-[#4E5A92] bg-[#121A3A] px-3 py-2 text-sm text-[#F6F8FF] outline-none focus:border-[#6B5CE7]"
+                        className="cm-input min-h-[70px] w-full rounded-lg border border-[#4E5A92] bg-[#121A3A] px-3 py-2 text-sm text-[#F6F8FF] outline-none focus:border-[#6B5CE7]"
                       />
                       <textarea
                         value={weeklyMore}
                         onChange={event => setWeeklyMore(event.target.value)}
                         placeholder="What would you like more of next week?"
-                        className="min-h-[70px] w-full rounded-lg border border-[#4E5A92] bg-[#121A3A] px-3 py-2 text-sm text-[#F6F8FF] outline-none focus:border-[#6B5CE7]"
+                        className="cm-input min-h-[70px] w-full rounded-lg border border-[#4E5A92] bg-[#121A3A] px-3 py-2 text-sm text-[#F6F8FF] outline-none focus:border-[#6B5CE7]"
                       />
                       <button
                         type="submit"
                         disabled={saving === 'weekly' || (weeklyScore === null && !weeklyGood.trim() && !weeklyMore.trim())}
-                        className="inline-flex items-center justify-center rounded-lg bg-[#4B3FA0] px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
+                        className="inline-flex items-center justify-center rounded-lg bg-[#A855F7] px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
                       >
                         {saving === 'weekly' ? 'Saving...' : 'Submit weekly check-in'}
                       </button>
@@ -831,7 +831,7 @@ export default function CouplesPage() {
                   {weekly.responses.length > 0 ? (
                     <div className="mt-4 grid gap-2 sm:grid-cols-2">
                       {weekly.responses.map(response => (
-                        <div key={response.id} className="rounded-xl border border-[#36416D] bg-[#121A3A] p-3">
+                        <div key={response.id} className="rounded-xl border border-[#7C3AED44] bg-[#120D1E] p-3">
                           <p className="text-[11px] uppercase tracking-[0.06em] text-[#A6AED0]">
                             {response.userId === state.viewerUserId ? 'You' : partnerName}
                           </p>
@@ -844,31 +844,31 @@ export default function CouplesPage() {
               </section>
 
               <section className="space-y-4">
-                <article className="rounded-2xl border border-[#2A3158] bg-[#0B1024]/90 p-5">
+                <article className="cm-card p-5">
                   <p className="text-[11px] uppercase tracking-[0.08em] text-[#A6AED0]">Shared Reminders</p>
                   <form className="mt-3 space-y-2" onSubmit={submitReminder}>
                     <input
                       value={reminderTitle}
                       onChange={event => setReminderTitle(event.target.value)}
                       placeholder="Reminder title"
-                      className="w-full rounded-lg border border-[#4E5A92] bg-[#121A3A] px-3 py-2 text-sm text-[#F6F8FF] outline-none focus:border-[#6B5CE7]"
+                      className="cm-input w-full rounded-lg border border-[#4E5A92] bg-[#121A3A] px-3 py-2 text-sm text-[#F6F8FF] outline-none focus:border-[#6B5CE7]"
                     />
                     <textarea
                       value={reminderNote}
                       onChange={event => setReminderNote(event.target.value)}
                       placeholder="Optional note..."
-                      className="min-h-[64px] w-full rounded-lg border border-[#4E5A92] bg-[#121A3A] px-3 py-2 text-sm text-[#F6F8FF] outline-none focus:border-[#6B5CE7]"
+                      className="cm-input min-h-[64px] w-full rounded-lg border border-[#4E5A92] bg-[#121A3A] px-3 py-2 text-sm text-[#F6F8FF] outline-none focus:border-[#6B5CE7]"
                     />
                     <input
                       type="datetime-local"
                       value={reminderDate}
                       onChange={event => setReminderDate(event.target.value)}
-                      className="w-full rounded-lg border border-[#4E5A92] bg-[#121A3A] px-3 py-2 text-sm text-[#F6F8FF] outline-none focus:border-[#6B5CE7]"
+                      className="cm-input w-full rounded-lg border border-[#4E5A92] bg-[#121A3A] px-3 py-2 text-sm text-[#F6F8FF] outline-none focus:border-[#6B5CE7]"
                     />
                     <button
                       type="submit"
                       disabled={reminderSaving || !reminderTitle.trim() || !reminderDate}
-                      className="inline-flex items-center justify-center rounded-lg bg-[#4B3FA0] px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
+                      className="inline-flex items-center justify-center rounded-lg bg-[#A855F7] px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
                     >
                       {reminderSaving ? 'Saving...' : 'Add reminder'}
                     </button>
@@ -876,7 +876,7 @@ export default function CouplesPage() {
                   {openReminders.length > 0 ? (
                     <div className="mt-4 space-y-2">
                       {openReminders.slice(0, 5).map(reminder => (
-                        <div key={reminder.id} className="rounded-xl border border-[#36416D] bg-[#121A3A] p-3">
+                        <div key={reminder.id} className="rounded-xl border border-[#7C3AED44] bg-[#120D1E] p-3">
                           <p className="text-sm text-[#E8ECFF]">{reminder.title}</p>
                           {reminder.note ? <p className="mt-1 text-xs text-[#D6DDFB]">{reminder.note}</p> : null}
                           <div className="mt-2 flex items-center justify-between gap-2">
@@ -885,7 +885,7 @@ export default function CouplesPage() {
                               type="button"
                               onClick={() => void completeReminder(reminder.id)}
                               disabled={reminderSaving}
-                              className="rounded-md border border-[#4E5A92] px-2 py-1 text-[11px] text-[#D6DDFB] disabled:opacity-60"
+                              className="rounded-md border border-[#7C3AED55] px-2 py-1 text-[11px] text-[#D6DDFB] disabled:opacity-60"
                             >
                               Mark done
                             </button>
@@ -898,7 +898,7 @@ export default function CouplesPage() {
                   )}
                 </article>
 
-                <article className="rounded-2xl border border-[#2A3158] bg-[#0B1024]/90 p-5">
+                <article className="cm-card p-5">
                   <div className="flex items-center gap-2">
                     <MessageCircleHeart size={16} className="text-[#C9C0FF]" />
                     <p className="text-[11px] uppercase tracking-[0.08em] text-[#A6AED0]">Love Notes</p>
@@ -908,12 +908,12 @@ export default function CouplesPage() {
                       value={loveNoteDraft}
                       onChange={event => setLoveNoteDraft(event.target.value)}
                       placeholder={`Send a quick appreciation to ${partnerName}...`}
-                      className="min-h-[82px] w-full rounded-lg border border-[#4E5A92] bg-[#121A3A] px-3 py-2 text-sm text-[#F6F8FF] outline-none focus:border-[#6B5CE7]"
+                      className="cm-input min-h-[82px] w-full rounded-lg border border-[#4E5A92] bg-[#121A3A] px-3 py-2 text-sm text-[#F6F8FF] outline-none focus:border-[#6B5CE7]"
                     />
                     <button
                       type="submit"
                       disabled={!loveNoteDraft.trim() || saving === 'note'}
-                      className="inline-flex items-center justify-center rounded-lg bg-[#4B3FA0] px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
+                      className="inline-flex items-center justify-center rounded-lg bg-[#A855F7] px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
                     >
                       {saving === 'note' ? 'Sending...' : 'Send love note'}
                     </button>
@@ -921,7 +921,7 @@ export default function CouplesPage() {
                   {notes.length > 0 ? (
                     <div className="mt-4 space-y-2">
                       {notes.slice(0, 5).map(note => (
-                        <div key={note.id} className="rounded-xl border border-[#36416D] bg-[#121A3A] p-3">
+                        <div key={note.id} className="rounded-xl border border-[#7C3AED44] bg-[#120D1E] p-3">
                           <p className="text-xs text-[#D6DDFB]">{note.body}</p>
                           <p className="mt-1 text-[11px] text-[#A6AED0]">
                             {note.isMine ? 'You' : partnerName} · {formatDateTime(note.createdAt)}
@@ -932,7 +932,7 @@ export default function CouplesPage() {
                   ) : null}
                 </article>
 
-                <article className="rounded-2xl border border-[#2A3158] bg-[#0B1024]/90 p-5">
+                <article className="cm-card p-5">
                   <div className="flex items-center gap-2">
                     <HeartHandshake size={16} className="text-[#C9C0FF]" />
                     <p className="text-[11px] uppercase tracking-[0.08em] text-[#A6AED0]">Shared Memory Timeline</p>
@@ -941,7 +941,7 @@ export default function CouplesPage() {
                   {timeline.length > 0 ? (
                     <ul className="mt-3 space-y-2">
                       {timeline.map(item => (
-                        <li key={item.id} className="rounded-xl border border-[#36416D] bg-[#121A3A] p-3">
+                        <li key={item.id} className="rounded-xl border border-[#7C3AED44] bg-[#120D1E] p-3">
                           <p className="text-xs uppercase tracking-[0.06em] text-[#A6AED0]">{item.title}</p>
                           <p className="mt-1 text-sm text-[#E8ECFF]">{item.summary}</p>
                           <p className="mt-1 text-[11px] text-[#A6AED0]">{formatDateTime(item.createdAt)}</p>
@@ -960,7 +960,7 @@ export default function CouplesPage() {
         ) : null}
 
         {!loading && state?.enabled && state.hasCouple && !selfModeOn ? (
-          <section className="rounded-2xl border border-[#2A3158] bg-[#0B1024]/90 p-6">
+          <section className="cm-card p-6">
             <h2 className="text-lg font-medium text-white">Couple Mode is OFF for you</h2>
             <p className="mt-2 text-sm text-[#A9B0D0]">
               Turn it ON above to enter your private couple space. Your partner can already see your ON/OFF status.
@@ -968,6 +968,60 @@ export default function CouplesPage() {
           </section>
         ) : null}
       </div>
+      <style jsx>{`
+        .couple-mode-v2 {
+          background: #110d1a;
+        }
+        .couple-mode-v2 :global(*) {
+          letter-spacing: 0;
+        }
+        .cm-shell {
+          margin: 0 auto;
+          padding-left: 14px;
+          padding-right: 14px;
+          padding-bottom: 90px;
+        }
+        .cm-card {
+          background: #1a1226;
+          border: 1px solid #2d1a44;
+          border-radius: 16px;
+          box-shadow: none;
+        }
+        .cm-header {
+          position: relative;
+          overflow: hidden;
+        }
+        .cm-header::before {
+          content: '';
+          position: absolute;
+          top: -30px;
+          right: -30px;
+          width: 100px;
+          height: 100px;
+          border-radius: 50%;
+          background: #3d1f5c;
+          opacity: 0.4;
+        }
+        .cm-kicker {
+          color: #a78bfa;
+        }
+        .cm-title {
+          font-family: Lora, Georgia, serif;
+          font-style: italic;
+          color: #e9d5ff;
+        }
+        .cm-plan-card {
+          background: #200d30;
+          border-color: rgba(124, 58, 237, 0.35);
+        }
+        .cm-input {
+          background: #120d1e !important;
+          border-color: rgba(124, 58, 237, 0.35) !important;
+        }
+        .cm-input::placeholder {
+          color: rgba(255, 255, 255, 0.24);
+        }
+      `}</style>
     </div>
   );
 }
