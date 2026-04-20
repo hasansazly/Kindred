@@ -693,6 +693,26 @@ export default function LandingPage() {
           .problem-grid > div {
             padding: 16px !important;
           }
+          .connection-grid {
+            gap: 8px !important;
+          }
+          .connection-grid > div {
+            padding: 10px 12px !important;
+            border-radius: 12px !important;
+          }
+          .connection-grid > div > div {
+            margin-bottom: 4px !important;
+            line-height: 1.25 !important;
+          }
+          .connection-grid > div p {
+            line-height: 1.45 !important;
+          }
+          .features-grid {
+            gap: 10px !important;
+          }
+          .problem-grid {
+            gap: 10px !important;
+          }
           .landing-section h2 {
             margin-bottom: 8px !important;
           }
