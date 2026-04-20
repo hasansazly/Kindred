@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import {
-  Heart, Sparkles, Shield, Star,
+  Heart, Sparkles, Shield,
   Brain, Zap, Users, CheckCircle, ArrowRight, Menu, X, CircleDashed, ScanLine,
 } from 'lucide-react';
 
@@ -112,27 +112,6 @@ const TRUST_FEATURES = [
   {
     title: 'Reporting and controls',
     desc: 'If something feels off, reporting and blocking are always one tap away.',
-  },
-];
-
-const TESTIMONIALS = [
-  {
-    name: 'Natalie R.',
-    age: 29,
-    city: 'New York',
-    initials: 'NR',
-    text: 'I didn’t have to guess what he wanted. The match explanation made the first conversation feel easy and clear.',
-    stars: 5,
-    verified: true,
-  },
-  {
-    name: 'Marcus T.',
-    age: 32,
-    city: 'Los Angeles',
-    initials: 'MT',
-    text: 'This felt calmer than other apps. Fewer matches, better reasons, and way less emotional noise.',
-    stars: 5,
-    verified: true,
   },
 ];
 
@@ -537,45 +516,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── Testimonials ── */}
-      <section id="testimonials" className="fade-in-up landing-section" style={{ padding: '100px 24px' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: 64 }}>
-            <h2 style={{ fontSize: 'clamp(32px, 4vw, 52px)', fontWeight: 800, letterSpacing: '-0.03em', marginBottom: 16 }}>
-              Real people,<br />real connections.
-            </h2>
-            <p style={{ fontSize: 17, color: '#5F5E5A' }}>Don&apos;t take our word for it.</p>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 20 }} className="testimonials-grid">
-            {TESTIMONIALS.map(t => (
-              <div key={t.name} className="card-lift" style={{ borderRadius: 20, padding: 28, display: 'flex', flexDirection: 'column', gap: 20, background: '#FBEAF0', border: '1px solid #F4C0D1', position: 'relative' }}>
-                <span style={{ position: 'absolute', left: 16, top: 2, fontSize: 48, color: '#F4C0D1', lineHeight: 1 }}>&ldquo;</span>
-                {/* Stars */}
-                <div style={{ display: 'flex', gap: 3 }}>
-                  {Array.from({ length: t.stars }).map((_, i) => (
-                    <Star key={i} size={14} color="#fbbf24" fill="#fbbf24" />
-                  ))}
-                </div>
-                <p style={{ fontSize: 15, lineHeight: 1.7, color: '#1A1A2E', flex: 1 }}>{t.text}</p>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <div className="avatar-gradient" style={{ width: 48, height: 48, borderRadius: '50%', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700 }}>
-                    {t.initials}
-                  </div>
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <span style={{ fontWeight: 700, fontSize: 14 }}>{t.name}</span>
-                      {t.verified && <CheckCircle size={13} color="#34d399" fill="rgba(52,211,153,0.2)" />}
-                    </div>
-                    <div style={{ fontSize: 12, color: '#5F5E5A' }}>Age {t.age} · {t.city}</div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* ── CTA Banner ── */}
       <section className="fade-in-up landing-section" style={{ padding: '100px 24px' }}>
         <div style={{ maxWidth: 800, margin: '0 auto', textAlign: 'center' }}>
@@ -702,9 +642,6 @@ export default function LandingPage() {
         .testimonials-grid > div {
           box-shadow: 0 10px 30px rgba(83,74,183,0.09);
         }
-        .testimonials-grid > div {
-          background: linear-gradient(180deg, rgba(251,234,240,0.92), rgba(255,255,255,0.85)) !important;
-        }
         .cta-banner {
           box-shadow: 0 24px 70px rgba(83,74,183,0.18);
         }
@@ -750,12 +687,10 @@ export default function LandingPage() {
           .connection-grid { grid-template-columns: 1fr !important; }
           .features-grid { grid-template-columns: 1fr !important; }
           .steps-grid { grid-template-columns: 1fr !important; gap: 16px !important; }
-          .testimonials-grid { grid-template-columns: 1fr !important; }
           .landing-section { padding-top: 28px !important; padding-bottom: 28px !important; }
           .landing-section .glass,
           .features-grid > div,
-          .problem-grid > div,
-          .testimonials-grid > div {
+          .problem-grid > div {
             padding: 16px !important;
           }
           .landing-section h2 {
@@ -772,9 +707,6 @@ export default function LandingPage() {
           }
           .steps-grid > div {
             margin-bottom: 4px !important;
-          }
-          .testimonials-grid > div {
-            gap: 12px !important;
           }
         }
         @media (max-width: 767px) {
