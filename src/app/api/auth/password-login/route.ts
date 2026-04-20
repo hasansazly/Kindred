@@ -17,12 +17,32 @@ function sanitizeNext(next: string | undefined) {
 
 export async function POST(request: Request) {
   try {
-    const body = (await request.json().catch(() => ({}))) as LoginPayload;
+    const contentType = request.headers.get('content-type') ?? '';
+    let body: LoginPayload = {};
+
+    if (contentType.includes('application/json')) {
+      body = (await request.json().catch(() => ({}))) as LoginPayload;
+    } else if (
+      contentType.includes('application/x-www-form-urlencoded') ||
+      contentType.includes('multipart/form-data')
+    ) {
+      const form = await request.formData();
+      body = {
+        email: typeof form.get('email') === 'string' ? String(form.get('email')) : '',
+        password: typeof form.get('password') === 'string' ? String(form.get('password')) : '',
+        next: typeof form.get('next') === 'string' ? String(form.get('next')) : '',
+      };
+    }
+
     const email = normalizeEmail(body.email ?? '');
     const password = typeof body.password === 'string' ? body.password : '';
     const safeNext = sanitizeNext(body.next);
+    const wantsRedirect = !contentType.includes('application/json');
 
     if (!email || !password) {
+      if (wantsRedirect) {
+        return NextResponse.redirect(new URL('/auth/login?error=Email%20and%20password%20are%20required', request.url), 303);
+      }
       return NextResponse.json({ error: 'Email and password are required.' }, { status: 400 });
     }
 
@@ -30,11 +50,23 @@ export async function POST(request: Request) {
     const { error, data } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
+      if (wantsRedirect) {
+        const encoded = encodeURIComponent(error.message);
+        return NextResponse.redirect(new URL(`/auth/login?error=${encoded}`, request.url), 303);
+      }
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
     if (!data.user) {
+      if (wantsRedirect) {
+        return NextResponse.redirect(new URL('/auth/login?error=Sign%20in%20failed', request.url), 303);
+      }
       return NextResponse.json({ error: 'Sign in failed.' }, { status: 400 });
+    }
+
+    if (wantsRedirect) {
+      const redirectTo = safeNext || '/dashboard';
+      return NextResponse.redirect(new URL(redirectTo, request.url), 303);
     }
 
     if (safeNext) {

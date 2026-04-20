@@ -1,9 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Eye, EyeOff, ArrowRight } from 'lucide-react';
-import { getSupabaseBrowserClient } from '../../../../utils/supabase/client';
 
 const isTempleEmail = (email: string) => email.trim().toLowerCase().endsWith('.edu');
 
@@ -28,44 +27,21 @@ export default function LoginPage() {
     }
   };
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setError('');
-    setSuccess('');
-    if (!email || !password) { setError('Please fill in all fields.'); return; }
-    if (!isTempleEmail(email)) { setError('Only .edu email addresses are allowed.'); return; }
-    setLoading(true);
-    try {
-      const requestedNext =
-        typeof window !== 'undefined'
-          ? new URLSearchParams(window.location.search).get('next') ?? ''
-          : '';
-
-      const response = await fetch('/api/auth/password-login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: email.trim().toLowerCase(),
-          password,
-          next: requestedNext,
-        }),
-      });
-
-      if (!response.ok) {
-        const message = await readResponseError(response);
-        setError(message);
-        return;
-      }
-      const payload = (await response.json().catch(() => ({}))) as { next?: string };
-      const target = typeof payload.next === 'string' && payload.next.trim() ? payload.next : '/dashboard';
-      window.location.assign(target);
-    } catch (signinFailure) {
-      const message = signinFailure instanceof Error ? signinFailure.message : 'Sign in failed.';
-      setError(message);
-    } finally {
-      setLoading(false);
+  const nextTarget = useMemo(() => {
+    if (typeof window === 'undefined') return '';
+    const raw = new URLSearchParams(window.location.search).get('next') ?? '';
+    const candidate = raw.trim();
+    if (!candidate.startsWith('/') || candidate.startsWith('//') || candidate.startsWith('/auth')) {
+      return '';
     }
-  }
+    return candidate;
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const incomingError = new URLSearchParams(window.location.search).get('error');
+    if (incomingError) setError(incomingError);
+  }, []);
 
   async function handleSendCode() {
     setError('');
@@ -205,7 +181,26 @@ export default function LoginPage() {
 
           {/* Form */}
           {!codeMode ? (
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <form
+              action="/api/auth/password-login"
+              method="post"
+              onSubmit={(e) => {
+                setError('');
+                setSuccess('');
+                if (!email || !password) {
+                  e.preventDefault();
+                  setError('Please fill in all fields.');
+                  return;
+                }
+                if (!isTempleEmail(email)) {
+                  e.preventDefault();
+                  setError('Only .edu email addresses are allowed.');
+                  return;
+                }
+                setLoading(true);
+              }}
+              style={{ display: 'flex', flexDirection: 'column', gap: 16 }}
+            >
               {error && (
                 <div style={{ background: 'rgba(244,63,94,0.1)', border: '1px solid rgba(244,63,94,0.25)', borderRadius: 10, padding: '12px 14px', fontSize: 13, color: '#fda4af' }}>
                   {error}
@@ -221,6 +216,7 @@ export default function LoginPage() {
                 <label style={{ fontSize: 13, fontWeight: 500, color: 'rgba(240,240,255,0.55)', display: 'block', marginBottom: 8 }}>Email</label>
                 <input
                   className="input-field"
+                  name="email"
                   type="email"
                   placeholder="you@example.com"
                   value={email}
@@ -237,6 +233,7 @@ export default function LoginPage() {
                 <div style={{ position: 'relative' }}>
                   <input
                     className="input-field"
+                    name="password"
                     type={showPassword ? 'text' : 'password'}
                     placeholder="••••••••"
                     value={password}
@@ -269,6 +266,7 @@ export default function LoginPage() {
                   <>Sign in <ArrowRight size={18} /></>
                 )}
               </button>
+              <input type="hidden" name="next" value={nextTarget} />
 
               <button
                 type="button"
