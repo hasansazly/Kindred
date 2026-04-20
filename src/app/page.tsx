@@ -751,7 +751,25 @@ export default function LandingPage() {
           .features-grid { grid-template-columns: 1fr !important; }
           .steps-grid { grid-template-columns: 1fr !important; gap: 16px !important; }
           .testimonials-grid { grid-template-columns: 1fr !important; }
-          .landing-section { padding-top: 72px !important; padding-bottom: 72px !important; }
+          .landing-section { padding-top: 42px !important; padding-bottom: 42px !important; }
+          .landing-section .glass,
+          .features-grid > div,
+          .problem-grid > div,
+          .testimonials-grid > div {
+            padding: 20px !important;
+          }
+          .landing-section h2 {
+            margin-bottom: 10px !important;
+          }
+          .landing-section p {
+            margin-bottom: 0 !important;
+          }
+          .landing-section > div > div:first-child {
+            margin-bottom: 26px !important;
+          }
+          .cta-banner {
+            padding: 36px 22px !important;
+          }
         }
         @media (max-width: 767px) {
           .nav-cta-wrap {
@@ -784,6 +802,19 @@ export default function LandingPage() {
           .landing-hero h1 { font-size: clamp(36px, 9vw, 48px) !important; }
         }
         @media (max-width: 480px) {
+          .landing-hero {
+            padding-top: 90px !important;
+            padding-bottom: 20px !important;
+          }
+          .hero-grid {
+            gap: 18px !important;
+          }
+          .hero-cta-group {
+            gap: 10px !important;
+          }
+          .steps-grid {
+            gap: 10px !important;
+          }
           .hero-cta-group .btn-primary, .hero-cta-group .btn-ghost {
             width: 100%;
           }
