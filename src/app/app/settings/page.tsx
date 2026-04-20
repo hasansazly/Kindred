@@ -123,6 +123,8 @@ export default function SettingsPage() {
                 gap: 4,
                 fontSize: 13,
                 fontFamily: 'inherit',
+                whiteSpace: 'nowrap',
+                flexShrink: 0,
               }}
             >
               Open <ChevronRight size={14} />
@@ -165,14 +167,18 @@ export default function SettingsPage() {
               <span style={{ fontSize: 13, fontWeight: 500, color: '#1A1A2E' }}>Age range</span>
               <span style={{ fontSize: 13, fontWeight: 600, color: '#534AB7' }}>{minAge}–{maxAge}</span>
             </div>
-            <div style={{ display: 'flex', gap: 12 }}>
+            <div className="settings-age-range-grid" style={{ display: 'flex', gap: 12 }}>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 11, color: '#888780', marginBottom: 6 }}>Min: {minAge}</div>
-                <input type="range" min={18} max={70} value={minAge} onChange={e => setMinAge(Math.min(Number(e.target.value), maxAge - 1))} />
+                <div className="settings-range-safe">
+                  <input type="range" min={18} max={70} value={minAge} onChange={e => setMinAge(Math.min(Number(e.target.value), maxAge - 1))} />
+                </div>
               </div>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 11, color: '#888780', marginBottom: 6 }}>Max: {maxAge}</div>
-                <input type="range" min={18} max={80} value={maxAge} onChange={e => setMaxAge(Math.max(Number(e.target.value), minAge + 1))} />
+                <div className="settings-range-safe">
+                  <input type="range" min={18} max={80} value={maxAge} onChange={e => setMaxAge(Math.max(Number(e.target.value), minAge + 1))} />
+                </div>
               </div>
             </div>
           </div>
@@ -183,7 +189,9 @@ export default function SettingsPage() {
               <span style={{ fontSize: 13, fontWeight: 500, color: '#1A1A2E' }}>Maximum distance</span>
               <span style={{ fontSize: 13, fontWeight: 600, color: '#534AB7' }}>{distance} km</span>
             </div>
-            <input type="range" min={5} max={200} value={distance} onChange={e => setDistance(Number(e.target.value))} />
+            <div className="settings-range-safe">
+              <input type="range" min={5} max={200} value={distance} onChange={e => setDistance(Number(e.target.value))} />
+            </div>
           </div>
         </div>
       </Section>
@@ -293,6 +301,8 @@ export default function SettingsPage() {
           .settings-page { padding: 24px 16px calc(var(--app-main-bottom-clearance) + 12px) !important; }
           .settings-interest-row button { flex: 1 1 calc(50% - 4px) !important; }
           .settings-sub-grid { grid-template-columns: 1fr !important; }
+          .settings-age-range-grid { flex-direction: column !important; gap: 10px !important; }
+          .settings-range-safe { padding-right: 64px; }
         }
         .settings-page .toggle {
           background: #E7E5E1;
