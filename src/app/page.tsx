@@ -242,8 +242,8 @@ export default function LandingPage() {
           </div>
 
           {/* CTA */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-            <Link href="/auth/signup" className="btn-primary" style={{ padding: '9px 20px', fontSize: 14 }}>
+          <div className="nav-cta-wrap" style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'nowrap' }}>
+            <Link href="/auth/signup" className="btn-primary nav-get-started" style={{ padding: '9px 20px', fontSize: 14 }}>
               Get Started
             </Link>
             {/* Hamburger — mobile only */}
@@ -754,7 +754,26 @@ export default function LandingPage() {
           .landing-section { padding-top: 72px !important; padding-bottom: 72px !important; }
         }
         @media (max-width: 767px) {
+          .nav-cta-wrap {
+            gap: 8px !important;
+            flex-wrap: nowrap !important;
+          }
+          .nav-get-started {
+            width: auto !important;
+            padding: 8px 14px !important;
+            font-size: 13px !important;
+            white-space: nowrap;
+          }
           .hamburger-btn { display: flex !important; }
+          .hamburger-btn {
+            width: 34px;
+            height: 34px;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            border: 1px solid rgba(83,74,183,0.22) !important;
+            background: rgba(255,255,255,0.72) !important;
+          }
           .nav-login-link { display: none !important; }
           .mobile-menu { display: flex !important; }
           .cta-banner { padding: 40px 24px !important; }
@@ -765,7 +784,7 @@ export default function LandingPage() {
           .landing-hero h1 { font-size: clamp(36px, 9vw, 48px) !important; }
         }
         @media (max-width: 480px) {
-          .btn-primary, .btn-ghost {
+          .hero-cta-group .btn-primary, .hero-cta-group .btn-ghost {
             width: 100%;
           }
         }
