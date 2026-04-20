@@ -1,14 +1,15 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { Eye, EyeOff, ArrowRight } from 'lucide-react';
-import type { AuthChangeEvent, Session } from '@supabase/supabase-js';
+import { useRouter } from 'next/navigation';
 import { getSupabaseBrowserClient } from '../../../../utils/supabase/client';
 
 const isTempleEmail = (email: string) => email.trim().toLowerCase().endsWith('.edu');
 
 export default function LoginPage() {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -18,7 +19,6 @@ export default function LoginPage() {
   const [codeMode, setCodeMode] = useState(false);
   const [otpCode, setOtpCode] = useState('');
   const [otpSent, setOtpSent] = useState(false);
-  const redirectedRef = useRef(false);
 
   const readResponseError = async (response: Response) => {
     const raw = await response.text();
@@ -30,77 +30,25 @@ export default function LoginPage() {
     }
   };
 
-  const getPostLoginTarget = () => {
-    const requestedNext =
-      typeof window !== 'undefined'
-        ? new URLSearchParams(window.location.search).get('next') ?? ''
-        : '';
-    const candidate = requestedNext.trim();
-    if (!candidate.startsWith('/') || candidate.startsWith('//')) {
-      return '/dashboard';
-    }
-    if (candidate.startsWith('/auth')) {
-      return '/dashboard';
-    }
-    return candidate || '/dashboard';
-  };
-
-  useEffect(() => {
-    const supabase = getSupabaseBrowserClient();
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event: AuthChangeEvent, session: Session | null) => {
-      if (!session || redirectedRef.current) return;
-      redirectedRef.current = true;
-      window.location.assign(getPostLoginTarget());
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
-
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError('');
     setSuccess('');
-
-    // Read from form fields first so browser/password-manager autofill still works.
-    const formData = new FormData(e.currentTarget);
-    const emailValue = String(formData.get('email') ?? email).trim().toLowerCase();
-    const passwordValue = String(formData.get('password') ?? password);
-
-    if (!emailValue || !passwordValue) { setError('Please fill in all fields.'); return; }
-    if (!isTempleEmail(emailValue)) { setError('Only .edu email addresses are allowed.'); return; }
-
-    // Keep state in sync with resolved values.
-    setEmail(emailValue);
-    setPassword(passwordValue);
-
+    if (!email || !password) { setError('Please fill in all fields.'); return; }
+    if (!isTempleEmail(email)) { setError('Only .edu email addresses are allowed.'); return; }
     setLoading(true);
     try {
       const supabase = getSupabaseBrowserClient();
       const { error: signInError } = await supabase.auth.signInWithPassword({
-        email: emailValue,
-        password: passwordValue,
+        email: email.trim().toLowerCase(),
+        password,
       });
 
       if (signInError) {
         setError(signInError.message);
         return;
       }
-
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (session && !redirectedRef.current) {
-        redirectedRef.current = true;
-        window.location.assign(getPostLoginTarget());
-        return;
-      }
-
-      const target = getPostLoginTarget();
-      window.location.assign(target);
+      router.push('/dashboard');
     } catch (signinFailure) {
       const message = signinFailure instanceof Error ? signinFailure.message : 'Sign in failed.';
       setError(message);
@@ -184,7 +132,7 @@ export default function LoginPage() {
     } finally {
       setLoading(false);
     }
-    window.location.assign('/onboarding');
+    router.push('/onboarding');
   }
 
   return (
@@ -263,7 +211,6 @@ export default function LoginPage() {
                 <label style={{ fontSize: 13, fontWeight: 500, color: 'rgba(240,240,255,0.55)', display: 'block', marginBottom: 8 }}>Email</label>
                 <input
                   className="input-field"
-                  name="email"
                   type="email"
                   placeholder="you@example.com"
                   value={email}
@@ -280,7 +227,6 @@ export default function LoginPage() {
                 <div style={{ position: 'relative' }}>
                   <input
                     className="input-field"
-                    name="password"
                     type={showPassword ? 'text' : 'password'}
                     placeholder="••••••••"
                     value={password}
