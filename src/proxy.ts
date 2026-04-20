@@ -2,8 +2,37 @@ import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 import { getSupabasePublishableKey, getSupabaseUrl } from '../utils/supabase/env';
 
+const PUBLIC_ROUTES = new Set([
+  '/',
+  '/login',
+  '/register',
+  '/signup',
+  '/auth/login',
+  '/auth/signup',
+  '/auth/forgot-password',
+  '/auth/callback',
+  '/auth/auth-code-error',
+  '/privacy',
+  '/terms',
+  '/safety',
+  '/contact',
+  '/blog',
+  '/careers',
+]);
+
+function isPublicRoute(pathname: string) {
+  return PUBLIC_ROUTES.has(pathname);
+}
+
 export async function proxy(request: NextRequest) {
   try {
+    const pathname = request.nextUrl.pathname;
+
+    // Always allow explicit public pages to avoid redirect loops.
+    if (isPublicRoute(pathname)) {
+      return NextResponse.next({ request });
+    }
+
     const response = NextResponse.next({ request });
 
     const supabase = createServerClient(getSupabaseUrl(), getSupabasePublishableKey(), {
@@ -20,8 +49,6 @@ export async function proxy(request: NextRequest) {
       },
     });
 
-    const pathname = request.nextUrl.pathname;
-    const isAuthRoute = pathname.startsWith('/auth');
     const isOnboardingRoute = pathname.startsWith('/onboarding');
     const isDashboardRoute = pathname.startsWith('/dashboard');
     const isAppRoute = pathname.startsWith('/app');
@@ -34,11 +61,12 @@ export async function proxy(request: NextRequest) {
 
     if (!user && isProtectedRoute) {
       const loginUrl = new URL('/auth/login', request.url);
-      loginUrl.searchParams.set('next', pathname);
+      loginUrl.searchParams.set('next', `${pathname}${request.nextUrl.search}`);
       return NextResponse.redirect(loginUrl);
     }
 
-    if (!user) {
+    // Non-protected routes are always accessible.
+    if (!user || !isProtectedRoute) {
       return response;
     }
 
@@ -56,16 +84,6 @@ export async function proxy(request: NextRequest) {
 
     if (onboardingComplete && isOnboardingRoute) {
       return NextResponse.redirect(new URL('/dashboard', request.url));
-    }
-
-    if (
-      isAuthRoute &&
-      pathname !== '/auth/callback' &&
-      pathname !== '/auth/auth-code-error'
-    ) {
-      return NextResponse.redirect(
-        new URL(onboardingComplete ? '/dashboard' : '/onboarding', request.url)
-      );
     }
 
     return response;
@@ -86,6 +104,9 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|api|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/dashboard/:path*',
+    '/onboarding/:path*',
+    '/app/:path*',
+    '/matches/:path*',
   ],
 };
