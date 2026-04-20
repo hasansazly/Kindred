@@ -11,6 +11,7 @@ import {
   Sparkles,
   Brain,
   CheckCircle,
+  Heart,
   Plus,
   X,
   User,
@@ -667,6 +668,15 @@ export default function ProfilePage() {
       <div className="profile-header-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
         <h1 style={{ fontSize: 26, fontWeight: 800, letterSpacing: '-0.03em' }}>Your Profile</h1>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          <button
+            type="button"
+            onClick={() => router.push('/app/couples')}
+            className="btn-ghost profile-edit-btn"
+            style={{ padding: '9px 18px', fontSize: 13, display: 'flex', alignItems: 'center', gap: 6 }}
+          >
+            <Heart size={14} />
+            Couples Mode
+          </button>
           <button
             type="button"
             onClick={() => router.push('/app/profile/edit')}

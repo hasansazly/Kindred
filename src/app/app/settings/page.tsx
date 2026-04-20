@@ -2,7 +2,7 @@
 
 import { ReactNode, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Bell, Shield, Trash2, ChevronRight, LogOut, HelpCircle } from 'lucide-react';
+import { Bell, Shield, Trash2, ChevronRight, LogOut, HelpCircle, Heart } from 'lucide-react';
 
 function Section({ title, icon, children }: { title: string; icon: ReactNode; children: ReactNode }) {
   return (
@@ -64,6 +64,32 @@ export default function SettingsPage() {
         <h1 style={{ fontSize: 28, fontWeight: 700, letterSpacing: '-0.03em', marginBottom: 6, color: '#FFFFFF' }}>Settings</h1>
         <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.78)' }}>Manage your preferences and account</p>
       </div>
+
+      {/* ─ Couples Mode ─ */}
+      <Section title="Mode" icon={<Heart size={16} color="#db2777" />}>
+        <Row
+          label="Couples Mode"
+          desc="Switch to your shared space for connection rituals and check-ins."
+          right={
+            <button
+              onClick={() => router.push('/app/couples')}
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                color: '#5F5E5A',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 4,
+                fontSize: 13,
+                fontFamily: 'inherit',
+              }}
+            >
+              Open <ChevronRight size={14} />
+            </button>
+          }
+        />
+      </Section>
 
       {/* ─ Discovery Preferences ─ */}
       <Section title="Discovery" icon={<Compass size={16} color="#a78bfa" />}>
