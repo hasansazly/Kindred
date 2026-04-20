@@ -19,27 +19,36 @@ type SectionProps = {
 function Section({ title, desc, matches, emptyMain, emptySub, emptyIcon, statusLabel }: SectionProps) {
   const badge =
     statusLabel === 'new'
-      ? { label: 'NEW', bg: '#7F77DD' }
+      ? { label: 'NEW', bg: '#FF5864', color: 'rgb(245, 238, 248)' }
       : statusLabel === 'active'
-        ? { label: 'ACTIVE', bg: '#1D9E75' }
-        : { label: '50–64%', bg: '#BA7517' };
+        ? { label: 'ACTIVE', bg: '#1D9E75', color: 'rgb(245, 238, 248)' }
+        : { label: '50–64%', bg: '#BA7517', color: 'rgb(245, 238, 248)' };
 
   return (
     <section
-      className="mb-3 rounded-[16px] border border-white/[0.08] p-4"
-      style={{ background: 'rgba(255,255,255,0.05)' }}
+      className="mb-3 rounded-[16px] border p-4"
+      style={{
+        background: '#FFFFFF',
+        borderColor: 'rgba(255, 88, 100, 0.2)',
+        boxShadow: '0 8px 22px rgba(26, 10, 30, 0.05)',
+      }}
     >
       <div className="mb-2.5 flex items-center justify-between">
-        <h2 className="text-[17px] font-semibold text-white">{title}</h2>
+        <h2
+          className="text-[17px] font-semibold"
+          style={{ color: '#1A0A1E', fontFamily: 'Inter, sans-serif', letterSpacing: '-0.01em' }}
+        >
+          {title}
+        </h2>
         <span
-          className="rounded-full px-2.5 py-1 text-[10px] font-bold tracking-[0.06em] text-white"
-          style={{ background: badge.bg }}
+          className="rounded-full px-2.5 py-1 text-[10px] font-bold tracking-[0.06em]"
+          style={{ background: badge.bg, color: badge.color }}
         >
           {badge.label}
         </span>
       </div>
 
-      <p className="mb-3 text-[12px] leading-[1.55] text-white/55">{desc}</p>
+      <p className="mb-3 text-[12px] leading-[1.55]" style={{ color: '#6B4B5E' }}>{desc}</p>
 
       {matches.length > 0 ? (
         <div className="space-y-3">
@@ -48,10 +57,13 @@ function Section({ title, desc, matches, emptyMain, emptySub, emptyIcon, statusL
           ))}
         </div>
       ) : (
-        <div className="rounded-[12px] border border-dashed border-white/[0.10] p-4 text-center">
-          <div className="mb-1.5 text-[20px] opacity-40">{emptyIcon}</div>
-          <p className="text-[13px] font-medium text-white/45">{emptyMain}</p>
-          <p className="mt-1 text-[11px] text-white/[0.3]">{emptySub}</p>
+        <div
+          className="rounded-[12px] border border-dashed p-4 text-center"
+          style={{ borderColor: 'rgba(255, 88, 100, 0.2)', background: '#FAF8F5' }}
+        >
+          <div className="mb-1.5 text-[20px] opacity-60" style={{ color: '#9B7099' }}>{emptyIcon}</div>
+          <p className="text-[13px] font-medium" style={{ color: '#1A0A1E' }}>{emptyMain}</p>
+          <p className="mt-1 text-[11px]" style={{ color: '#6B4B5E' }}>{emptySub}</p>
         </div>
       )}
     </section>
@@ -86,21 +98,25 @@ export default async function AppDiscoverPage() {
   const sections = getDiscoverSections(matches, tier);
 
   return (
-    <div className="app-interior-page min-h-full bg-[#0D0D1A] px-4 pt-6 pb-8 text-[#F3F5FF]">
+    <div className="app-interior-page min-h-full bg-[#FAF8F5] px-4 pt-6 pb-8 text-[#1A0A1E]">
       {/* Page meta */}
       <div className="mb-4 flex items-start justify-between gap-3">
         <div>
-          <p className="mb-1 text-[10px] tracking-[0.1em] text-white/40">DISCOVER</p>
-          <h1 className="text-[26px] font-bold leading-[1.1] text-white">
+          <p className="mb-1 text-[10px] tracking-[0.1em]" style={{ color: '#9B7099', fontFamily: 'Inter, sans-serif' }}>DISCOVER</p>
+          <h1
+            className="text-[26px] font-bold leading-[1.1]"
+            style={{ color: '#1A0A1E', fontFamily: 'Inter, sans-serif', letterSpacing: '-0.02em' }}
+          >
             Curated<br />Matches
           </h1>
-          <p className="mt-1 text-[12px] leading-[1.55] text-white/55">
+          <p className="mt-1 text-[12px] leading-[1.55]" style={{ color: '#6B4B5E' }}>
             Focused browsing · no old history
           </p>
         </div>
         <Link
           href="/dashboard"
-          className="mt-1 shrink-0 rounded-full border border-white/[0.15] px-3 py-1.5 text-[12px] text-white/65"
+          className="mt-1 shrink-0 rounded-full border px-3 py-1.5 text-[12px]"
+          style={{ borderColor: 'rgba(255, 88, 100, 0.35)', color: '#FF3B5C', background: '#FFF0F1' }}
         >
           ← Dashboard
         </Link>
