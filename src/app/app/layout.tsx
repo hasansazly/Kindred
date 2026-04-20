@@ -308,27 +308,10 @@ function MobileBottomNav() {
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div style={{ height: '100dvh', background: '#07070f', display: 'flex', overflow: 'hidden' }}>
-      {/* Desktop sidebar */}
-      <div
-        className="desktop-only app-sidebar"
-        style={{
-          width: 260,
-          flexShrink: 0,
-          borderRight: '1px solid rgba(255,255,255,0.06)',
-          height: '100dvh',
-          overflowY: 'auto',
-          background: 'rgba(10,10,20,0.8)',
-          backdropFilter: 'blur(20px)',
-        }}
-      >
-        <Sidebar />
-      </div>
-
       {/* Content column */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, height: '100dvh', overflow: 'hidden' }}>
         {/* Mobile top bar */}
         <div
-          className="mobile-only"
           style={{
             flexShrink: 0,
             background: 'rgba(7,7,15,0.95)',
@@ -348,6 +331,15 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               <Heart size={12} color="white" fill="white" />
             </div>
           </Link>
+
+          <div className="desktop-top-links" style={{ alignItems: 'center', gap: 16 }}>
+            <Link href="/app/discover" style={{ color: 'rgba(240,240,255,0.72)', textDecoration: 'none', fontSize: 13 }}>Discover</Link>
+            <Link href="/app/matches" style={{ color: 'rgba(240,240,255,0.72)', textDecoration: 'none', fontSize: 13 }}>Matches</Link>
+            <Link href="/app/messages" style={{ color: 'rgba(240,240,255,0.72)', textDecoration: 'none', fontSize: 13 }}>Messages</Link>
+            <Link href="/app/profile" style={{ color: 'rgba(240,240,255,0.72)', textDecoration: 'none', fontSize: 13 }}>Profile</Link>
+            <Link href="/app/couples" style={{ color: 'rgba(240,240,255,0.72)', textDecoration: 'none', fontSize: 13 }}>Couples</Link>
+            <Link href="/app/settings" style={{ color: 'rgba(240,240,255,0.72)', textDecoration: 'none', fontSize: 13 }}>Settings</Link>
+          </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
             <div style={{ position: 'relative', cursor: 'pointer' }}>
@@ -379,9 +371,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       </div>
       <AssistantShell />
       <style>{`
+        .desktop-top-links { display: flex; }
         .mobile-only { display: none; }
         .desktop-only { display: flex; }
         @media (max-width: 767px) {
+          .desktop-top-links { display: none !important; }
           .mobile-only { display: flex !important; }
           .desktop-only { display: none !important; }
           .app-main-scroll {
