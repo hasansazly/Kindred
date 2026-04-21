@@ -41,6 +41,9 @@ type EventRow = {
   created_at: string;
 };
 
+const DAILY_REPEAT_LOOKBACK_DAYS = 75;
+const WEEKLY_REPEAT_LOOKBACK_DAYS = 75;
+
 function pickDeterministicQuestion(trackId: string, cycleKey: string, bucket: QuestionRow[], salt: string) {
   if (bucket.length === 0) return null;
   const index = stableHash(`${trackId}:${cycleKey}:${salt}`) % bucket.length;
@@ -87,6 +90,30 @@ function pickRotatingQuestion(
   }
 
   return pickDeterministicQuestion(trackId, cycleKey, pool, salt);
+}
+
+function pickLockedOrRotatingQuestion(args: {
+  trackId: string;
+  cycleKey: string;
+  bucket: QuestionRow[];
+  salt: string;
+  history: Array<Pick<ResponseRow, 'question_id' | 'created_at'>>;
+  cycleResponses: Array<Pick<ResponseRow, 'cycle_key' | 'question_id' | 'created_at'>>;
+  lookbackDays: number;
+}) {
+  const existingForCycle = args.cycleResponses
+    .filter(response => response.cycle_key === args.cycleKey)
+    .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())[0];
+
+  if (existingForCycle) {
+    const locked = args.bucket.find(question => question.id === existingForCycle.question_id);
+    if (locked) return locked;
+  }
+
+  return pickRotatingQuestion(args.trackId, args.cycleKey, args.bucket, args.salt, args.history, {
+    lookbackDays: args.lookbackDays,
+    avoidRepeatCategory: true,
+  });
 }
 
 function normalizeResponses(responses: ResponseRow[]) {
@@ -273,6 +300,14 @@ export async function GET(req: NextRequest) {
 
     const todayKey = getTodayKey();
     const weekKey = getWeekKey();
+
+    const { data: cycleResponseAnchors } = await supabase
+      .from('connection_track_responses')
+      .select('cycle_key,question_id,created_at')
+      .eq('connection_track_id', track.id)
+      .in('cycle_key', [todayKey, weekKey])
+      .returns<Array<Pick<ResponseRow, 'cycle_key' | 'question_id' | 'created_at'>>>();
+
     const { data: historyRows } = await supabase
       .from('connection_track_responses')
       .select('question_id,created_at')
@@ -282,13 +317,24 @@ export async function GET(req: NextRequest) {
       .returns<Array<Pick<ResponseRow, 'question_id' | 'created_at'>>>();
 
     const history = historyRows ?? [];
-    const dailyQuestion = pickRotatingQuestion(track.id, todayKey, dailyPool, 'daily', history, {
-      lookbackDays: 30,
-      avoidRepeatCategory: true,
+    const anchors = cycleResponseAnchors ?? [];
+    const dailyQuestion = pickLockedOrRotatingQuestion({
+      trackId: track.id,
+      cycleKey: todayKey,
+      bucket: dailyPool,
+      salt: 'daily',
+      history,
+      cycleResponses: anchors,
+      lookbackDays: DAILY_REPEAT_LOOKBACK_DAYS,
     });
-    const weeklyQuestion = pickRotatingQuestion(track.id, weekKey, weeklyPool, 'weekly', history, {
-      lookbackDays: 60,
-      avoidRepeatCategory: true,
+    const weeklyQuestion = pickLockedOrRotatingQuestion({
+      trackId: track.id,
+      cycleKey: weekKey,
+      bucket: weeklyPool,
+      salt: 'weekly',
+      history,
+      cycleResponses: anchors,
+      lookbackDays: WEEKLY_REPEAT_LOOKBACK_DAYS,
     });
 
     if (!dailyQuestion || !weeklyQuestion) {
