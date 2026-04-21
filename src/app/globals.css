@@ -1704,3 +1704,14 @@ input[type="range"]::-webkit-slider-thumb {
   padding: 9px 14px !important;
   font-size: 13px !important;
 }
+
+/* Final discover heading lock (must stay white over generic app-interior rules) */
+.app-interior-page.discover-screen h1,
+.app-interior-page.discover-screen h2,
+.app-interior-page.discover-screen h3,
+.app-interior-page.discover-screen p,
+.app-interior-page.discover-screen span,
+.app-interior-page.discover-screen a,
+.app-interior-page.discover-screen li {
+  color: #ffffff !important;
+}
