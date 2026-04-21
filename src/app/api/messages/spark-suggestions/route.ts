@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '../../../../../utils/supabase/server';
-import { CONVERSATION_PROMPTS } from '@/lib/conversationSupportCopy';
 
 type Kind = 'startEasy' | 'goDeeper' | 'suggestPlan';
 
@@ -14,32 +13,6 @@ type MessageRow = {
   body: string;
   created_at: string;
 };
-
-function withContext(prompt: string, context: PromptContext) {
-  if (prompt.includes('[interest]') && context.reason) {
-    return prompt.replace('[interest]', context.reason);
-  }
-
-  if (!context.intent) return prompt;
-  if (prompt.toLowerCase().includes('what are you looking for')) {
-    return `${prompt} I noticed your intent says ${context.intent}.`;
-  }
-  return prompt;
-}
-
-function fallbackSuggestions(context: PromptContext): Record<Kind, string[]> {
-  return {
-    startEasy: CONVERSATION_PROMPTS.opening.thoughtful
-      .slice(0, 3)
-      .map(prompt => withContext(prompt, context)),
-    goDeeper: CONVERSATION_PROMPTS.substance.direct
-      .slice(0, 3)
-      .map(prompt => withContext(prompt, context)),
-    suggestPlan: CONVERSATION_PROMPTS.plan.playful
-      .slice(0, 3)
-      .map(prompt => withContext(prompt, context)),
-  };
-}
 
 async function callAnthropic(apiKey: string, prompt: string) {
   const Anthropic = (await import('@anthropic-ai/sdk')).default;
@@ -165,12 +138,13 @@ export async function POST(req: NextRequest) {
     const intent = body.relationshipIntent?.trim() ?? '';
     const context: PromptContext = { reason, intent };
 
-    const fallback = fallbackSuggestions(context);
-
     const openAIKey = process.env.OPENAI_API_KEY;
     const anthropicKey = process.env.ANTHROPIC_API_KEY;
     if (!openAIKey && !anthropicKey) {
-      return NextResponse.json({ source: 'fallback', suggestions: fallback });
+      return NextResponse.json(
+        { error: 'AI suggestions are unavailable. Configure OPENAI_API_KEY or ANTHROPIC_API_KEY.' },
+        { status: 503 }
+      );
     }
 
     const prompt = `Generate 3 suggestions each for Start Easy, Go Deeper, and Suggest a Plan.
@@ -198,13 +172,14 @@ Rules:
       } else if (anthropicKey) {
         text = await callAnthropic(anthropicKey, prompt);
       }
-    } catch {
-      return NextResponse.json({ source: 'fallback', suggestions: fallback });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'AI request failed';
+      return NextResponse.json({ error: message }, { status: 502 });
     }
 
     const parsed = parseSuggestions(text);
     if (!parsed) {
-      return NextResponse.json({ source: 'fallback', suggestions: fallback });
+      return NextResponse.json({ error: 'AI returned invalid suggestion format.' }, { status: 502 });
     }
 
     return NextResponse.json({ source: 'ai', suggestions: parsed });
@@ -213,4 +188,3 @@ Rules:
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
-

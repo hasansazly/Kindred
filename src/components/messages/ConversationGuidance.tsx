@@ -2,23 +2,9 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { Flame } from 'lucide-react';
-import { CONVERSATION_BUTTON_COPY, CONVERSATION_PROMPTS } from '@/lib/conversationSupportCopy';
+import { CONVERSATION_BUTTON_COPY } from '@/lib/conversationSupportCopy';
 
 type GuidanceKind = 'startEasy' | 'goDeeper' | 'suggestPlan';
-
-function withContext(prompt: string, context: { reason?: string; intent?: string }) {
-  if (prompt.includes('[interest]') && context.reason) {
-    return prompt.replace('[interest]', context.reason);
-  }
-
-  if (!context.intent) return prompt;
-
-  if (prompt.toLowerCase().includes('what are you looking for')) {
-    return `${prompt} I noticed your intent says ${context.intent}.`;
-  }
-
-  return prompt;
-}
 
 export default function ConversationGuidance({
   onPick,
@@ -31,25 +17,20 @@ export default function ConversationGuidance({
   compatibilityReasons: string[];
   relationshipIntent?: string;
 }) {
-  const primaryReason = compatibilityReasons[0] ?? 'shared priorities';
-
-  const fallbackGroups = useMemo(
-    () => ({
-      startEasy: CONVERSATION_PROMPTS.opening.thoughtful.slice(0, 3),
-      goDeeper: CONVERSATION_PROMPTS.substance.direct.slice(0, 3),
-      suggestPlan: CONVERSATION_PROMPTS.plan.playful.slice(0, 3),
-    }),
-    []
-  );
-  const [groups, setGroups] = useState<Record<GuidanceKind, string[]>>(fallbackGroups);
+  const [groups, setGroups] = useState<Record<GuidanceKind, string[]>>({
+    startEasy: [],
+    goDeeper: [],
+    suggestPlan: [],
+  });
   const [loading, setLoading] = useState(false);
-  const [source, setSource] = useState<'ai' | 'fallback'>('fallback');
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let active = true;
 
     const load = async () => {
       setLoading(true);
+      setError(null);
       try {
         const res = await fetch('/api/messages/spark-suggestions', {
           method: 'POST',
@@ -61,26 +42,27 @@ export default function ConversationGuidance({
           }),
         });
 
-        if (!res.ok) throw new Error('Failed to load AI suggestions');
+        if (!res.ok) {
+          const payload = (await res.json().catch(() => ({}))) as { error?: string };
+          throw new Error(payload.error || 'Failed to load AI suggestions');
+        }
         const json = (await res.json()) as {
-          source?: 'ai' | 'fallback';
           suggestions?: Partial<Record<GuidanceKind, string[]>>;
         };
 
         const nextGroups: Record<GuidanceKind, string[]> = {
-          startEasy: (json.suggestions?.startEasy ?? fallbackGroups.startEasy).slice(0, 3),
-          goDeeper: (json.suggestions?.goDeeper ?? fallbackGroups.goDeeper).slice(0, 3),
-          suggestPlan: (json.suggestions?.suggestPlan ?? fallbackGroups.suggestPlan).slice(0, 3),
+          startEasy: (json.suggestions?.startEasy ?? []).slice(0, 3),
+          goDeeper: (json.suggestions?.goDeeper ?? []).slice(0, 3),
+          suggestPlan: (json.suggestions?.suggestPlan ?? []).slice(0, 3),
         };
 
         if (active) {
           setGroups(nextGroups);
-          setSource(json.source === 'ai' ? 'ai' : 'fallback');
         }
-      } catch {
+      } catch (e) {
         if (active) {
-          setGroups(fallbackGroups);
-          setSource('fallback');
+          setGroups({ startEasy: [], goDeeper: [], suggestPlan: [] });
+          setError(e instanceof Error ? e.message : 'AI suggestions unavailable');
         }
       } finally {
         if (active) setLoading(false);
@@ -91,7 +73,7 @@ export default function ConversationGuidance({
     return () => {
       active = false;
     };
-  }, [conversationId, compatibilityReasons, relationshipIntent, fallbackGroups]);
+  }, [conversationId, compatibilityReasons, relationshipIntent]);
 
   const categoryTitles: Record<GuidanceKind, string> = {
     startEasy: CONVERSATION_BUTTON_COPY.startEasy.label,
@@ -108,32 +90,32 @@ export default function ConversationGuidance({
       <p className="mb-2 text-xs text-white/60">
         {loading
           ? 'Generating context-aware suggestions...'
-          : source === 'ai'
-            ? 'AI suggestions are based on your recent conversation.'
-            : 'Using local prompt fallback. Add an API key for AI-generated suggestions.'}
+          : error
+            ? 'AI suggestions are unavailable right now.'
+            : 'AI suggestions are based on your recent conversation.'}
       </p>
+      {error ? <p className="mb-2 text-xs text-amber-300">{error}</p> : null}
       <div className="space-y-2">
         {(Object.keys(groups) as GuidanceKind[]).map(kind => (
           <div key={kind} className="rounded-xl border border-white/10 bg-[#151220] p-2.5">
             <p className="mb-2 text-[11px] font-medium uppercase tracking-[0.06em] text-white/40">{categoryTitles[kind]}</p>
             <div className="flex flex-wrap gap-2">
               {groups[kind].map(prompt => {
-                const text = withContext(prompt, {
-                  reason: primaryReason,
-                  intent: relationshipIntent,
-                });
                 return (
                   <button
                     key={`${kind}-${prompt}`}
                     type="button"
-                    onClick={() => onPick(text)}
+                    onClick={() => onPick(prompt)}
                     className="rounded-[20px] border border-white/15 bg-[#252030] px-3 py-1.5 text-xs text-white/80 hover:border-[#A855F7] hover:bg-[#2B243C]"
                     title="Insert into message"
                   >
-                    {text.length > 56 ? `${text.slice(0, 56)}...` : text}
+                    {prompt.length > 56 ? `${prompt.slice(0, 56)}...` : prompt}
                   </button>
                 );
               })}
+              {!loading && groups[kind].length === 0 ? (
+                <span className="text-xs text-white/45">No AI suggestions available.</span>
+              ) : null}
             </div>
           </div>
         ))}
