@@ -541,13 +541,13 @@ export default function CouplesPage() {
 
         {!loading && state && !state.enabled ? (
           <section className="cm-card p-6">
-            <p className="text-sm text-[#CED6F8]">Couple Mode is currently disabled.</p>
+            <p className="couple-mode-off-copy text-sm text-[#CED6F8]">Couple Mode is currently disabled.</p>
           </section>
         ) : null}
 
         {!loading && state?.enabled && !state.hasCouple ? (
           <section className="cm-card p-6">
-            <h2 className="couple-mode-empty-title text-lg font-semibold text-[#F8FAFF]">Not in Couple Mode yet</h2>
+            <h2 className="couple-mode-empty-title couple-mode-off-title text-lg font-semibold text-[#F8FAFF]">Not in Couple Mode yet</h2>
             <p className="mt-2 text-sm text-[#CED6F8]">
               Couple Mode unlocks after a confirmed couple status is set for your pair.
             </p>

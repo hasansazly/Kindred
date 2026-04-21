@@ -1720,3 +1720,8 @@ input[type="range"]::-webkit-slider-thumb {
 .app-interior-page.couple-mode-v2 .couple-mode-empty-title {
   color: #ffffff !important;
 }
+
+.app-interior-page.couple-mode-v2 .couple-mode-off-title,
+.app-interior-page.couple-mode-v2 .couple-mode-off-copy {
+  color: #ffffff !important;
+}
