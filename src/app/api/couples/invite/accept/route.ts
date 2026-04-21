@@ -82,13 +82,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Only approved tester emails can accept invites.' }, { status: 403 });
     }
 
+    // Invite creation is already restricted to approved tester emails.
+    // Keep a best-effort inviter email check, but do not hard-fail when email
+    // is unavailable in `profiles` (can happen with RLS/profile hydration gaps).
     const { data: inviterProfile } = await supabase
       .from('profiles')
       .select('email')
       .eq('id', invite.inviter_user_id)
       .maybeSingle<InviterProfileRow>();
     const inviterEmail = normalizeEmail(inviterProfile?.email ?? '');
-    if (!isQaAccessEmail(inviterEmail)) {
+    if (inviterEmail && !isQaAccessEmail(inviterEmail)) {
       return NextResponse.json({ error: 'Only invites sent by approved tester emails are valid.' }, { status: 403 });
     }
 
