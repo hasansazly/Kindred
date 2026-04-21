@@ -10,7 +10,7 @@ type PromptContext = {
 
 type MessageRow = {
   sender_user_id: string;
-  body: string;
+  body: string | null;
   created_at: string;
 };
 

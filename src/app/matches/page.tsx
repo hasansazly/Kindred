@@ -13,7 +13,9 @@ type ParticipantRow = {
 
 type MessageRow = {
   conversation_id: string;
-  body: string;
+  body: string | null;
+  message_type: 'text' | 'image';
+  media_url: string | null;
   sender_user_id: string;
   created_at: string;
 };
@@ -91,7 +93,7 @@ export default async function MatchesPage() {
     conversationIds.length > 0
       ? supabase
           .from('messages')
-          .select('conversation_id,body,sender_user_id,created_at')
+          .select('conversation_id,body,message_type,media_url,sender_user_id,created_at')
           .in('conversation_id', conversationIds)
           .order('created_at', { ascending: false })
           .returns<MessageRow[]>()
@@ -200,7 +202,11 @@ export default async function MatchesPage() {
                       <p className="conversation-match-name text-[24px] leading-tight text-white" style={{ fontFamily: 'Playfair Display, Georgia, serif' }}>
                         {item.match.matchedProfile.firstName}
                       </p>
-                      <p className="conversation-preview mt-1 text-sm leading-relaxed text-white/70">{item.latest.body}</p>
+                      <p className="conversation-preview mt-1 text-sm leading-relaxed text-white/70">
+                        {item.latest.message_type === 'image'
+                          ? '📷 Photo'
+                          : (item.latest.body ?? '').trim() || 'No messages yet'}
+                      </p>
                     </div>
                     <div className="shrink-0 text-right">
                       <p className="conversation-time text-sm leading-none text-white/70">

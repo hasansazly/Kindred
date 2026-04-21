@@ -34,7 +34,7 @@ type OnboardingRow = {
 };
 
 type MessageRow = {
-  body: string;
+  body: string | null;
 };
 
 type BriefingRow = {
@@ -230,7 +230,7 @@ async function getRecentConversationSnippets(
 
   return (messages ?? [])
     .map(msg => msg.body)
-    .filter(body => typeof body === 'string' && body.trim().length > 0)
+    .filter((body): body is string => typeof body === 'string' && body.trim().length > 0)
     .slice(0, 6);
 }
 

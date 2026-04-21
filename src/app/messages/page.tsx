@@ -12,7 +12,9 @@ type ParticipantRow = {
 
 type MessageRow = {
   conversation_id: string;
-  body: string;
+  body: string | null;
+  message_type: 'text' | 'image';
+  media_url: string | null;
   created_at: string;
 };
 
@@ -111,7 +113,7 @@ export default async function MessagesInboxPage() {
       .returns<ParticipantRow[]>(),
     supabase
       .from('messages')
-      .select('conversation_id,body,created_at')
+      .select('conversation_id,body,message_type,media_url,created_at')
       .in('conversation_id', conversationIds)
       .order('created_at', { ascending: false })
       .returns<MessageRow[]>(),
@@ -231,7 +233,10 @@ export default async function MessagesInboxPage() {
       return {
         conversationId,
         name,
-        lastBody: latest?.body ?? 'No messages yet',
+        lastBody:
+          latest?.message_type === 'image'
+            ? '📷 Photo'
+            : (latest?.body ?? '').trim() || 'No messages yet',
         lastAt: latest?.created_at ?? null,
       };
     })

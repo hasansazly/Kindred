@@ -1,9 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { ArrowLeft, Send, ShieldCheck, Smile } from 'lucide-react';
+import { ArrowLeft, ImagePlus, Send, ShieldCheck, Smile, X } from 'lucide-react';
 import EmojiPicker from 'emoji-picker-react';
 import ConversationGuidance from '@/components/messages/ConversationGuidance';
 import ConnectionSafetyActions from '@/components/safety/ConnectionSafetyActions';
@@ -14,7 +14,9 @@ type MessageRow = {
   id: string;
   conversation_id: string;
   sender_user_id: string;
-  body: string;
+  body: string | null;
+  message_type: 'text' | 'image';
+  media_url: string | null;
   created_at: string;
 };
 
@@ -77,6 +79,7 @@ export default function ConversationPage() {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [compatibilityReasons, setCompatibilityReasons] = useState<string[]>([]);
   const [relationshipIntent, setRelationshipIntent] = useState<string>('');
@@ -84,6 +87,9 @@ export default function ConversationPage() {
   const [potentialFit, setPotentialFit] = useState(false);
   const [messagingDisabledReason, setMessagingDisabledReason] = useState<string | null>(null);
   const [couplePartnerId, setCouplePartnerId] = useState<string | null>(null);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [selectedImagePreview, setSelectedImagePreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -232,7 +238,7 @@ export default function ConversationPage() {
 
         const { data: messageRowsRaw, error: messagesError } = await supabase
           .from('messages')
-          .select('id,conversation_id,sender_user_id,body,created_at')
+          .select('id,conversation_id,sender_user_id,body,message_type,media_url,created_at')
           .eq('conversation_id', conversationId)
           .order('created_at', { ascending: true });
         const messageRows = (messageRowsRaw ?? []) as MessageRow[];
@@ -275,23 +281,68 @@ export default function ConversationPage() {
 
   const onSend = async (event: FormEvent) => {
     event.preventDefault();
-    if (!currentUserId || !input.trim() || sending || Boolean(messagingDisabledReason)) return;
+    if (!currentUserId || sending || uploadingImage || Boolean(messagingDisabledReason)) return;
+    if (!input.trim() && !selectedImage) return;
 
     setSending(true);
     setError(null);
 
     try {
       const supabase = getSupabaseBrowserClient();
-      const body = input.trim();
+      let payload: {
+        conversation_id: string;
+        sender_user_id: string;
+        body: string | null;
+        message_type: 'text' | 'image';
+        media_url: string | null;
+      };
+
+      if (selectedImage) {
+        if (!selectedImage.type.startsWith('image/')) {
+          throw new Error('Only image files are allowed.');
+        }
+        if (selectedImage.size > 10 * 1024 * 1024) {
+          throw new Error('Image must be 10MB or smaller.');
+        }
+
+        setUploadingImage(true);
+        const ext = selectedImage.name.split('.').pop()?.toLowerCase() || 'jpg';
+        const path = `messages/${conversationId}/${currentUserId}/${Date.now()}-${crypto.randomUUID()}.${ext}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('message-photos')
+          .upload(path, selectedImage, {
+            upsert: false,
+            contentType: selectedImage.type || 'image/jpeg',
+            cacheControl: '3600',
+          });
+
+        if (uploadError) {
+          throw new Error(uploadError.message);
+        }
+
+        const { data: publicData } = supabase.storage.from('message-photos').getPublicUrl(path);
+        payload = {
+          conversation_id: conversationId,
+          sender_user_id: currentUserId,
+          body: null,
+          message_type: 'image',
+          media_url: publicData.publicUrl,
+        };
+      } else {
+        payload = {
+          conversation_id: conversationId,
+          sender_user_id: currentUserId,
+          body: input.trim(),
+          message_type: 'text',
+          media_url: null,
+        };
+      }
 
       const { data: insertedRaw, error: insertError } = await supabase
         .from('messages')
-        .insert({
-          conversation_id: conversationId,
-          sender_user_id: currentUserId,
-          body,
-        })
-        .select('id,conversation_id,sender_user_id,body,created_at')
+        .insert(payload)
+        .select('id,conversation_id,sender_user_id,body,message_type,media_url,created_at')
         .single();
       const inserted = (insertedRaw ?? null) as MessageRow | null;
 
@@ -301,13 +352,42 @@ export default function ConversationPage() {
 
       setMessages(prev => [...prev, inserted]);
       setInput('');
+      setSelectedImage(null);
+      setSelectedImagePreview(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to send message';
       setError(message);
     } finally {
+      setUploadingImage(false);
       setSending(false);
     }
   };
+
+  const onPickImage = (file: File | null) => {
+    if (!file) return;
+    setSelectedImage(file);
+    const nextUrl = URL.createObjectURL(file);
+    setSelectedImagePreview(prev => {
+      if (prev) URL.revokeObjectURL(prev);
+      return nextUrl;
+    });
+  };
+
+  const clearSelectedImage = () => {
+    if (selectedImagePreview) URL.revokeObjectURL(selectedImagePreview);
+    setSelectedImage(null);
+    setSelectedImagePreview(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  useEffect(() => {
+    return () => {
+      if (selectedImagePreview) URL.revokeObjectURL(selectedImagePreview);
+    };
+  }, [selectedImagePreview]);
 
   return (
     <main className="app-interior-page mobile-premium-screen conversation-screen min-h-screen bg-[#12101A] px-4 py-4 text-[#F3F5FF]">
@@ -366,7 +446,15 @@ export default function ConversationPage() {
                             : 'conversation-bubble-them rounded-bl-[4px] border border-white/10 bg-[#252030] text-white/95'
                         }`}
                       >
-                        <p>{message.body}</p>
+                        {message.message_type === 'image' && message.media_url ? (
+                          <img
+                            src={message.media_url}
+                            alt="Shared in chat"
+                            className="max-h-[240px] w-auto max-w-full rounded-xl object-cover"
+                          />
+                        ) : (
+                          <p>{message.body}</p>
+                        )}
                         <p className={`mt-1 text-[11px] ${mine ? 'text-white/70' : 'text-white/50'}`}>
                           {formatTimestamp(message.created_at)}
                         </p>
@@ -404,7 +492,42 @@ export default function ConversationPage() {
                 />
               </div>
             ) : null}
+            {selectedImagePreview ? (
+              <div className="mb-3 rounded-xl border border-white/10 bg-[#1A1624] p-2">
+                <div className="relative">
+                  <img
+                    src={selectedImagePreview}
+                    alt="Selected"
+                    className="max-h-[220px] w-auto max-w-full rounded-lg object-cover"
+                  />
+                  <button
+                    type="button"
+                    onClick={clearSelectedImage}
+                    className="absolute right-2 top-2 inline-flex h-7 w-7 items-center justify-center rounded-full border border-white/20 bg-black/45 text-white"
+                    aria-label="Remove image"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              </div>
+            ) : null}
             <div className="conversation-input-row flex items-center gap-2">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={event => onPickImage(event.target.files?.[0] ?? null)}
+              />
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/15 bg-[#1E1A2E] text-white/75 hover:border-[#A855F7] hover:text-white"
+                aria-label="Upload photo"
+                disabled={Boolean(messagingDisabledReason) || sending || uploadingImage}
+              >
+                <ImagePlus size={18} />
+              </button>
               <button
                 type="button"
                 onClick={() => setShowEmojiPicker(prev => !prev)}
@@ -426,7 +549,7 @@ export default function ConversationPage() {
               />
               <button
                 type="submit"
-                disabled={!input.trim() || sending || loading || Boolean(messagingDisabledReason)}
+                disabled={(!input.trim() && !selectedImage) || sending || uploadingImage || loading || Boolean(messagingDisabledReason)}
                 className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#8A5CF6] bg-gradient-to-br from-[#7C3AED] to-[#A855F7] text-white transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
                 aria-label="Send message"
               >
