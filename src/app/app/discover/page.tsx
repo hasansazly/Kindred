@@ -29,7 +29,7 @@ function Section({ title, desc, matches, emptyMain, emptySub, emptyIcon, statusL
       <div className="mb-2.5 flex items-center justify-between">
         <h2
           className="text-[34px] font-semibold leading-[1.05]"
-          style={{ color: '#F5EEF8', fontFamily: 'Playfair Display, Georgia, serif', letterSpacing: '-0.02em' }}
+          style={{ color: '#FFFFFF', fontFamily: 'Playfair Display, Georgia, serif', letterSpacing: '-0.02em' }}
         >
           {title}
         </h2>
@@ -96,12 +96,6 @@ export default async function AppDiscoverPage() {
       <div className="mb-4 flex items-start justify-between gap-3">
         <div>
           <p className="mb-1 text-[10px] tracking-[0.1em]" style={{ color: 'rgba(184, 158, 196, 0.86)', fontFamily: 'DM Sans, Inter, sans-serif' }}>DISCOVER</p>
-          <h1
-            className="text-[46px] font-semibold leading-[0.9]"
-            style={{ color: '#F5EEF8', fontFamily: 'Playfair Display, Georgia, serif', letterSpacing: '-0.02em' }}
-          >
-            Vínculo
-          </h1>
           <p className="mt-1 text-[12px] leading-[1.55]" style={{ color: 'rgba(184, 158, 196, 0.86)' }}>
             Focused browsing with clear intent
           </p>
