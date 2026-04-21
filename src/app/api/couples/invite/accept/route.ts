@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '../../../../../../utils/supabase/server';
-import { isQaAccessEmail, normalizeEmail } from '@/lib/utils';
+import { normalizeEmail } from '@/lib/utils';
 import { resolveCoupleContext, sortPair } from '@/server/couples/service';
 
 type AcceptPayload = {
@@ -22,10 +22,6 @@ type CoupleRow = {
   user_two_id: string;
   status: 'confirmed' | 'inactive';
   confirmed_at: string | null;
-};
-
-type InviterProfileRow = {
-  email?: string | null;
 };
 
 function looksLikeMissingTable(error: { code?: string; message?: string } | null | undefined, table: string) {
@@ -69,27 +65,11 @@ export async function POST(request: NextRequest) {
     }
 
     const currentUserEmail = normalizeEmail(user.email ?? '');
-    if (!isQaAccessEmail(currentUserEmail)) {
-      return NextResponse.json({ error: 'Only approved tester emails can accept invites.' }, { status: 403 });
-    }
     if (!currentUserEmail || currentUserEmail !== normalizeEmail(invite.partner_email)) {
       return NextResponse.json(
         { error: `This invite is locked to ${invite.partner_email}. Sign in with that email.` },
         { status: 403 }
       );
-    }
-    if (!isQaAccessEmail(invite.partner_email)) {
-      return NextResponse.json({ error: 'Only approved tester emails can accept invites.' }, { status: 403 });
-    }
-
-    const { data: inviterProfile } = await supabase
-      .from('profiles')
-      .select('email')
-      .eq('id', invite.inviter_user_id)
-      .maybeSingle<InviterProfileRow>();
-    const inviterEmail = normalizeEmail(inviterProfile?.email ?? '');
-    if (!isQaAccessEmail(inviterEmail)) {
-      return NextResponse.json({ error: 'Only invites sent by approved tester emails are valid.' }, { status: 403 });
     }
 
     const expiresAt = new Date(invite.expires_at).getTime();
