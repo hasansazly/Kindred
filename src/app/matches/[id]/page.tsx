@@ -101,7 +101,7 @@ export default async function MatchDetailPage({ params }: MatchDetailPageProps) 
                   <User size={52} className="text-slate-400" />
                 </div>
                 {!match.canViewPhotos ? (
-                  <div className="absolute inset-x-0 bottom-20 mx-auto w-fit rounded-full border border-violet-300/35 bg-slate-900/75 px-3 py-1.5 text-xs text-violet-100 backdrop-blur">
+                  <div className="absolute left-1/2 top-5 z-10 w-fit -translate-x-1/2 rounded-full border border-violet-300/45 bg-slate-950/85 px-3.5 py-2 text-xs font-medium leading-tight text-violet-100 backdrop-blur">
                     Photos unlock after mutual match
                   </div>
                 ) : null}
@@ -131,7 +131,7 @@ export default async function MatchDetailPage({ params }: MatchDetailPageProps) 
               {trustSignals.map(signal => (
                 <span
                   key={signal}
-                  className="rounded-full border border-slate-700/80 bg-slate-800/75 px-3 py-1.5 text-xs text-slate-300"
+                  className="match-signal-chip rounded-2xl border border-slate-700/80 bg-slate-800/75 px-3.5 py-2 text-xs leading-relaxed text-slate-200"
                 >
                   {signal}
                 </span>
@@ -184,7 +184,7 @@ export default async function MatchDetailPage({ params }: MatchDetailPageProps) 
               {match.compatibilityReasons.map(reason => (
                 <li
                   key={reason}
-                  className="flex items-center gap-2 rounded-xl border border-slate-700/70 bg-slate-800/60 px-3 py-2.5 text-sm text-slate-200"
+                  className="match-reason-item flex min-h-11 items-start gap-2 rounded-xl border border-slate-700/70 bg-slate-800/60 px-3.5 py-3 text-sm leading-relaxed text-slate-100"
                 >
                   <CheckCircle2 size={14} className="shrink-0 text-violet-300" />
                   {reason}

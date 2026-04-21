@@ -22,13 +22,13 @@ export default function TrustSignals({
         {signals.map(signal => (
           <div
             key={signal}
-            className="rounded-xl border border-slate-700/70 bg-slate-800/65 px-3 py-2.5 text-sm text-slate-300"
+            className="trust-signal-item rounded-xl border border-slate-700/70 bg-slate-800/65 px-3.5 py-3 text-sm leading-relaxed text-slate-200"
           >
             {signal}
           </div>
         ))}
         {potentialFit ? (
-          <div className="rounded-xl border border-amber-400/40 bg-amber-500/12 px-3 py-2.5 text-sm font-medium text-amber-200">
+          <div className="trust-signal-item trust-signal-item-premium rounded-xl border border-amber-400/45 bg-amber-500/15 px-3.5 py-3 text-sm font-medium leading-relaxed text-amber-100">
             Potential Fit (exploratory range)
           </div>
         ) : null}
