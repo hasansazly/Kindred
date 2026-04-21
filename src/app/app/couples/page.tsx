@@ -1035,6 +1035,13 @@ export default function CouplesPage() {
           justify-content: center;
           line-height: 1.4;
         }
+        .cm-card .cm-title,
+        .cm-card h2,
+        .cm-card h3,
+        .cm-card p {
+          padding-left: 2px;
+          overflow-wrap: anywhere;
+        }
       `}</style>
     </div>
   );
