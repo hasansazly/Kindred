@@ -19,6 +19,83 @@ const WAITLIST_MIN_POOL_SIZE_RAW = Number(process.env.MATCH_WAITLIST_MIN_POOL_SI
 const WAITLIST_MIN_POOL_SIZE = Number.isFinite(WAITLIST_MIN_POOL_SIZE_RAW) && WAITLIST_MIN_POOL_SIZE_RAW > 0
   ? Math.floor(WAITLIST_MIN_POOL_SIZE_RAW)
   : 20;
+const MATCH_FORCE_WAITLIST_RAW = String(process.env.MATCH_FORCE_WAITLIST ?? 'false').trim().toLowerCase();
+const MATCH_WAITLIST_RELEASE_USER_COUNT_RAW = Number(process.env.MATCH_WAITLIST_RELEASE_USER_COUNT ?? 50);
+const MATCH_WAITLIST_EARLY_RELEASE_USER_COUNT_RAW = Number(process.env.MATCH_WAITLIST_EARLY_RELEASE_USER_COUNT ?? 16);
+const MATCH_WAITLIST_BALANCE_RATIO_RAW = Number(process.env.MATCH_WAITLIST_BALANCE_RATIO ?? 0.72);
+
+const MATCH_WAITLIST_RELEASE_USER_COUNT =
+  Number.isFinite(MATCH_WAITLIST_RELEASE_USER_COUNT_RAW) && MATCH_WAITLIST_RELEASE_USER_COUNT_RAW > 1
+    ? Math.floor(MATCH_WAITLIST_RELEASE_USER_COUNT_RAW)
+    : 50;
+const MATCH_WAITLIST_EARLY_RELEASE_USER_COUNT =
+  Number.isFinite(MATCH_WAITLIST_EARLY_RELEASE_USER_COUNT_RAW) && MATCH_WAITLIST_EARLY_RELEASE_USER_COUNT_RAW > 1
+    ? Math.floor(MATCH_WAITLIST_EARLY_RELEASE_USER_COUNT_RAW)
+    : 16;
+const MATCH_WAITLIST_BALANCE_RATIO =
+  Number.isFinite(MATCH_WAITLIST_BALANCE_RATIO_RAW) && MATCH_WAITLIST_BALANCE_RATIO_RAW > 0 && MATCH_WAITLIST_BALANCE_RATIO_RAW <= 1
+    ? MATCH_WAITLIST_BALANCE_RATIO_RAW
+    : 0.72;
+
+function isGlobalWaitlistEnabled(): boolean {
+  return !['0', 'false', 'off', 'no'].includes(MATCH_FORCE_WAITLIST_RAW);
+}
+
+type PoolStats = {
+  total: number;
+  men: number;
+  women: number;
+  balanceRatio: number;
+};
+
+function normalizedGender(value: unknown): 'man' | 'woman' | 'other' {
+  const raw = String(value ?? '').trim().toLowerCase();
+  if (raw === 'man' || raw === 'male' || raw === 'm') return 'man';
+  if (raw === 'woman' || raw === 'female' || raw === 'f') return 'woman';
+  return 'other';
+}
+
+async function getPoolStats(): Promise<PoolStats> {
+  try {
+    const supabase = await createSupabaseServerClient();
+    const { data: profiles } = await supabase
+      .from('profiles')
+      .select('gender,onboarding_complete')
+      .eq('onboarding_complete', true)
+      .returns<Array<{ gender?: string | null; onboarding_complete?: boolean | null }>>();
+
+    const rows = profiles ?? [];
+    let men = 0;
+    let women = 0;
+    for (const row of rows) {
+      const gender = normalizedGender(row.gender);
+      if (gender === 'man') men += 1;
+      if (gender === 'woman') women += 1;
+    }
+
+    const total = rows.length;
+    const maxCount = Math.max(men, women);
+    const minCount = Math.min(men, women);
+    const balanceRatio = maxCount > 0 ? minCount / maxCount : 0;
+    return { total, men, women, balanceRatio };
+  } catch {
+    return { total: 0, men: 0, women: 0, balanceRatio: 0 };
+  }
+}
+
+async function shouldAllowShowingByPool(): Promise<{ allow: boolean; stats: PoolStats }> {
+  const stats = await getPoolStats();
+  if (stats.total >= MATCH_WAITLIST_RELEASE_USER_COUNT) {
+    return { allow: true, stats };
+  }
+
+  const balancedEnough = stats.men > 0 && stats.women > 0 && stats.balanceRatio >= MATCH_WAITLIST_BALANCE_RATIO;
+  if (stats.total >= MATCH_WAITLIST_EARLY_RELEASE_USER_COUNT && balancedEnough) {
+    return { allow: true, stats };
+  }
+
+  return { allow: false, stats };
+}
 
 function createId(prefix: string): string {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
@@ -233,8 +310,11 @@ export async function runMatchmaking(
   const limited = recommendations.slice(0, Math.max(1, Math.min(50, limit)));
   let waitlist = null;
   const bypassWaitlist = await isWaitlistBypassUser(userId);
+  const forceWaitlist = isGlobalWaitlistEnabled();
+  const poolGate = await shouldAllowShowingByPool();
+  const shouldWaitlist = !bypassWaitlist && (forceWaitlist || !poolGate.allow);
 
-  if (!bypassWaitlist && recommendations.length < dailyLimitForTier(tier)) {
+  if (shouldWaitlist) {
     waitlist = await store.upsertWaitlistEntry({
       userId,
       segment: segmentKeyForUser(user as unknown as Record<string, unknown>),
@@ -242,6 +322,10 @@ export async function runMatchmaking(
       scoreSnapshot: {
         eligibleMatchesNow: recommendations.length,
         tier,
+        poolTotal: poolGate.stats.total,
+        poolMen: poolGate.stats.men,
+        poolWomen: poolGate.stats.women,
+        poolBalanceRatio: Number(poolGate.stats.balanceRatio.toFixed(3)),
       },
     });
     await store.saveRecommendations(userId, []);
@@ -277,6 +361,21 @@ export async function getMatchmakingRecommendations(
 ): Promise<MatchmakingResponse> {
   const store = getMatchmakingStore();
   const tier = parseTier(tierInput);
+  const bypassWaitlist = await isWaitlistBypassUser(userId);
+  const forceWaitlist = isGlobalWaitlistEnabled();
+  const poolGate = await shouldAllowShowingByPool();
+  const shouldWaitlist = !bypassWaitlist && (forceWaitlist || !poolGate.allow);
+
+  if (shouldWaitlist) {
+    return {
+      userId,
+      tier,
+      generatedAt: new Date().toISOString(),
+      version: MATCHMAKING_ENGINE_VERSION,
+      recommendations: [],
+      waitlist: await store.getWaitlistEntry(userId),
+    };
+  }
 
   const recommendations = await store.getRecommendations(userId, limit);
   const waitlist = recommendations.length === 0 ? await store.getWaitlistEntry(userId) : null;
