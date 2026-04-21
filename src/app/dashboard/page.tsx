@@ -294,7 +294,7 @@ export default async function DashboardPage() {
               <span className="text-[16px] font-semibold text-white">Today&apos;s matches</span>
               <Link
                 href="/app/discover"
-                className="rounded-full bg-gradient-to-r from-[#D4537E] to-[#7F77DD] px-3 py-[5px] text-[11px] font-semibold text-white"
+                className="rounded-full bg-gradient-to-r from-[#D4537E] to-[#7F77DD] px-4 py-1.5 text-[14px] font-semibold text-white"
               >
                 View all
               </Link>
