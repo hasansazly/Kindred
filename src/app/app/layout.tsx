@@ -20,6 +20,11 @@ const SIDE_EXTRA = [
   { href: '/app/settings', icon: Settings, label: 'Settings',  notif: 0, isSpark: false },
 ];
 
+type NavCounts = {
+  matches: number;
+  messages: number;
+};
+
 type SidebarIdentity = {
   name: string;
   auraScore: number;
@@ -30,6 +35,7 @@ function Sidebar() {
   const pathname = usePathname();
   const [identity, setIdentity] = useState<SidebarIdentity>({ name: 'You', auraScore: 65, photoUrl: null });
   const [coupleModeOn, setCoupleModeOn] = useState(false);
+  const [navCounts, setNavCounts] = useState<NavCounts>({ matches: 0, messages: 0 });
 
   useEffect(() => {
     let active = true;
@@ -95,6 +101,67 @@ function Sidebar() {
 
   useEffect(() => {
     let active = true;
+    const loadCounts = async () => {
+      try {
+        const supabase = getSupabaseBrowserClient();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        if (!user) return;
+
+        const { count: activeMatchesCount } = await supabase
+          .from('matches')
+          .select('*', { count: 'exact', head: true })
+          .eq('user_id', user.id)
+          .eq('status', 'active');
+
+        const { data: myParticipants } = await supabase
+          .from('conversation_participants')
+          .select('conversation_id')
+          .eq('user_id', user.id);
+
+        const conversationIds = (myParticipants ?? []).map((row: { conversation_id: string }) => row.conversation_id);
+        let unreadCount = 0;
+
+        if (conversationIds.length > 0) {
+          const { data: messages } = await supabase
+            .from('messages')
+            .select('conversation_id,sender_user_id,created_at')
+            .in('conversation_id', conversationIds)
+            .order('created_at', { ascending: false });
+
+          const latestByConversation = new Map<string, { sender_user_id: string }>();
+          for (const row of (messages ?? []) as Array<{ conversation_id: string; sender_user_id: string }>) {
+            const conversationId = row.conversation_id;
+            if (!latestByConversation.has(conversationId)) {
+              latestByConversation.set(conversationId, { sender_user_id: row.sender_user_id });
+            }
+          }
+
+          unreadCount = [...latestByConversation.values()].filter(
+            row => row.sender_user_id && row.sender_user_id !== user.id
+          ).length;
+        }
+
+        if (active) {
+          setNavCounts({
+            matches: activeMatchesCount ?? 0,
+            messages: unreadCount,
+          });
+        }
+      } catch {
+        // Keep zero badges if count lookup fails.
+      }
+    };
+
+    void loadCounts();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let active = true;
     const loadMode = async () => {
       try {
         const response = await fetch('/api/couples/mode', { method: 'GET' });
@@ -151,6 +218,12 @@ function Sidebar() {
         {sidebarNav.map(item => {
           const Icon = item.icon;
           const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
+          const notif =
+            item.href === '/app/matches'
+              ? navCounts.matches
+              : item.href === '/app/messages'
+                ? navCounts.messages
+                : (item.notif ?? 0);
           return (
             <Link
               key={item.href}
@@ -161,9 +234,9 @@ function Sidebar() {
               <Icon size={18} />
               {item.label}
               {item.isSpark && !isActive && <span style={{ marginLeft: 4, fontSize: 14 }}>🔥</span>}
-              {(item.notif ?? 0) > 0 && (
+              {notif > 0 && (
                 <div style={{ marginLeft: 'auto', background: item.isSpark ? 'rgba(251,146,60,0.9)' : 'linear-gradient(135deg, #7c3aed, #db2777)', color: 'white', borderRadius: 999, minWidth: 18, height: 18, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, padding: '0 5px' }}>
-                  {item.notif}
+                  {notif}
                 </div>
               )}
             </Link>
@@ -194,6 +267,7 @@ function Sidebar() {
 function MobileBottomNav() {
   const pathname = usePathname();
   const [coupleModeOn, setCoupleModeOn] = useState(false);
+  const [navCounts, setNavCounts] = useState<NavCounts>({ matches: 0, messages: 0 });
 
   useEffect(() => {
     let active = true;
@@ -208,6 +282,67 @@ function MobileBottomNav() {
       }
     };
     void loadMode();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    const loadCounts = async () => {
+      try {
+        const supabase = getSupabaseBrowserClient();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        if (!user) return;
+
+        const { count: activeMatchesCount } = await supabase
+          .from('matches')
+          .select('*', { count: 'exact', head: true })
+          .eq('user_id', user.id)
+          .eq('status', 'active');
+
+        const { data: myParticipants } = await supabase
+          .from('conversation_participants')
+          .select('conversation_id')
+          .eq('user_id', user.id);
+
+        const conversationIds = (myParticipants ?? []).map((row: { conversation_id: string }) => row.conversation_id);
+        let unreadCount = 0;
+
+        if (conversationIds.length > 0) {
+          const { data: messages } = await supabase
+            .from('messages')
+            .select('conversation_id,sender_user_id,created_at')
+            .in('conversation_id', conversationIds)
+            .order('created_at', { ascending: false });
+
+          const latestByConversation = new Map<string, { sender_user_id: string }>();
+          for (const row of (messages ?? []) as Array<{ conversation_id: string; sender_user_id: string }>) {
+            const conversationId = row.conversation_id;
+            if (!latestByConversation.has(conversationId)) {
+              latestByConversation.set(conversationId, { sender_user_id: row.sender_user_id });
+            }
+          }
+
+          unreadCount = [...latestByConversation.values()].filter(
+            row => row.sender_user_id && row.sender_user_id !== user.id
+          ).length;
+        }
+
+        if (active) {
+          setNavCounts({
+            matches: activeMatchesCount ?? 0,
+            messages: unreadCount,
+          });
+        }
+      } catch {
+        // Keep zero badges if count lookup fails.
+      }
+    };
+
+    void loadCounts();
     return () => {
       active = false;
     };
@@ -240,6 +375,12 @@ function MobileBottomNav() {
         const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
         const activeColor = item.isSpark ? '#fb923c' : '#a78bfa';
         const inactiveColor = item.isSpark ? 'rgba(251,146,60,0.5)' : 'rgba(240,240,255,0.28)';
+        const notif =
+          item.href === '/app/matches'
+            ? navCounts.matches
+            : item.href === '/app/messages'
+              ? navCounts.messages
+              : (item.notif ?? 0);
         return (
           <Link
             key={item.href}
@@ -277,7 +418,7 @@ function MobileBottomNav() {
             {/* Icon + badge */}
             <div style={{ position: 'relative' }}>
               <Icon size={23} strokeWidth={isActive ? 2.5 : 1.7} />
-              {(item.notif ?? 0) > 0 && (
+              {notif > 0 && (
                 <div style={{
                   position: 'absolute',
                   top: -4,
@@ -295,7 +436,7 @@ function MobileBottomNav() {
                   color: 'white',
                   padding: '0 3px',
                 }}>
-                  {item.notif}
+                  {notif}
                 </div>
               )}
             </div>

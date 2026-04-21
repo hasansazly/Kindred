@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Compass, MessageCircle, User, Users, HeartHandshake } from 'lucide-react';
+import { getSupabaseBrowserClient } from '../../../utils/supabase/client';
 
 const NAV_DISCOVER = { href: '/app/discover', icon: Compass, label: 'Discover', notif: 0 };
 const NAV_MATCHES = { href: '/matches', icon: Users, label: 'Matches', notif: 3 };
@@ -12,6 +13,11 @@ const NAV_PROFILE = { href: '/app/profile', icon: User, label: 'Profile', notif:
 const NAV = [NAV_DISCOVER, NAV_MATCHES, NAV_MESSAGES, NAV_PROFILE];
 
 const COUPLES_ITEM = { href: '/app/couples', icon: HeartHandshake, label: 'Couples', notif: 0 };
+
+type NavCounts = {
+  matches: number;
+  messages: number;
+};
 
 function isActivePath(pathname: string, href: string) {
   if (href === '/messages') return pathname === '/messages' || pathname.startsWith('/messages/');
@@ -22,6 +28,7 @@ function isActivePath(pathname: string, href: string) {
 export default function MobileBottomNav() {
   const pathname = usePathname();
   const [coupleModeOn, setCoupleModeOn] = useState(false);
+  const [navCounts, setNavCounts] = useState<NavCounts>({ matches: 0, messages: 0 });
 
   useEffect(() => {
     let active = true;
@@ -36,6 +43,67 @@ export default function MobileBottomNav() {
       }
     };
     void loadMode();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    const loadCounts = async () => {
+      try {
+        const supabase = getSupabaseBrowserClient();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        if (!user) return;
+
+        const { count: activeMatchesCount } = await supabase
+          .from('matches')
+          .select('*', { count: 'exact', head: true })
+          .eq('user_id', user.id)
+          .eq('status', 'active');
+
+        const { data: myParticipants } = await supabase
+          .from('conversation_participants')
+          .select('conversation_id')
+          .eq('user_id', user.id);
+
+        const conversationIds = (myParticipants ?? []).map((row: { conversation_id: string }) => row.conversation_id);
+        let unreadCount = 0;
+
+        if (conversationIds.length > 0) {
+          const { data: messages } = await supabase
+            .from('messages')
+            .select('conversation_id,sender_user_id,created_at')
+            .in('conversation_id', conversationIds)
+            .order('created_at', { ascending: false });
+
+          const latestByConversation = new Map<string, { sender_user_id: string }>();
+          for (const row of (messages ?? []) as Array<{ conversation_id: string; sender_user_id: string }>) {
+            const conversationId = row.conversation_id;
+            if (!latestByConversation.has(conversationId)) {
+              latestByConversation.set(conversationId, { sender_user_id: row.sender_user_id });
+            }
+          }
+
+          unreadCount = [...latestByConversation.values()].filter(
+            row => row.sender_user_id && row.sender_user_id !== user.id
+          ).length;
+        }
+
+        if (active) {
+          setNavCounts({
+            matches: activeMatchesCount ?? 0,
+            messages: unreadCount,
+          });
+        }
+      } catch {
+        // Keep zero badges if counts cannot be fetched.
+      }
+    };
+
+    void loadCounts();
     return () => {
       active = false;
     };
@@ -65,6 +133,12 @@ export default function MobileBottomNav() {
       {navItems.map(item => {
         const Icon = item.icon;
         const isActive = isActivePath(pathname, item.href);
+        const notif =
+          item.href === '/matches'
+            ? navCounts.matches
+            : item.href === '/messages'
+              ? navCounts.messages
+              : item.notif;
         return (
           <Link
             key={item.href}
@@ -102,7 +176,7 @@ export default function MobileBottomNav() {
 
             <div style={{ position: 'relative' }}>
               <Icon size={23} strokeWidth={isActive ? 2.5 : 1.7} />
-              {item.notif > 0 ? (
+              {notif > 0 ? (
                 <div
                   style={{
                     position: 'absolute',
@@ -122,7 +196,7 @@ export default function MobileBottomNav() {
                     padding: '0 3px',
                   }}
                 >
-                  {item.notif}
+                  {notif}
                 </div>
               ) : null}
             </div>
