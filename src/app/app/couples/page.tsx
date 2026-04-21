@@ -575,7 +575,7 @@ export default function CouplesPage() {
             <div className="mt-4 rounded-xl border border-[#3D2B58] bg-[#120D1E] p-4">
               <p className="text-sm font-medium text-white">Invite your partner</p>
               <p className="mt-1 text-xs text-[#CED6F8]">
-                Only approved tester emails can send and accept invites.
+                Only @temple.edu users can send invites, and invited partners must use a .edu email.
               </p>
               {canCreateInvite ? (
                 <form className="mt-3 space-y-2" onSubmit={createInvite}>

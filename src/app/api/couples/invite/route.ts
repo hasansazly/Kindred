@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '../../../../../utils/supabase/server';
-import { normalizeEmail, isTempleUniversityEmail } from '@/lib/utils';
+import { normalizeEmail, isEduEmail, isTempleUniversityEmail } from '@/lib/utils';
 import { resolveCoupleContext } from '@/server/couples/service';
 
 type InvitePayload = {
@@ -121,8 +121,8 @@ export async function POST(request: NextRequest) {
     if (!partnerEmail || !/\S+@\S+\.\S+/.test(partnerEmail)) {
       return NextResponse.json({ error: 'Valid partnerEmail is required.' }, { status: 400 });
     }
-    if (!isTempleUniversityEmail(partnerEmail)) {
-      return NextResponse.json({ error: 'Only @temple.edu emails can be invited.' }, { status: 403 });
+    if (!isEduEmail(partnerEmail)) {
+      return NextResponse.json({ error: 'Only .edu emails can be invited.' }, { status: 403 });
     }
     if (partnerEmail === userEmail) {
       return NextResponse.json({ error: 'You cannot invite your own email.' }, { status: 400 });

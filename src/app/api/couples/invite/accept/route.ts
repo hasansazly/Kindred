@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '../../../../../../utils/supabase/server';
-import { isTempleUniversityEmail, normalizeEmail } from '@/lib/utils';
+import { isEduEmail, isTempleUniversityEmail, normalizeEmail } from '@/lib/utils';
 import { resolveCoupleContext, sortPair } from '@/server/couples/service';
 
 type AcceptPayload = {
@@ -69,8 +69,8 @@ export async function POST(request: NextRequest) {
     }
 
     const currentUserEmail = normalizeEmail(user.email ?? '');
-    if (!isTempleUniversityEmail(currentUserEmail)) {
-      return NextResponse.json({ error: 'Only @temple.edu emails can accept invites.' }, { status: 403 });
+    if (!isEduEmail(currentUserEmail)) {
+      return NextResponse.json({ error: 'Only .edu emails can accept invites.' }, { status: 403 });
     }
     if (!currentUserEmail || currentUserEmail !== normalizeEmail(invite.partner_email)) {
       return NextResponse.json(
@@ -78,8 +78,8 @@ export async function POST(request: NextRequest) {
         { status: 403 }
       );
     }
-    if (!isTempleUniversityEmail(invite.partner_email)) {
-      return NextResponse.json({ error: 'Only @temple.edu emails can accept invites.' }, { status: 403 });
+    if (!isEduEmail(invite.partner_email)) {
+      return NextResponse.json({ error: 'Only .edu emails can accept invites.' }, { status: 403 });
     }
 
     // Invite creation is already restricted to @temple.edu emails.
