@@ -1,6 +1,7 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 import { getSupabasePublishableKey, getSupabaseUrl } from '../utils/supabase/env';
+import { isQaAccessEmail } from './lib/utils';
 
 const PUBLIC_ROUTES = new Set([
   '/',
@@ -22,6 +23,21 @@ const PUBLIC_ROUTES = new Set([
 
 function isPublicRoute(pathname: string) {
   return PUBLIC_ROUTES.has(pathname);
+}
+
+const APP_LOCKDOWN_ENABLED_RAW = String(process.env.APP_LOCKDOWN_ENABLED ?? 'true').trim().toLowerCase();
+
+function isAppLockdownEnabled(): boolean {
+  return !['0', 'false', 'off', 'no'].includes(APP_LOCKDOWN_ENABLED_RAW);
+}
+
+function isLockdownAllowedRoute(pathname: string): boolean {
+  if (pathname.startsWith('/onboarding')) return true;
+  if (pathname === '/matches') return true;
+  if (pathname === '/app/matches') return true;
+  if (pathname.startsWith('/app/profile')) return true;
+  if (pathname.startsWith('/app/settings')) return true;
+  return false;
 }
 
 export async function proxy(request: NextRequest) {
@@ -53,7 +69,9 @@ export async function proxy(request: NextRequest) {
     const isDashboardRoute = pathname.startsWith('/dashboard');
     const isAppRoute = pathname.startsWith('/app');
     const isMatchesRoute = pathname.startsWith('/matches');
-    const isProtectedRoute = isOnboardingRoute || isDashboardRoute || isAppRoute || isMatchesRoute;
+    const isMessagesRoute = pathname.startsWith('/messages');
+    const isProfileOrSettingsRoute = pathname.startsWith('/app/profile') || pathname.startsWith('/app/settings');
+    const isProtectedRoute = isOnboardingRoute || isDashboardRoute || isAppRoute || isMatchesRoute || isMessagesRoute;
 
     const {
       data: { user },
@@ -78,12 +96,25 @@ export async function proxy(request: NextRequest) {
 
     const onboardingComplete = !!preferenceRow;
 
-    if (!onboardingComplete && (isDashboardRoute || isAppRoute || isMatchesRoute)) {
+    const lockdownEnabled = isAppLockdownEnabled();
+    const shouldRedirectToOnboarding =
+      isDashboardRoute ||
+      (isAppRoute && !isProfileOrSettingsRoute) ||
+      (isMatchesRoute && !lockdownEnabled) ||
+      isMessagesRoute;
+
+    if (!onboardingComplete && shouldRedirectToOnboarding) {
       return NextResponse.redirect(new URL('/onboarding', request.url));
     }
 
     if (onboardingComplete && isOnboardingRoute) {
       return NextResponse.redirect(new URL('/dashboard', request.url));
+    }
+
+    // Launch lock mode: keep app mostly closed for non-tester users.
+    const isTester = isQaAccessEmail(user.email ?? '');
+    if (lockdownEnabled && !isTester && isProtectedRoute && !isLockdownAllowedRoute(pathname)) {
+      return NextResponse.redirect(new URL('/matches', request.url));
     }
 
     return response;
@@ -94,7 +125,8 @@ export async function proxy(request: NextRequest) {
       pathname.startsWith('/onboarding') ||
       pathname.startsWith('/dashboard') ||
       pathname.startsWith('/app') ||
-      pathname.startsWith('/matches');
+      pathname.startsWith('/matches') ||
+      pathname.startsWith('/messages');
     if (isProtectedRoute) {
       return NextResponse.redirect(new URL('/auth/login', request.url));
     }
@@ -108,5 +140,6 @@ export const config = {
     '/onboarding/:path*',
     '/app/:path*',
     '/matches/:path*',
+    '/messages/:path*',
   ],
 };

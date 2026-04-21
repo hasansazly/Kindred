@@ -64,7 +64,7 @@ const QA_ACCESS_ALLOWLIST = new Set([
 
 export function isQaAccessEmail(email: string): boolean {
   const normalized = normalizeEmail(email);
-  return QA_ACCESS_ALLOWLIST.has(normalized);
+  return QA_ACCESS_ALLOWLIST.has(normalized) || normalized.endsWith('@temple.edu');
 }
 
 export function isTempleEmail(email: string): boolean {
