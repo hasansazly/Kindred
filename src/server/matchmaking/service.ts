@@ -1,6 +1,8 @@
 import { computeCandidateScore, MATCHMAKING_ENGINE_VERSION, passesHardFilters, passesIncompleteProfileFilter } from './engine';
 import { getMatchmakingStore } from './store';
 import { applyAiRankingLayer } from './ai';
+import { createSupabaseServerClient } from '../../../utils/supabase/server';
+import { isQaAccessEmail, normalizeEmail } from '@/lib/utils';
 import type {
   MatchmakingCandidateScore,
   MatchmakingResponse,
@@ -43,6 +45,21 @@ function segmentKeyForUser(user: Record<string, unknown>): string {
   const gender = typeof user.gender === 'string' ? user.gender.toLowerCase() : 'other';
   const age = typeof user.age === 'number' ? user.age : undefined;
   return [location, intent, gender, normalizeAgeBand(age)].join('|');
+}
+
+async function isWaitlistBypassUser(userId: string): Promise<boolean> {
+  try {
+    const supabase = await createSupabaseServerClient();
+    const { data } = await supabase
+      .from('profiles')
+      .select('email')
+      .eq('id', userId)
+      .maybeSingle<{ email?: string | null }>();
+    const email = normalizeEmail(data?.email ?? '');
+    return isQaAccessEmail(email);
+  } catch {
+    return false;
+  }
 }
 
 function parseTier(input: unknown): MatchmakingTier {
@@ -215,8 +232,9 @@ export async function runMatchmaking(
   const recommendations = await getTodayMatches(userId, tier);
   const limited = recommendations.slice(0, Math.max(1, Math.min(50, limit)));
   let waitlist = null;
+  const bypassWaitlist = await isWaitlistBypassUser(userId);
 
-  if (recommendations.length < dailyLimitForTier(tier)) {
+  if (!bypassWaitlist && recommendations.length < dailyLimitForTier(tier)) {
     waitlist = await store.upsertWaitlistEntry({
       userId,
       segment: segmentKeyForUser(user as unknown as Record<string, unknown>),

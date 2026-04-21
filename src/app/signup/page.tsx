@@ -2,8 +2,7 @@
 
 import { FormEvent, useState } from 'react';
 import { getSupabaseBrowserClient } from '../../../utils/supabase/client';
-
-const isTempleEmail = (email: string) => email.trim().toLowerCase().endsWith('.edu');
+import { isQaAccessEmail } from '@/lib/utils';
 
 export default function SignupPage() {
   const [email, setEmail] = useState('');
@@ -17,8 +16,8 @@ export default function SignupPage() {
     setError(null);
     setSuccess(null);
 
-    if (!isTempleEmail(email)) {
-      setError('Only .edu email addresses are allowed.');
+    if (!isQaAccessEmail(email)) {
+      setError('Access is limited to approved tester emails.');
       return;
     }
 

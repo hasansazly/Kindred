@@ -3,8 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { Eye, EyeOff, ArrowRight } from 'lucide-react';
-
-const isTempleEmail = (email: string) => email.trim().toLowerCase().endsWith('.edu');
+import { isQaAccessEmail } from '@/lib/utils';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -50,8 +49,8 @@ export default function LoginPage() {
       setError('Please enter your email first.');
       return;
     }
-    if (!isTempleEmail(email)) {
-      setError('Only .edu email addresses are allowed.');
+    if (!isQaAccessEmail(email)) {
+      setError('Access is limited to approved tester emails.');
       return;
     }
 
@@ -91,8 +90,8 @@ export default function LoginPage() {
       setError('Please enter your email and verification code.');
       return;
     }
-    if (!isTempleEmail(email)) {
-      setError('Only .edu email addresses are allowed.');
+    if (!isQaAccessEmail(email)) {
+      setError('Access is limited to approved tester emails.');
       return;
     }
 
@@ -192,9 +191,9 @@ export default function LoginPage() {
                   setError('Please fill in all fields.');
                   return;
                 }
-                if (!isTempleEmail(email)) {
+                if (!isQaAccessEmail(email)) {
                   e.preventDefault();
-                  setError('Only .edu email addresses are allowed.');
+                  setError('Access is limited to approved tester emails.');
                   return;
                 }
                 setLoading(true);

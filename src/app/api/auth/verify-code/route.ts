@@ -2,7 +2,7 @@ import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { getSupabasePublishableKey, getSupabaseUrl } from '../../../../../utils/supabase/env';
-import { isTempleEmail, normalizeEmail } from '@/lib/utils';
+import { isQaAccessEmail, normalizeEmail } from '@/lib/utils';
 
 export async function POST(request: Request) {
   try {
@@ -14,9 +14,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Email and code are required.' }, { status: 400 });
     }
 
-    if (!isTempleEmail(email)) {
+    if (!isQaAccessEmail(email)) {
       return NextResponse.json(
-        { error: 'Only .edu email addresses are allowed.' },
+        { error: 'Access is limited to approved tester emails.' },
         { status: 403 }
       );
     }

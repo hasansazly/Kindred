@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { Eye, EyeOff, ArrowRight, CheckCircle, Brain, Sparkles, Shield } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { isQaAccessEmail } from '@/lib/utils';
 
 const PERKS = [
   { icon: Brain, text: 'AI-powered deep compatibility' },
@@ -11,8 +12,6 @@ const PERKS = [
   { icon: Shield, text: 'Safety-first verified community' },
   { icon: CheckCircle, text: 'No credit card required' },
 ];
-
-const isTempleEmail = (email: string) => email.trim().toLowerCase().endsWith('.edu');
 
 export default function SignupPage() {
   const router = useRouter();
@@ -46,7 +45,7 @@ export default function SignupPage() {
     setSuccess('');
     if (!email) { setError('Email is required.'); return; }
     if (!/\S+@\S+\.\S+/.test(email)) { setError('Enter a valid email.'); return; }
-    if (!isTempleEmail(email)) { setError('Only .edu email addresses are allowed.'); return; }
+    if (!isQaAccessEmail(email)) { setError('Access is limited to approved tester emails.'); return; }
     setStep(2);
   }
 
@@ -82,8 +81,8 @@ export default function SignupPage() {
       setError('Password and confirm password must match.');
       return;
     }
-    if (!isTempleEmail(email)) {
-      setError('Only .edu email addresses are allowed.');
+    if (!isQaAccessEmail(email)) {
+      setError('Access is limited to approved tester emails.');
       return;
     }
 
@@ -124,8 +123,8 @@ export default function SignupPage() {
       setError('Please enter your email and verification code.');
       return;
     }
-    if (!isTempleEmail(email)) {
-      setError('Only .edu email addresses are allowed.');
+    if (!isQaAccessEmail(email)) {
+      setError('Access is limited to approved tester emails.');
       return;
     }
 

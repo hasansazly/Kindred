@@ -5,8 +5,7 @@ import { useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { getSupabaseBrowserClient } from '../../../../utils/supabase/client';
-
-const isTempleEmail = (email: string) => email.trim().toLowerCase().endsWith('.edu');
+import { isQaAccessEmail } from '@/lib/utils';
 
 export default function ForgotPasswordPage() {
   const router = useRouter();
@@ -42,8 +41,8 @@ export default function ForgotPasswordPage() {
       setError('Enter a valid email.');
       return;
     }
-    if (!isTempleEmail(email)) {
-      setError('Only .edu email addresses are allowed.');
+    if (!isQaAccessEmail(email)) {
+      setError('Access is limited to approved tester emails.');
       return;
     }
     if (newPassword.length < 8) {
@@ -92,8 +91,8 @@ export default function ForgotPasswordPage() {
       setError('Please complete all fields.');
       return;
     }
-    if (!isTempleEmail(email)) {
-      setError('Only .edu email addresses are allowed.');
+    if (!isQaAccessEmail(email)) {
+      setError('Access is limited to approved tester emails.');
       return;
     }
     if (newPassword.length < 8) {

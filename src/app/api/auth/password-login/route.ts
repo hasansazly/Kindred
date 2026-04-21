@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '../../../../../utils/supabase/server';
-import { normalizeEmail } from '@/lib/utils';
+import { isQaAccessEmail, normalizeEmail } from '@/lib/utils';
 
 type LoginPayload = {
   email?: string;
@@ -44,6 +44,13 @@ export async function POST(request: Request) {
         return NextResponse.redirect(new URL('/auth/login?error=Email%20and%20password%20are%20required', request.url), 303);
       }
       return NextResponse.json({ error: 'Email and password are required.' }, { status: 400 });
+    }
+
+    if (!isQaAccessEmail(email)) {
+      if (wantsRedirect) {
+        return NextResponse.redirect(new URL('/auth/login?error=Access%20is%20limited%20to%20approved%20tester%20emails', request.url), 303);
+      }
+      return NextResponse.json({ error: 'Access is limited to approved tester emails.' }, { status: 403 });
     }
 
     const supabase = await createSupabaseServerClient();

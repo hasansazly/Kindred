@@ -57,9 +57,18 @@ export function normalizeEmail(email: string): string {
   return email.trim().toLowerCase();
 }
 
-export function isTempleEmail(email: string): boolean {
+const QA_ACCESS_ALLOWLIST = new Set([
+  'sarkarrony777@gmail.com',
+  'sarkarronnie008@gmail.com',
+]);
+
+export function isQaAccessEmail(email: string): boolean {
   const normalized = normalizeEmail(email);
-  return normalized.endsWith('.edu');
+  return QA_ACCESS_ALLOWLIST.has(normalized);
+}
+
+export function isTempleEmail(email: string): boolean {
+  return isQaAccessEmail(email);
 }
 
 export function isTempleUniversityEmail(email: string): boolean {
