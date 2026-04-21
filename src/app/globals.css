@@ -1580,6 +1580,13 @@ input[type="range"]::-webkit-slider-thumb {
   min-height: 96px;
 }
 
+.messages-screen .messages-title {
+  color: #ffffff !important;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  letter-spacing: -0.01em !important;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
 .messages-screen .messages-inbox-name,
 .messages-screen .messages-inbox-preview {
   white-space: normal;

@@ -79,7 +79,7 @@ export default async function MessagesInboxPage() {
     return (
       <main className="app-interior-page mobile-premium-screen messages-screen min-h-screen bg-[#12101A] px-4 py-6 pb-24 text-white">
         <div className="mx-auto max-w-4xl rounded-2xl border border-white/10 bg-[#1A1624] p-5">
-          <h1 className="text-xl font-semibold text-white">Messages</h1>
+          <h1 className="messages-title text-xl font-semibold text-white">Messages</h1>
           <p className="mt-2 text-sm text-rose-300">{myParticipantsError.message}</p>
         </div>
         <MobileBottomNav />
@@ -94,7 +94,7 @@ export default async function MessagesInboxPage() {
     return (
       <main className="app-interior-page mobile-premium-screen messages-screen min-h-screen bg-[#12101A] px-4 py-6 pb-24 text-white">
         <div className="mx-auto max-w-4xl rounded-2xl border border-white/10 bg-[#1A1624] p-5">
-          <h1 className="text-2xl font-semibold text-white">Messages</h1>
+          <h1 className="messages-title text-2xl font-semibold text-white">Messages</h1>
           <div className="mt-5 rounded-2xl border border-white/10 bg-[#151220] p-8 text-center">
             <MessageCircle size={34} className="mx-auto text-white/50" />
             <p className="mt-3 text-sm text-white/70">No conversations yet. Open a match and click Message This Match.</p>
@@ -252,7 +252,7 @@ export default async function MessagesInboxPage() {
     <main className="app-interior-page mobile-premium-screen messages-screen min-h-screen bg-[#12101A] px-4 py-6 pb-24 text-white">
       <div className="mx-auto max-w-4xl">
         <header className="mb-4 rounded-2xl border border-white/10 bg-[#1A1624] p-5">
-          <h1 className="text-2xl font-semibold tracking-tight text-white">Messages</h1>
+          <h1 className="messages-title text-2xl font-semibold tracking-tight text-white">Messages</h1>
           <p className="body-on-dark mt-1 text-sm text-white/70">{conversations.length} active conversation{conversations.length > 1 ? 's' : ''}</p>
         </header>
 

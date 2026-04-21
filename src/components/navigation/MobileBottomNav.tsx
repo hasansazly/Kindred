@@ -131,6 +131,7 @@ export default function MobileBottomNav() {
       {navItems.map(item => {
         const Icon = item.icon;
         const isActive = isActivePath(pathname, item.href);
+        const isMessagesTab = item.href === '/messages' || item.href === '/app/messages';
         const notif =
           item.href === '/matches'
             ? navCounts.matches
@@ -199,7 +200,15 @@ export default function MobileBottomNav() {
               ) : null}
             </div>
 
-            <span style={{ fontSize: 10, fontWeight: isActive ? 700 : 400, letterSpacing: '0.01em', lineHeight: 1 }}>
+            <span
+              style={{
+                fontSize: 10,
+                fontWeight: isActive ? 700 : 400,
+                letterSpacing: '0.01em',
+                lineHeight: 1,
+                color: isActive && isMessagesTab ? '#FFFFFF' : undefined,
+              }}
+            >
               {item.label}
             </span>
           </Link>

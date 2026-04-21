@@ -371,6 +371,7 @@ function MobileBottomNav() {
       {navItems.map(item => {
         const Icon = item.icon;
         const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
+        const isMessagesTab = item.href === '/app/messages' || item.href === '/messages';
         const activeColor = item.isSpark ? '#fb923c' : '#a78bfa';
         const inactiveColor = item.isSpark ? 'rgba(251,146,60,0.5)' : 'rgba(240,240,255,0.28)';
         const notif =
@@ -439,7 +440,15 @@ function MobileBottomNav() {
               )}
             </div>
 
-            <span style={{ fontSize: 10, fontWeight: isActive ? 700 : 400, letterSpacing: '0.01em', lineHeight: 1 }}>
+            <span
+              style={{
+                fontSize: 10,
+                fontWeight: isActive ? 700 : 400,
+                letterSpacing: '0.01em',
+                lineHeight: 1,
+                color: isActive && isMessagesTab ? '#FFFFFF' : undefined,
+              }}
+            >
               {item.label}
             </span>
           </Link>
