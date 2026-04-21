@@ -7,6 +7,9 @@ function toInClause(ids: string[]): string {
   return `(${ids.map(id => `'${id.replace(/'/g, "''")}'`).join(',')})`;
 }
 
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
 export async function POST(req: NextRequest) {
   try {
     const supabase = await createSupabaseServerClient();
@@ -19,10 +22,14 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json().catch(() => ({}));
-    const matchUserId = typeof body?.matchUserId === 'string' ? body.matchUserId.trim() : '';
+    const rawMatchUserId = typeof body?.matchUserId === 'string' ? body.matchUserId : '';
+    const matchUserId = rawMatchUserId.trim().replace(/^"+|"+$/g, '');
 
     if (!matchUserId) {
       return NextResponse.json({ error: 'matchUserId is required' }, { status: 400 });
+    }
+    if (!UUID_RE.test(matchUserId)) {
+      return NextResponse.json({ error: 'Invalid matchUserId format' }, { status: 400 });
     }
 
     if (matchUserId === user.id) {

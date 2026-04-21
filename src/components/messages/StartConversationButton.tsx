@@ -21,12 +21,13 @@ export default function StartConversationButton({
     if (isLoading || disabled) return;
     setError(null);
     setIsLoading(true);
+    const safeMatchUserId = matchUserId.trim().replace(/^"+|"+$/g, '');
 
     try {
       const res = await fetch('/api/messages/start', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ matchUserId }),
+        body: JSON.stringify({ matchUserId: safeMatchUserId }),
       });
 
       const data = await res.json().catch(() => ({}));
