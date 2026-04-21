@@ -292,7 +292,7 @@ export default function LandingPage() {
                   <ArrowRight size={18} />
                 </Link>
                 <a href="#how-it-works" style={{ fontSize: 14, fontWeight: 500, color: '#FF3B5C', textDecoration: 'none' }}>
-                  See a Sample Match Breakdown
+                  See How Match Breakdown Works
                 </a>
               </div>
 
@@ -301,11 +301,11 @@ export default function LandingPage() {
                 <span>·</span>
                 <span>Verified profiles</span>
                 <span>·</span>
-                <span>4.9 rating</span>
+                <span>Thoughtful matching</span>
               </div>
             </div>
 
-            {/* Right — compatibility report mockup */}
+            {/* Right — compatibility report preview */}
             <div className="hero-phone-wrap" style={{ position: 'relative', display: 'flex', justifyContent: 'center' }}>
               <div className="hero-phone-frame glass card-lift" style={{ width: 320, borderRadius: 24, padding: 22, animation: 'float 6s ease-in-out infinite' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
