@@ -35,6 +35,35 @@ async function callOpenAI(apiKey: string, prompt: string) {
     body: JSON.stringify({
       model: 'gpt-4o-mini',
       temperature: 0.7,
+      response_format: {
+        type: 'json_schema',
+        json_schema: {
+          name: 'spark_suggestions',
+          schema: {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+              startEasy: {
+                type: 'array',
+                minItems: 3,
+                items: { type: 'string' },
+              },
+              goDeeper: {
+                type: 'array',
+                minItems: 3,
+                items: { type: 'string' },
+              },
+              suggestPlan: {
+                type: 'array',
+                minItems: 3,
+                items: { type: 'string' },
+              },
+            },
+            required: ['startEasy', 'goDeeper', 'suggestPlan'],
+          },
+          strict: true,
+        },
+      },
       messages: [
         {
           role: 'system',
@@ -57,21 +86,62 @@ async function callOpenAI(apiKey: string, prompt: string) {
   return data.choices?.[0]?.message?.content ?? '';
 }
 
-function parseSuggestions(text: string): Record<Kind, string[]> | null {
+function cleanSuggestionArray(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .filter(item => typeof item === 'string')
+    .map(item => item.trim())
+    .filter(Boolean)
+    .slice(0, 3);
+}
+
+function parseJsonLoose(text: string): unknown | null {
+  const direct = text.trim();
   try {
-    const json = JSON.parse(text) as Partial<Record<Kind, unknown>>;
-    const result: Record<Kind, string[]> = {
-      startEasy: Array.isArray(json.startEasy) ? json.startEasy.filter(item => typeof item === 'string').slice(0, 3) : [],
-      goDeeper: Array.isArray(json.goDeeper) ? json.goDeeper.filter(item => typeof item === 'string').slice(0, 3) : [],
-      suggestPlan: Array.isArray(json.suggestPlan) ? json.suggestPlan.filter(item => typeof item === 'string').slice(0, 3) : [],
-    };
-    if (result.startEasy.length && result.goDeeper.length && result.suggestPlan.length) {
-      return result;
-    }
-    return null;
+    return JSON.parse(direct);
   } catch {
+    // keep trying fallbacks
+  }
+
+  const fenceMatch = direct.match(/```(?:json)?\s*([\s\S]*?)```/i);
+  if (fenceMatch?.[1]) {
+    try {
+      return JSON.parse(fenceMatch[1].trim());
+    } catch {
+      // continue
+    }
+  }
+
+  const start = direct.indexOf('{');
+  const end = direct.lastIndexOf('}');
+  if (start !== -1 && end !== -1 && end > start) {
+    const candidate = direct.slice(start, end + 1);
+    try {
+      return JSON.parse(candidate);
+    } catch {
+      return null;
+    }
+  }
+
+  return null;
+}
+
+function parseSuggestions(text: string): Record<Kind, string[]> | null {
+  const jsonRaw = parseJsonLoose(text);
+  if (!jsonRaw || typeof jsonRaw !== 'object' || jsonRaw === null) {
     return null;
   }
+
+  const json = jsonRaw as Record<string, unknown>;
+  const startEasy = cleanSuggestionArray(json.startEasy ?? json.start_easy ?? json['start easy']);
+  const goDeeper = cleanSuggestionArray(json.goDeeper ?? json.go_deeper ?? json['go deeper']);
+  const suggestPlan = cleanSuggestionArray(json.suggestPlan ?? json.suggest_plan ?? json['suggest a plan']);
+
+  if (!startEasy.length || !goDeeper.length || !suggestPlan.length) {
+    return null;
+  }
+
+  return { startEasy, goDeeper, suggestPlan };
 }
 
 export async function POST(req: NextRequest) {
