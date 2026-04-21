@@ -164,13 +164,13 @@ export default async function MatchesPage() {
           {newMatches.length > 0 ? (
             <div className="flex gap-3 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {newMatches.map(match => (
-                <Link key={match.id} href={`/matches/${match.id}`} className="shrink-0 text-center">
-                  <div className="h-[74px] w-[74px] rounded-full border-2 border-[#A855F7] bg-gradient-to-br from-[#7C3AED] to-[#DB2777] p-[2px]">
+                <Link key={match.id} href={`/matches/${match.id}`} className="new-match-card shrink-0 text-center">
+                  <div className="h-[78px] w-[78px] rounded-full border-2 border-[#A855F7] bg-gradient-to-br from-[#7C3AED] to-[#DB2777] p-[2px]">
                     <div className="flex h-full w-full items-center justify-center rounded-full bg-[#1B1730] text-[29px]">
                       {match.matchedProfile.firstName.slice(0, 1).toUpperCase()}
                     </div>
                   </div>
-                  <p className="mt-1.5 w-[74px] truncate text-sm text-white/85">{match.matchedProfile.firstName}</p>
+                  <p className="new-match-name mt-2 w-[96px] text-sm leading-snug text-white/90">{match.matchedProfile.firstName}</p>
                 </Link>
               ))}
             </div>
@@ -191,19 +191,19 @@ export default async function MatchesPage() {
                   <Link
                     key={item.conversationId}
                     href={`/messages/${item.conversationId}`}
-                    className={`flex items-center gap-3 p-4 transition hover:bg-white/[0.03] ${index < conversationMatches.length - 1 ? 'border-b border-white/10' : ''}`}
+                    className={`match-conversation-row flex min-h-[94px] items-start gap-3 p-4 transition hover:bg-white/[0.03] ${index < conversationMatches.length - 1 ? 'border-b border-white/10' : ''}`}
                   >
                     <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#4F46E5] to-[#A855F7] text-[20px]">
                       {item.match.matchedProfile.firstName.slice(0, 1).toUpperCase()}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-[26px] leading-none text-white" style={{ fontFamily: 'Playfair Display, Georgia, serif' }}>
+                      <p className="conversation-match-name text-[24px] leading-tight text-white" style={{ fontFamily: 'Playfair Display, Georgia, serif' }}>
                         {item.match.matchedProfile.firstName}
                       </p>
-                      <p className="mt-1 truncate text-sm text-white/55">{item.latest.body}</p>
+                      <p className="conversation-preview mt-1 text-sm leading-relaxed text-white/70">{item.latest.body}</p>
                     </div>
                     <div className="shrink-0 text-right">
-                      <p className="text-sm leading-none text-white/45">
+                      <p className="conversation-time text-sm leading-none text-white/50">
                         {formatTimestamp(item.latest.created_at)}
                       </p>
                       {unread ? <span className="ml-auto mt-1 block h-3 w-3 rounded-full bg-[#A855F7]" /> : null}
