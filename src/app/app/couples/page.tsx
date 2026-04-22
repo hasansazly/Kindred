@@ -134,6 +134,7 @@ export default function CouplesPage() {
   const [loveNoteDraft, setLoveNoteDraft] = useState('');
   const [saving, setSaving] = useState<'daily' | 'weekly' | 'note' | null>(null);
   const [plannerSaving, setPlannerSaving] = useState(false);
+  const [deletingPlanId, setDeletingPlanId] = useState<string | null>(null);
   const [reminderSaving, setReminderSaving] = useState(false);
   const [modeSaving, setModeSaving] = useState(false);
   const [plannerVibe, setPlannerVibe] = useState('cozy');
@@ -379,6 +380,25 @@ export default function CouplesPage() {
       setError(err instanceof Error ? err.message : 'Failed to generate date plan');
     } finally {
       setPlannerSaving(false);
+    }
+  };
+
+  const deleteDatePlan = async (planId: string) => {
+    setDeletingPlanId(planId);
+    setError(null);
+    try {
+      const res = await fetch(`/api/couples/planner?planId=${encodeURIComponent(planId)}`, {
+        method: 'DELETE',
+      });
+      const payload = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(typeof payload.error === 'string' ? payload.error : 'Failed to delete date plan');
+      }
+      await loadState();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to delete date plan');
+    } finally {
+      setDeletingPlanId(null);
     }
   };
 
@@ -676,6 +696,9 @@ export default function CouplesPage() {
                   <p className="mt-1 text-xs text-[#CED6F8]">
                     Quick planning based on your vibe, budget, and time.
                   </p>
+                  <p className="mt-1 text-[11px] text-[#D5DBFA]">
+                    Date plans are private to you and auto-expire after 24 hours.
+                  </p>
                   <form className="mt-4 grid gap-2 sm:grid-cols-2" onSubmit={generateDatePlan}>
                     <select
                       value={plannerVibe}
@@ -726,10 +749,25 @@ export default function CouplesPage() {
                           {plan.steps.length > 0 ? (
                             <p className="mt-1 text-[11px] text-[#D5DBFA]">{plan.steps.join(' · ')}</p>
                           ) : null}
+                          <div className="mt-2 flex items-center justify-between gap-2">
+                            <p className="text-[11px] text-[#D5DBFA]">{formatDateTime(plan.createdAt)}</p>
+                            <button
+                              type="button"
+                              onClick={() => void deleteDatePlan(plan.id)}
+                              disabled={deletingPlanId === plan.id}
+                              className="rounded-md border border-[#7C3AED55] px-2 py-1 text-[11px] text-[#D6DDFB] disabled:opacity-60"
+                            >
+                              {deletingPlanId === plan.id ? 'Deleting...' : 'Delete'}
+                            </button>
+                          </div>
                         </div>
                       ))}
                     </div>
-                  ) : null}
+                  ) : (
+                    <p className="mt-4 text-xs text-[#CED6F8]">
+                      No active date plans yet. Generate one anytime.
+                    </p>
+                  )}
                 </article>
 
                 <article className="cm-card p-5">

@@ -87,3 +87,49 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
+
+export async function DELETE(req: NextRequest) {
+  try {
+    const supabase = await createSupabaseServerClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    const mode = await getCoupleModeState(supabase, user.id);
+    if (!mode.featureEnabled || !mode.hasCouple || !mode.coupleId) {
+      return NextResponse.json({ error: 'Couple context is required.' }, { status: 403 });
+    }
+
+    const planId = req.nextUrl.searchParams.get('planId')?.trim() ?? '';
+    if (!planId) {
+      return NextResponse.json({ error: 'planId is required.' }, { status: 400 });
+    }
+
+    const { data: deleted, error: deleteError } = await supabase
+      .from('couple_date_plans')
+      .delete()
+      .eq('id', planId)
+      .eq('couple_id', mode.coupleId)
+      .eq('created_by_user_id', user.id)
+      .select('id')
+      .maybeSingle<{ id: string }>();
+
+    if (deleteError) {
+      if (looksLikeMissingTable(deleteError, 'couple_date_plans')) {
+        return NextResponse.json({ error: 'Date planner tables are not initialized yet.' }, { status: 503 });
+      }
+      return NextResponse.json({ error: deleteError.message }, { status: 500 });
+    }
+
+    if (!deleted) {
+      return NextResponse.json({ error: 'Date plan not found.' }, { status: 404 });
+    }
+
+    return NextResponse.json({ ok: true, deletedId: deleted.id });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unexpected error';
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+}
