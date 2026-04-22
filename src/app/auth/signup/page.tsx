@@ -223,7 +223,7 @@ export default function SignupPage() {
                 {success && <div style={{ background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', borderRadius: 10, padding: '12px 14px', fontSize: 13, color: '#6ee7b7' }}>{success}</div>}
                 <div>
                   <label style={{ fontSize: 13, fontWeight: 500, color: 'rgba(240,240,255,0.82)', display: 'block', marginBottom: 8 }}>Email</label>
-                  <input className="input-field" type="email" placeholder="you@school.edu" value={email} onChange={e => setEmail(e.target.value)} autoComplete="email" />
+                  <input className="input-field" type="email" placeholder="you@temple.edu" value={email} onChange={e => setEmail(e.target.value)} autoComplete="email" />
                 </div>
                 <div>
                   <label style={{ fontSize: 13, fontWeight: 500, color: 'rgba(240,240,255,0.82)', display: 'block', marginBottom: 8 }}>Add Password</label>
@@ -265,7 +265,7 @@ export default function SignupPage() {
 
               <div>
                 <label style={{ fontSize: 13, fontWeight: 500, color: 'rgba(240,240,255,0.82)', display: 'block', marginBottom: 8 }}>Email</label>
-                <input className="input-field" type="email" value={email} placeholder="you@school.edu" onChange={e => setEmail(e.target.value)} autoComplete="email" />
+                <input className="input-field" type="email" value={email} placeholder="you@temple.edu" onChange={e => setEmail(e.target.value)} autoComplete="email" />
               </div>
 
               <div>

@@ -174,7 +174,7 @@ export default function ForgotPasswordPage() {
 
             <div>
               <label style={{ fontSize: 13, fontWeight: 500, color: 'rgba(240,240,255,0.82)', display: 'block', marginBottom: 8 }}>Email</label>
-              <input className="input-field" type="email" placeholder="you@school.edu" value={email} onChange={e => setEmail(e.target.value)} autoComplete="email" />
+              <input className="input-field" type="email" placeholder="you@temple.edu" value={email} onChange={e => setEmail(e.target.value)} autoComplete="email" />
             </div>
 
             <div>
