@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { Eye, EyeOff, ArrowRight, CheckCircle, Brain, Sparkles, Shield } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { isQaAccessEmail } from '@/lib/utils';
+import { getSupabaseBrowserClient } from '../../../../utils/supabase/client';
 
 const PERKS = [
   { icon: Brain, text: 'AI-powered deep compatibility' },
@@ -123,6 +124,14 @@ export default function SignupPage() {
       setError('Please enter your email and verification code.');
       return;
     }
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters.');
+      return;
+    }
+    if (password !== confirmPassword) {
+      setError('Password and confirm password must match.');
+      return;
+    }
     if (!isQaAccessEmail(email)) {
       setError('Access is limited to approved tester emails.');
       return;
@@ -141,6 +150,15 @@ export default function SignupPage() {
       if (!response.ok) {
         const message = await readResponseError(response);
         setError(`Verify code failed (${response.status}): ${message}`);
+        return;
+      }
+
+      const supabase = getSupabaseBrowserClient();
+      const { error: updateError } = await supabase.auth.updateUser({
+        password,
+      });
+      if (updateError) {
+        setError(`Password setup failed: ${updateError.message}`);
         return;
       }
     } catch (error) {
