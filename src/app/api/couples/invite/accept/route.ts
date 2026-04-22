@@ -158,9 +158,43 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: updateInviteError.message }, { status: 500 });
     }
 
+    const { error: modePrefError } = await supabase.from('couple_mode_preferences').upsert(
+      [
+        { user_id: invite.inviter_user_id, enabled: true },
+        { user_id: user.id, enabled: true },
+      ],
+      { onConflict: 'user_id' }
+    );
+
+    if (modePrefError && !looksLikeMissingTable(modePrefError, 'couple_mode_preferences')) {
+      return NextResponse.json({ error: modePrefError.message }, { status: 500 });
+    }
+
+    await supabase.from('couple_mode_events').insert([
+      {
+        couple_id: coupleId,
+        actor_user_id: user.id,
+        event_type: 'enabled',
+        metadata: {
+          source: 'invite_accept_auto_enable',
+          autoEnabledForBoth: true,
+        },
+      },
+      {
+        couple_id: coupleId,
+        actor_user_id: invite.inviter_user_id,
+        event_type: 'enabled',
+        metadata: {
+          source: 'invite_accept_auto_enable',
+          autoEnabledForBoth: true,
+        },
+      },
+    ]);
+
     return NextResponse.json({
       ok: true,
       coupleId,
+      autoEnabledForBoth: true,
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unexpected error';

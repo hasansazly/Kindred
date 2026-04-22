@@ -568,7 +568,7 @@ export default function CouplesPage() {
                   disabled={inviteLoading}
                   className="mt-3 rounded-lg bg-[#A855F7] px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
                 >
-                  {inviteLoading ? 'Accepting...' : 'Accept Invite'}
+                  {inviteLoading ? 'Approving...' : 'Approve Partner'}
                 </button>
               </div>
             ) : null}
