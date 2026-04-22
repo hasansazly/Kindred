@@ -22,7 +22,6 @@ export async function POST(request: Request) {
     }
 
     const cookieStore = await cookies();
-    const successResponse = NextResponse.json({ ok: true });
     const supabase = createServerClient(
       getSupabaseUrl(),
       getSupabasePublishableKey(),
@@ -34,7 +33,6 @@ export async function POST(request: Request) {
           setAll(cookiesToSet) {
             cookiesToSet.forEach(({ name, value, options }) => {
               cookieStore.set(name, value, options);
-              successResponse.cookies.set(name, value, options);
             });
           },
         },
@@ -51,7 +49,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
-    return successResponse;
+    return NextResponse.json({ ok: true });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown server error';
     console.error('verify-code route failed:', error);
