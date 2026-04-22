@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { MessageCircle } from 'lucide-react';
 import MobileBottomNav from '@/components/navigation/MobileBottomNav';
+import PartnerStartChatCard from '@/components/messages/PartnerStartChatCard';
 import { createSupabaseServerClient } from '../../../utils/supabase/server';
 import { getCoupleModeState } from '@/server/couples/mode';
 
@@ -301,24 +302,7 @@ export default async function MessagesInboxPage() {
               </Link>
             ))
           ) : showPartnerStarter && couplePartnerId ? (
-            <form action="/api/messages/start" method="post" className="p-5">
-              <input type="hidden" name="matchUserId" value={couplePartnerId} />
-              <button
-                type="submit"
-                className="flex w-full items-center justify-between rounded-xl border border-[#7C3AED55] bg-[#120D1E] px-4 py-4 text-left transition hover:bg-[#181127]"
-              >
-                <span className="inline-flex items-center gap-3">
-                  <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#7C3AED] to-[#DB2777] text-base font-semibold text-white">
-                    {partnerName.slice(0, 1).toUpperCase()}
-                  </span>
-                  <span>
-                    <span className="block text-base font-medium text-white">{partnerName}</span>
-                    <span className="mt-1 block text-sm text-white/75">Start to chat with {partnerName}</span>
-                  </span>
-                </span>
-                <span className="text-xs text-[#C084FC]">Open chat</span>
-              </button>
-            </form>
+            <PartnerStartChatCard partnerUserId={couplePartnerId} partnerName={partnerName} />
           ) : (
             <div className="p-6 text-sm text-white/70">
               {couplePartnerId
