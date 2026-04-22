@@ -22,8 +22,13 @@ export default function PartnerStartChatCard({
       const response = await fetch('/api/messages/start', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ matchUserId: partnerUserId }),
       });
+      if (response.status === 401) {
+        router.push('/auth/login?next=/messages');
+        return;
+      }
       const payload = (await response.json().catch(() => ({}))) as { error?: string; conversationId?: string };
       if (!response.ok) {
         throw new Error(typeof payload.error === 'string' ? payload.error : 'Unable to open chat');

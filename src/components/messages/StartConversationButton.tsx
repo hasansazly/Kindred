@@ -27,8 +27,13 @@ export default function StartConversationButton({
       const res = await fetch('/api/messages/start', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ matchUserId: safeMatchUserId }),
       });
+      if (res.status === 401) {
+        router.push('/auth/login?next=/messages');
+        return;
+      }
 
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
