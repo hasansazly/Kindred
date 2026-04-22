@@ -150,10 +150,10 @@ export async function POST(req: NextRequest) {
     }
 
     const disabledReason =
-      typeof (matchRow as { conversation_disabled_reason?: unknown }).conversation_disabled_reason === 'string'
-        ? ((matchRow as { conversation_disabled_reason?: string }).conversation_disabled_reason ?? '').trim()
+      typeof matchRow?.conversation_disabled_reason === 'string'
+        ? matchRow.conversation_disabled_reason.trim()
         : '';
-    const conversationDisabled = Boolean((matchRow as { conversation_disabled?: unknown }).conversation_disabled);
+    const conversationDisabled = Boolean(matchRow?.conversation_disabled);
 
     if (conversationDisabled) {
       if (wantsRedirect) {
