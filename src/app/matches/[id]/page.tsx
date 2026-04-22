@@ -7,7 +7,10 @@ import StartConversationButton from '@/components/messages/StartConversationButt
 import ConnectionSafetyActions from '@/components/safety/ConnectionSafetyActions';
 import TrustSignals from '@/components/matches/TrustSignals';
 import PreDateBriefingCard from '@/components/matches/PreDateBriefingCard';
+import IRLDateTrack from '@/components/irl/IRLDateTrack';
 import { isDatingLockedForUser } from '@/server/couples/mode';
+import { isIRLFeatureEnabled } from '@/lib/irl/featureFlag';
+import { getConnectionTrackConsecutiveDays } from '@/lib/irl/service';
 
 type MatchDetailPageProps = {
   params: Promise<{ id: string }>;
@@ -43,6 +46,8 @@ export default async function MatchDetailPage({ params }: MatchDetailPageProps) 
   if (!match) {
     notFound();
   }
+  const IRL_FEATURE_ENABLED = isIRLFeatureEnabled();
+  const connectionTrackDays = IRL_FEATURE_ENABLED ? await getConnectionTrackConsecutiveDays(supabase, match.id) : 0;
   const createdAtLabel = new Date(match.createdAt).toLocaleDateString(undefined, {
     month: 'short',
     day: 'numeric',
@@ -224,6 +229,8 @@ export default async function MatchDetailPage({ params }: MatchDetailPageProps) 
             disabledReason={match.conversationDisabledReason}
           />
         </section>
+
+        {connectionTrackDays >= 3 && IRL_FEATURE_ENABLED && <IRLDateTrack matchId={match.id} />}
       </div>
     </main>
   );
