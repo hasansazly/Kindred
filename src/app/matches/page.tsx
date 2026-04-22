@@ -27,6 +27,12 @@ type WaitlistRow = {
   joined_at: string;
 };
 
+function shouldShowWaitlistMessage(waitlistEntry: WaitlistRow | null, matchesCount: number): boolean {
+  if (waitlistEntry?.status === 'waiting' || waitlistEntry?.status === 'ready') return true;
+  if (waitlistEntry?.status === 'released') return false;
+  return matchesCount === 0;
+}
+
 function formatTimestamp(iso: string): string {
   const date = new Date(iso);
   if (Number.isNaN(date.getTime())) return '';
@@ -132,6 +138,7 @@ export default async function MatchesPage() {
 
   const conversationUserIds = new Set(conversationMatches.map(item => item.match.matchedUserId));
   const newMatches = matches.filter(match => !conversationUserIds.has(match.matchedUserId));
+  const showWaitlistMessage = shouldShowWaitlistMessage(waitlistEntry ?? null, matches.length);
 
   return (
     <main className="app-interior-page mobile-premium-screen matches-screen min-h-screen bg-[#12101A] px-4 py-5 pb-24 text-[#F5EEF8]">
@@ -154,11 +161,11 @@ export default async function MatchesPage() {
         </header>
 
         <section className="mb-5">
-          {waitlistEntry?.status === 'waiting' ? (
+          {showWaitlistMessage ? (
             <div className="mb-3 rounded-xl border border-[#A855F7]/40 bg-[#1B1630] p-3 text-sm text-white/80">
-              <p className="font-medium text-white">Priority waitlist active</p>
+              <p className="font-medium text-white">Thank you, you&apos;re on the waitlist</p>
               <p className="mt-1 text-xs text-white/65">
-                We&apos;re building a balanced match set for your segment. You&apos;ll be notified as soon as your first curated introductions are ready.
+                We&apos;re preparing your curated reveal. Matches will unlock after the waitlist release window.
               </p>
             </div>
           ) : null}

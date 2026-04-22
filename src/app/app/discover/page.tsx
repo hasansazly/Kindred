@@ -6,6 +6,19 @@ import { getMatchesForUser } from '@/lib/matches';
 import { createSupabaseServerClient } from '../../../../utils/supabase/server';
 import { isDatingLockedForUser } from '@/server/couples/mode';
 
+type WaitlistRow = {
+  user_id: string;
+  segment: string;
+  status: 'waiting' | 'ready' | 'released';
+  joined_at: string;
+};
+
+function shouldShowWaitlistMessage(waitlistEntry: WaitlistRow | null, matchesCount: number): boolean {
+  if (waitlistEntry?.status === 'waiting' || waitlistEntry?.status === 'ready') return true;
+  if (waitlistEntry?.status === 'released') return false;
+  return matchesCount === 0;
+}
+
 type SectionProps = {
   title: string;
   desc: string;
@@ -73,9 +86,14 @@ export default async function AppDiscoverPage() {
     redirect('/auth/login?next=/app/discover');
   }
 
-  const [{ data: preferenceRow }, { data: profile }, matches] = await Promise.all([
+  const [{ data: preferenceRow }, { data: profile }, { data: waitlistEntry }, matches] = await Promise.all([
     supabase.from('match_preferences').select('user_id').eq('user_id', user.id).maybeSingle(),
     supabase.from('profiles').select('*').eq('id', user.id).maybeSingle(),
+    supabase
+      .from('matchmaking_waitlist')
+      .select('user_id,segment,status,joined_at')
+      .eq('user_id', user.id)
+      .maybeSingle<WaitlistRow>(),
     getMatchesForUser(supabase, user.id),
   ]);
 
@@ -89,6 +107,7 @@ export default async function AppDiscoverPage() {
 
   const tier = resolveViewerTier((profile ?? null) as Record<string, unknown> | null);
   const sections = getDiscoverSections(matches, tier);
+  const showWaitlistMessage = shouldShowWaitlistMessage(waitlistEntry ?? null, matches.length);
 
   return (
     <div className="app-interior-page discover-screen min-h-full bg-[#12101A] px-4 pt-4 pb-8 text-[#F5EEF8]">
@@ -108,6 +127,15 @@ export default async function AppDiscoverPage() {
           ⚙ Dashboard
         </Link>
       </div>
+
+      {showWaitlistMessage ? (
+        <section className="mb-5 rounded-[18px] border p-4" style={{ borderColor: 'rgba(168,85,247,0.45)', background: '#1B1630' }}>
+          <p className="text-[14px] font-semibold" style={{ color: '#FFFFFF' }}>Thank you, you&apos;re on the waitlist</p>
+          <p className="mt-1 text-[12px] leading-[1.55]" style={{ color: 'rgba(255,255,255,0.78)' }}>
+            We&apos;re preparing your curated reveal. Matches will unlock after the waitlist release window.
+          </p>
+        </section>
+      ) : null}
 
       <Section
         title="New Today"
